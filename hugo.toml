@@ -12,8 +12,8 @@ theme = "PaperMod"
   ShowCodeCopyButtons = true
 
   [params.homeInfoParams]
-    Title = "Hey, I'm Vishnu 👋"
-    Content = "Notes on infrastructure, Kubernetes, and AI systems."
+    Title = "Welcome to vishctl"
+    Content = "A pun on my name + `kubectl`. Here I share practical notes and experiments across Kubernetes, DevOps, AI infrastructure, and continuous learning. Authentic write-ups from the trenches so neither of us has to solve the same headache twice."
 
   [[params.socialIcons]]
     name = "linkedin"
