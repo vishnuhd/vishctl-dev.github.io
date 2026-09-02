@@ -1,4 +1,4 @@
-﻿# Hugo build output and caches
+# Hugo build output and caches
 /public/
 /resources/_gen/
 .hugo_build.lock
@@ -9,6 +9,22 @@
 *.key
 *.pem
 *.secret
+*.crt
+*.p12
+*.pfx
+*id_rsa*
+*id_ed25519*
+*.ovpn
+
+# DevOps, Cloud & Kubernetes secrets
+kubeconfig*
+*.kubeconfig
+*.tfvars
+*.tfvars.json
+*secret*.yaml
+*secret*.yml
+*credential*
+credentials.json
 
 # AI, instructions, personal notes & scratchpads
 instruction.md
