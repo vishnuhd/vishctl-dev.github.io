@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-family-code: 'JetBrains Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+}
+
+body {
+    font-family: var(--font-family-base);
+    letter-spacing: -0.01em;
+}
+
+code, kbd, samp, pre {
+    font-family: var(--font-family-code) !important;
+}
+
+/* Header & Logo styling */
+.logo a {
+    font-family: var(--font-family-code);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.03em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s ease;
+}
+
+.logo a:hover {
+    opacity: 0.85;
+}
+
+/* Nav Menu active and hover states */
+.menu a {
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.menu .active {
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 2px;
+}
+
+/* Home Info Card */
+.first-entry.home-info {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 36px;
+    background: var(--entry);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.first-entry.home-info:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.25);
+}
+
+.first-entry .entry-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+}
+
+.first-entry .entry-content {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--content);
+}
+
+.first-entry .entry-content code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #38bdf8;
+}
+
+/* Post Cards */
+.post-entry {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 24px;
+    background: var(--entry);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.post-entry:hover {
+    transform: translateY(-2px);
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.2);
+}
+
+.post-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* Tags Styling */
+.post-tags {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.post-tags a {
+    font-family: var(--font-family-code);
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: var(--secondary);
+    transition: all 0.2s ease;
+}
+
+.post-tags a:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
+}
+
+/* Table of Contents */
+.toc {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    background: var(--entry);
+}
+
+.toc summary {
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+}
+
+.toc ul {
+    padding-left: 20px;
+}
+
+.toc a {
+    transition: color 0.2s ease;
+}
+
+.toc a:hover {
+    color: #38bdf8;
+}
+
+/* Search input polish */
+#searchInput {
+    font-family: var(--font-family-base);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#searchInput:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    outline: none;
+}
+
+/* Social icons subtle lift */
+.social-icons a {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.social-icons a:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
