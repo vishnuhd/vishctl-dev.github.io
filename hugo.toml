@@ -1,0 +1,15 @@
+baseURL = "https://vishctl.dev/"
+languageCode = "en-us"
+title = "vishctl"
+theme = "PaperMod"
+
+[params]
+  env = "production"
+  description = "Notes on infra, Kubernetes, and AI systems"
+  ShowReadingTime = true
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowCodeCopyButtons = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
