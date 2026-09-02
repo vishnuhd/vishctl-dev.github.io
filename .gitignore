@@ -1,0 +1,36 @@
+﻿# Hugo build output and caches
+/public/
+/resources/_gen/
+.hugo_build.lock
+
+# Environment variables & secrets
+.env
+.env.*
+*.key
+*.pem
+*.secret
+
+# AI, instructions, personal notes & scratchpads
+instruction.md
+instructions.md
+instructions/
+notes.md
+notes/
+todo.md
+TODO.md
+drafts/
+scratch/
+*.log
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+
+# IDE & Editor configurations
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
