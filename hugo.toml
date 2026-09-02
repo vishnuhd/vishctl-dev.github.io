@@ -11,5 +11,22 @@ theme = "PaperMod"
   ShowPostNavLinks = true
   ShowCodeCopyButtons = true
 
+  [params.homeInfoParams]
+    Title = "Hey, I'm Vishnu 👋"
+    Content = "Notes on infrastructure, Kubernetes, and AI systems."
+
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://www.linkedin.com/in/vishnuhd/"
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/vishnuhd"
+
+  [[params.socialIcons]]
+    name = "link"
+    url = "https://own.page/vishnuhd"
+    title = "own.page"
+
 [outputs]
   home = ["HTML", "RSS", "JSON"]
