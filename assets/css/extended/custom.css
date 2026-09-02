@@ -43,19 +43,25 @@ code, kbd, samp, pre {
     padding-bottom: 2px;
 }
 
-/* Home Info Card */
+/* Home Info Card (Welcome / Intro Section) */
 .first-entry.home-info {
-    border: 1px solid var(--border);
+    border: 1px solid rgba(56, 189, 248, 0.22);
     border-radius: 12px;
     padding: 30px;
-    margin-bottom: 36px;
-    background: var(--entry);
+    margin-bottom: 24px;
+    background: #1c2230;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+:root[data-theme="light"] .first-entry.home-info,
+body.light .first-entry.home-info {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
 .first-entry.home-info:hover {
-    border-color: rgba(56, 189, 248, 0.4);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.25);
+    border-color: rgba(56, 189, 248, 0.45);
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.3);
 }
 
 .first-entry .entry-header h1 {
@@ -63,6 +69,31 @@ code, kbd, samp, pre {
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 14px;
+}
+
+/* Posts Section Header on Homepage */
+.posts-section-header {
+    margin: 32px 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.posts-section-title {
+    font-size: 19px;
+    font-weight: 700;
+    font-family: var(--font-family-code);
+    color: var(--primary);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.posts-section-header::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    opacity: 0.6;
 }
 
 .first-entry .entry-content {
