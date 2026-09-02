@@ -202,7 +202,7 @@ country: "NO"
 
 It formats cleanly, avoids parser edge cases, and provides predictable output for gitops diffs and scripts.
 
-### 6. Heads Up: SELinuxMount Reaches GA
+### 6. SELinuxMount Reaches GA
 
 If your nodes run SELinux (common in Red Hat, Rocky, or Fedora environments), volume mounts historically required recursive file relabeling on every pod start, which could cause painfully slow startup times on large volumes.
 
