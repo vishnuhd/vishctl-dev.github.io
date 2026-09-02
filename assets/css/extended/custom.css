@@ -80,9 +80,8 @@ body.light .first-entry.home-info {
 }
 
 .posts-section-title {
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 700;
-    font-family: var(--font-family-code);
     color: var(--primary);
     letter-spacing: -0.02em;
     margin: 0;
