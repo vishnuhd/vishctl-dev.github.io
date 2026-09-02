@@ -30,7 +30,7 @@ theme = "PaperMod"
 
   [params.homeInfoParams]
     Title = "Welcome to `vishctl`"
-    Content = "A play on my name + `kubectl`. Here I share practical notes and experiments across Kubernetes, DevOps, AI infrastructure, and continuous learning. Authentic write-ups from the trenches so neither of us has to solve the same headache twice."
+    Content = "`vishctl` is a play on my name and `kubectl`, which felt right since that's basically what I've been running for the better part of a decade. I write about the DevOps and Kubernetes work I do day to day, container platforms, hybrid cloud, homelab setups, and the AI infra experiments I'm currently buried in, so neither of us has to solve the same headache twice."
 
   [[params.socialIcons]]
     name = "linkedin"
