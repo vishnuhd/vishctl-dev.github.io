@@ -42,7 +42,7 @@ ollama pull ornith-1.5:9b
 
 This feels deliberately familiar if you work with containers: `ollama pull` downloads the model and its layers, while `ollama run` starts an interactive session. The current Ollama build of `ornith-1.5:9b` is 6.6 GB with a 256K context window, which is a comfortable starting point on a 32 GB laptop. [Ollama's model page](https://ollama.com/library/ornith-1.5) lists the available tags; the 35B download is 23 GB, so I would not make that the default on an Air.
 
-![Pulling Ornith 1.5 9B, then confirming the local model](/static/images/posts/ollama-32gb-macbook-air/01-pull-ornith-1-5-9b.png)
+![Pulling Ornith 1.5 9B, then confirming the local model](/images/posts/ollama-32gb-macbook-air/01-pull-ornith-1-5-9b.png)
 
 After the pull completes, confirm it is available:
 
@@ -60,7 +60,7 @@ ollama run ornith-1.5:9b
 
 Use a question that resembles the work you actually do. I tested a simple greeting first, then moved on to infrastructure questions. Exit the interactive prompt with `/exit` or `Ctrl-D`.
 
-![An interactive Ornith 1.5 9B session in the terminal](/static/images/posts/ollama-32gb-macbook-air/02-run-ornith-1-5-9b.png)
+![An interactive Ornith 1.5 9B session in the terminal](/images/posts/ollama-32gb-macbook-air/02-run-ornith-1-5-9b.png)
 
 For an initial sanity check, the model was responsive and produced a natural answer. That is useful confirmation that the model loads and runs locally, but it is not a benchmark. A real comparison needs the same prompt, context length, generation settings, and output length.
 
@@ -108,7 +108,7 @@ curl http://localhost:11434/api/chat \
   }'
 ```
 
-![Calling the local Ollama chat API with curl](/static/images/posts/ollama-32gb-macbook-air/03-ornith-local-api.png)
+![Calling the local Ollama chat API with curl](/images/posts/ollama-32gb-macbook-air/03-ornith-local-api.png)
 
 The response includes the answer and useful timing fields. Keep this endpoint local by default. If I later expose it to another device, I will put authentication and a proper reverse proxy in front of it. I will not publish port 11434 directly. [Ollama's API documentation](https://docs.ollama.com/api/introduction) covers the local base URL and client libraries.
 
@@ -116,7 +116,7 @@ The response includes the answer and useful timing fields. Keep this endpoint lo
 
 The CLI is great for testing and scripts, but the Ollama app also gives me a simple chat interface. Here, Ornith is selected in the model picker and used for a weather question.
 
-![The Ollama app with Ornith 1.5 9B selected](/static/images/posts/ollama-32gb-macbook-air/04-ollama-app-ornith.png)
+![The Ollama app with Ornith 1.5 9B selected](/images/posts/ollama-32gb-macbook-air/04-ollama-app-ornith.png)
 
 The UI is useful when I want to compare prompts casually. The local API is the path I will use when I want to integrate models into tooling.
 
