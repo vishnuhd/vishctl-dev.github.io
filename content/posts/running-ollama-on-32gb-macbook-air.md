@@ -118,6 +118,8 @@ The CLI is great for testing and scripts, but the Ollama app also gives me a sim
 
 ![The Ollama app with Ornith 1.5 9B selected](/images/posts/ollama-32gb-macbook-air/04-ollama-app-ornith.png)
 
+The app can also give a model access to web tools. In this example, Ornith searched for current Singapore weather before answering. That extends the model with fresh online information when the tool is enabled, but it does not replace the model's built-in training knowledge. Treat retrieved results as sources to verify, especially for technical or time-sensitive answers.
+
 The UI is useful when I want to compare prompts casually. The local API is the path I will use when I want to integrate models into tooling.
 
 ### Commands Worth Remembering
