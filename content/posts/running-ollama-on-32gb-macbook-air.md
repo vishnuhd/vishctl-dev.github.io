@@ -145,7 +145,7 @@ Models are not small. Treat `ollama pull` the same way you would a sizeable `doc
 
 ### What This MacBook Air Is Good At
 
-An 8B–9B class model is a good fit for private note summarisation, explaining logs, drafting YAML, lightweight coding help, and experimenting with local integrations. This is not where I expect a 70B-class model to be effortless or where I would host production inference.
+An 8B to 9B class model is a good fit for private note summarisation, explaining logs, drafting YAML, lightweight coding help, and experimenting with local integrations. This is not where I expect a 70B-class model to be effortless or where I would host production inference.
 
 There are many ways to run models locally, but Ollama is an excellent Apple-silicon starting point. It gets the plumbing out of the way so I can spend time evaluating the models themselves.
 
