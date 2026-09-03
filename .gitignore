@@ -1,4 +1,4 @@
-# Hugo build output and caches
+# Hugo build output and caches (push-permission test: no behavior change)
 /public/
 /resources/
 /resources/_gen/
