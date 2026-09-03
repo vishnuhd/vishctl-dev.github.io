@@ -5,7 +5,7 @@ draft = false
 description = "My notes on Kubernetes v1.37: native HPA scale-to-zero, tracking unused PVCs, ClusterTrustBundles, and etcd streaming."
 tags = ["kubernetes", "devops", "cloudnative", "infrastructure"]
 ShowToc = true
-TocOpen = true
+TocOpen = false
 +++
 
 Kubernetes v1.37 landed recently under the release theme **Garhwal**, named after the Himalayan region of Uttarakhand, India. The release packages 67 enhancements across alpha, beta, and stable.

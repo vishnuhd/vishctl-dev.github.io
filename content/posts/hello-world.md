@@ -5,7 +5,7 @@ title = 'Hello World'
 description = "A quick intro to vishctl, my background in Kubernetes and AI infra, and why this blog exists."
 tags = ["devops", "kubernetes", "infrastructure", "ai", "homelab"]
 ShowToc = true
-TocOpen = true
+TocOpen = false
 +++
 
 Hey, I'm Vishnu. Welcome to my little corner of the internet.

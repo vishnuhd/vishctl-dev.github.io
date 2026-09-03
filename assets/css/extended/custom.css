@@ -220,3 +220,30 @@ body.light .first-entry.home-info {
     transform: translateY(-2px);
     opacity: 0.9;
 }
+
+/* Screenshot figures inside posts */
+.md-content figure.post-screenshot {
+    margin: 2rem 0;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--entry);
+    box-shadow: 0 12px 28px -18px rgba(0, 0, 0, 0.65);
+}
+
+.md-content figure.post-screenshot img {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 7px;
+}
+
+.md-content figure.post-screenshot figcaption,
+.md-content figure.post-screenshot figcaption p {
+    margin: 10px 4px 2px;
+    color: var(--secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.45;
+}
