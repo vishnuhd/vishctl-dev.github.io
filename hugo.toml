@@ -16,6 +16,7 @@ theme = "PaperMod"
   ShowToc = true
   TocOpen = false
   ShowAllPagesInArchive = true
+  ShowRssButtonInSectionTermList = true
   mainSections = ["posts"]
 
   [params.label]
@@ -44,6 +45,11 @@ theme = "PaperMod"
     name = "link"
     url = "https://own.page/vishnuhd"
     title = "own.page"
+
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
+    title = "RSS Feed"
 
 [[menu.main]]
   identifier = "posts"
