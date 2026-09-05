@@ -48,6 +48,11 @@ theme = "PaperMod"
     title = "own.page"
 
   [[params.socialIcons]]
+    name = "email"
+    url = "mailto:vishnuharidadhich@gmail.com"
+    title = "Email"
+
+  [[params.socialIcons]]
     name = "rss"
     url = "/index.xml"
     title = "RSS Feed"
