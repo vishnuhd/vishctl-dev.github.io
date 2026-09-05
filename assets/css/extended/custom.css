@@ -267,3 +267,10 @@ body.light .first-entry.home-info {
     font-weight: 500;
     line-height: 1.45;
 }
+
+/* Comments section */
+.comments {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
