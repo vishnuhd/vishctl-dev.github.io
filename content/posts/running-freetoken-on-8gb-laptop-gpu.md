@@ -32,7 +32,7 @@ On paper, an 8 GB VRAM budget makes running a 35-billion parameter model look im
 
 ### Installing FreeToken and Exploring the Library
 
-The FreeToken desktop app provides a self-contained installation. When you launch it, the interface automatically detects your hardware specs, available VRAM, and system RAM, and presents a curated library of models optimized for edge offloading.
+The FreeToken desktop app is available to download directly from the [FlashML website](https://www.flashml.ai/). It provides a self-contained installer that is quick to set up on Windows. When you launch it, the interface automatically detects your hardware specs, available VRAM, and system RAM, and presents a curated library of models optimized for edge offloading.
 
 {{< figure src="/images/posts/freetoken-8gb-laptop-gpu/02-hardware-specs-and-model-library.png" alt="FreeToken hardware detection and model library" caption="FreeToken accurately detects the RTX 4070 Laptop GPU (8 GB) and 32 GB RAM, recommending compatible models." class="post-screenshot" >}}
 
@@ -146,4 +146,4 @@ FreeToken is a relatively young product, but its approach solves a real constrai
 
 If you have a laptop with 32 GB of system RAM and a modest 8 GB NVIDIA GPU, FreeToken is worth checking out. It makes 35B-class MoE models runnable on consumer hardware that would otherwise choke on them, keeping your data completely local.
 
-The project is available on [GitHub](https://github.com/FlashML-org/FreeToken), and their research paper is on [arXiv:2608.16157](https://arxiv.org/abs/2608.16157).
+You can download the desktop app directly from [FlashML](https://www.flashml.ai/), check out the project on [GitHub](https://github.com/FlashML-org/FreeToken), and read their research paper on [arXiv:2608.16157](https://arxiv.org/abs/2608.16157).
