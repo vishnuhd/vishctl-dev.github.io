@@ -18,6 +18,7 @@ theme = "PaperMod"
   TocOpen = false
   ShowAllPagesInArchive = true
   ShowRssButtonInSectionTermList = true
+  ShowFullTextinRSS = true
   mainSections = ["posts"]
 
   [params.label]
