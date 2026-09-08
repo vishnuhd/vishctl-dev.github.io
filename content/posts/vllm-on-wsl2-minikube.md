@@ -1,20 +1,51 @@
 +++
-title = "Running vLLM on Kubernetes in WSL2: GPU Setup with Minikube"
+title = "Run vLLM on Kubernetes with Minikube, WSL2 and NVIDIA GPU"
 date = '2026-09-08T13:30:00+08:00'
 draft = false
-description = "A practical guide to running vLLM on Kubernetes in WSL2 using Minikube, setting up the NVIDIA device plugin, and serving Qwen3.5 on GPU."
+description = "A practical guide to running vLLM on Kubernetes in WSL2 with Minikube, configuring NVIDIA GPU passthrough, and serving an OpenAI-compatible API."
 tags = ["ai", "local-llm", "vllm", "kubernetes", "minikube", "wsl2", "gpu", "nvidia"]
 ShowToc = true
 TocOpen = false
 +++
 
-This is the [vLLM](https://github.com/vllm-project/vllm) entry in my local AI series. After testing [Ollama](/posts/running-ollama-on-32gb-macbook-air/), [llama.cpp](/posts/running-llama-cpp-on-32gb-macbook-air/), and [FreeToken](/posts/running-freetoken-on-8gb-laptop-gpu/), I wanted to run vLLM as a Kubernetes Deployment on my Windows/WSL2 setup.
+This is the [vLLM](https://docs.vllm.ai/) entry in my local AI series. After testing [Ollama](/posts/running-ollama-on-32gb-macbook-air/), [llama.cpp](/posts/running-llama-cpp-on-32gb-macbook-air/), and [FreeToken](/posts/running-freetoken-on-8gb-laptop-gpu/), I wanted to run vLLM as a Kubernetes Deployment on my Windows/WSL2 setup.
 
 The plan was simple: deploy vLLM, request `nvidia.com/gpu: 1`, expose an OpenAI-compatible API endpoint through a Service, and tie it into the Kubernetes workflows I write about regularly.
 
 Getting a GPU into Kubernetes on WSL2 turned into an investigation. Not because vLLM is hard, but because container runtimes and nested clusters handle GPU passthrough in non-obvious ways. Here is what happened, how the device plugin and node prerequisites work, and how to get a working GPU cluster running with Minikube.
 
-### The Test Rig
+## What You'll Build
+
+```text
+Windows
+   │
+   ▼
+WSL2 Ubuntu
+   │
+   ▼
+Docker Engine + NVIDIA Container Toolkit
+   │
+   ▼
+Minikube
+   │
+   ▼
+Kubernetes
+   │
+   ├── NVIDIA GPU Operator
+   │
+   ├── NVIDIA Device Plugin
+   │
+   └── vLLM
+         │
+         ▼
+      NVIDIA GPU
+```
+
+By the end of this guide, you'll have vLLM running on Kubernetes with GPU acceleration and serving an OpenAI-compatible API.
+
+---
+
+## The Test Rig
 
 My test machine for this run:
 
@@ -27,7 +58,7 @@ My test machine for this run:
 - **Model:** Qwen3.5-0.8B (`Qwen/Qwen3.5-0.8B`) served by vLLM v0.28.0
 
 
-### Attempt 1: Docker Desktop's Built-in Kubernetes
+## Troubleshooting vLLM GPU Support on WSL2 Kubernetes
 
 Docker Desktop offers a one-click Kubernetes cluster in its settings. Turning it on provisions a single-node cluster named `desktop-control-plane` running on `containerd://2.3.4`.
 
@@ -57,7 +88,7 @@ In this tested Docker Desktop Kubernetes setup, GPU resources were not exposed t
 
 ---
 
-### Why: The Node Is Not What It Looks Like
+## Why Docker Desktop Kubernetes Cannot Detect My NVIDIA GPU
 
 Based on the runtime architecture observed in this setup, the issue comes down to how Docker Desktop isolates its cluster node.
 
@@ -73,11 +104,11 @@ Docker has an open, long-standing roadmap issue requesting native GPU passthroug
 
 ---
 
-### What the NVIDIA Device Plugin Actually Does
+## How Kubernetes Detects NVIDIA GPUs Using the NVIDIA Device Plugin
 
 The [NVIDIA Kubernetes Device Plugin](https://github.com/NVIDIA/k8s-device-plugin) is a DaemonSet that exposes GPU hardware to the Kubernetes control plane. It does not run inference, and it does not install drivers or container runtimes.
 
-Instead, it integrates with Kubelet through the Kubernetes Device Plugin API over gRPC, using a Unix domain socket at `/var/lib/kubelet/device-plugins/kubelet.sock`. Its responsibility comes down to three functions:
+Under standard [Kubernetes GPU scheduling](https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/), pods request GPU resources by specifying limits for extended resources. The device plugin integrates with Kubelet through the Kubernetes Device Plugin API over gRPC, using a Unix domain socket at `/var/lib/kubelet/device-plugins/kubelet.sock`. Its responsibility comes down to three functions:
 
 1. **Discovery:** The plugin queries the host system using NVML (NVIDIA Management Library) to check how many physical GPUs are present and verify their health status.
 2. **Registration:** It registers with Kubelet and advertises the discovered GPUs as an extended allocatable resource named `nvidia.com/gpu`.
@@ -88,14 +119,14 @@ Instead, it integrates with Kubelet through the Kubernetes Device Plugin API ove
 Because the device plugin only handles discovery and Kubelet registration, it assumes the worker node already has a functional GPU stack. For worker nodes in any Kubernetes cluster, three layers must be in place before the device plugin can run:
 
 1. **Host Kernel Drivers:** The node OS must have the NVIDIA kernel modules loaded (`nvidia.ko`, `nvidia-uvm.ko`) and device nodes created in `/dev`. Running `nvidia-smi` on the host must return clean output.
-2. **NVIDIA Container Toolkit:** Packages such as `libnvidia-container` and `nvidia-container-toolkit` must be installed on the host. This toolkit includes the OCI prestart hook that inspects container environment variables and mounts host GPU driver libraries into the target container.
+2. **NVIDIA Container Toolkit:** Packages such as `libnvidia-container` and `nvidia-container-toolkit` must be installed on the host. Refer to the [NVIDIA Container Toolkit install guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) for distribution setup. This toolkit includes the OCI prestart hook that inspects container environment variables and mounts host GPU driver libraries into the target container.
 3. **Runtime Configuration:** The node container runtime (containerd or Docker) must have the NVIDIA runtime configured in its daemon settings (such as `/etc/containerd/config.toml` or `/etc/docker/daemon.json`) and set up to handle CDI (Container Device Interface) or NVIDIA runtime hooks.
 
 If any of those three pieces is missing or unconfigured, the device plugin pod will fail during startup or report zero allocatable GPUs. That was the exact failure inside Docker Desktop: the `desktop-control-plane` container lacked the driver mounts and the toolkit configuration inside its sysbox sandbox.
 
 ---
 
-### Step 1: Installing Docker CE and Containerd Inside WSL2
+## Step 1: Installing Docker CE and Containerd Inside WSL2
 
 To satisfy those node prerequisites and bypass Docker Desktop's VM isolation, we install the native Docker Community Edition engine directly inside the Ubuntu 24.04 WSL2 environment:
 
@@ -136,7 +167,7 @@ docker container run --gpus all --rm nvidia/cuda:13.3.1-base-ubuntu26.04 nvidia-
 
 ---
 
-### Step 2: Installing and Starting Minikube with GPU Acceleration
+## Run Minikube with NVIDIA GPU Support on WSL2
 
 Install the latest Minikube Debian package:
 
@@ -147,7 +178,7 @@ sudo dpkg -i minikube_latest_amd64.deb
 
 {{< figure src="/images/posts/vllm-wsl2-minikube/05-install-minikube-deb.png" alt="Installing Minikube package in WSL2" caption="Installing Minikube v1.39.0 via Debian package." class="post-screenshot" >}}
 
-Now start Minikube. Two flags matter here and both are easy to miss:
+Following the official [Minikube GPU documentation](https://minikube.sigs.k8s.io/docs/tutorials/nvidia/), starting Minikube with GPU acceleration requires specific driver and runtime parameters. Now start Minikube. Two flags matter here and both are easy to miss:
 
 ```bash
 minikube start \
@@ -170,7 +201,7 @@ Notice the startup output: Minikube automatically detects the GPU and enables th
 
 ---
 
-### Step 3: Verifying the Cluster and GPU Allocation
+## Verifying the Cluster and GPU Allocation
 
 Install `kubectl` to talk to the cluster:
 
@@ -243,11 +274,11 @@ kubectl logs gpu-test
 Real GPU scheduling and `nvidia.com/gpu` resource accounting, without Docker Desktop getting in the way.
 
 
-### Step 4: Deploying vLLM to Kubernetes
+## Deploy vLLM on Kubernetes with NVIDIA GPU
 
-Model choice for 8 GB VRAM: **Qwen3.5-0.8B** (`Qwen/Qwen3.5-0.8B`). Small enough to leave real headroom for vLLM's KV cache, which is the main reason to use vLLM over llama.cpp or Ollama in the first place, and it is a capable model at that size.
+Model choice for 8 GB VRAM: **Qwen3.5-0.8B** (`Qwen/Qwen3.5-0.8B`). Small enough to leave real headroom for vLLM's KV cache, which is the main reason to use vLLM over llama.cpp or Ollama in the first place, and it is a capable model at that size. As detailed in the [vLLM documentation](https://docs.vllm.ai/), the server exposes an OpenAI-compatible API endpoint over HTTP.
 
-#### The Shared Memory (`/dev/shm`) Gotcha
+### The Shared Memory (`/dev/shm`) Gotcha
 
 When running vLLM via the Docker CLI, passing `--ipc=host` lets workers exchange tensors and state across processes using host shared memory. In Kubernetes, pods do not share the host IPC namespace by default, and Kubernetes provisions `/dev/shm` as a minimal 64 MB tmpfs mount.
 
@@ -336,7 +367,7 @@ Once PyTorch compilation and CUDA graph capture finish, the ASGI application com
 
 ---
 
-### Step 5: Testing Inference and Hardware Telemetry
+## Testing Inference and Hardware Telemetry
 
 Forward port 8000 from the cluster service to the local machine:
 
@@ -391,13 +422,13 @@ Dedicated GPU memory held at **4.4 / 8.0 GB** (in line with the `--gpu-memory-ut
 
 ---
 
-### Beyond Local Dev: Why Production Clusters Use the NVIDIA GPU Operator
+## Beyond Local Dev: Why Production Clusters Use the NVIDIA GPU Operator
 
 For a single-node laptop or a Minikube sandbox, managing drivers on the host and running a standalone device plugin DaemonSet gets the job done.
 
 In production Kubernetes clusters, manual node configuration does not scale. When you operate multi-node clusters across cloud providers or bare metal, nodes get provisioned dynamically by autoscalers, Linux kernel patch levels drift, and different GPU architectures (such as A100, H100, or L40S) coexist in the same cluster.
 
-This is why production setups deploy the **NVIDIA GPU Operator** instead of managing the device plugin directly.
+This is why production setups deploy the [NVIDIA GPU Operator](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/) instead of managing the device plugin directly.
 
 The GPU Operator automates the deployment and lifecycle management of the NVIDIA software stack required for GPU-enabled Kubernetes nodes. Driven by the `ClusterPolicy` Custom Resource Definition, it manages several components depending on your cluster configuration:
 
@@ -412,7 +443,7 @@ In short: the device plugin provides basic GPU scheduling for pods. The GPU Oper
 
 ---
 
-### Key Takeaways
+## Key Takeaways
 
 1. **In tested Docker Desktop Kubernetes setups, GPU resources are not exposed to the node.** Because `desktop-control-plane` is isolated in a nested `sysbox-runc` sandbox without GPU passthrough flags, the device plugin cannot discover any GPU devices. Avoid spending hours trying to manually patch containerd or driver libraries inside that nested container.
 2. **Minikube on native Docker CE in WSL2 works reliably.** By installing native Docker CE inside Ubuntu WSL2 (where NVIDIA container runtime works out of the box), Minikube can launch with `--driver=docker --container-runtime=docker --gpus=all` and automatically provision the NVIDIA device plugin.
