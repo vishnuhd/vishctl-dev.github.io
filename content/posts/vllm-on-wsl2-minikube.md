@@ -53,23 +53,23 @@ kubectl describe node desktop-control-plane | grep -A5 "Capacity:\|Allocatable:"
 
 {{< figure src="/images/posts/vllm-wsl2-minikube/01-docker-desktop-k8s-no-gpu.png" alt="Docker Desktop Kubernetes node missing GPU resources" caption="Checking Docker Desktop's desktop-control-plane: nvidia-smi finds the RTX 4070, but the node exposes zero GPU capacity." class="post-screenshot" >}}
 
-There is no `nvidia.com/gpu` resource anywhere under `Capacity` or `Allocatable`. Despite the underlying Windows host and WSL2 distribution having full access to CUDA, the Kubernetes control plane is completely blind to the GPU.
+In this tested Docker Desktop Kubernetes setup, GPU resources were not exposed to the Kubernetes node. Despite GPU access working in WSL2 and standalone Docker containers, the Kubernetes node could not expose `nvidia.com/gpu` to the device plugin.
 
 ---
 
 ### Why: The Node Is Not What It Looks Like
 
-Understanding why this fails requires looking at how Docker Desktop constructs its Kubernetes node.
+Based on the runtime architecture observed in this setup, the issue comes down to how Docker Desktop isolates its cluster node.
 
 `desktop-control-plane` is not a traditional virtual machine or a standard container. It runs inside Docker Desktop's private utility VM (`docker-desktop`), isolated using **`sysbox-runc`** rather than the standard OCI runtime `runc`. Sysbox provides nested container virtualization, allowing Docker Desktop to safely spin up a full systemd, kubelet, and containerd stack within an unprivileged container environment.
 
-However, that exact isolation boundary breaks GPU passthrough:
+In this configuration, that isolation layer prevents GPU passthrough:
 
 1. **Missing OCI Runtime Passthrough:** The node container itself was not launched with NVIDIA GPU passthrough flags (`--gpus all`). Inside the sysbox sandbox, the nested containerd cannot see NVIDIA device nodes (`/dev/nvidia*`) or the WSL2 DirectX driver mapping (`/usr/lib/wsl/lib`).
-2. **Locked-Down Runtime Configuration:** You cannot simply `apt install` the NVIDIA Container Toolkit inside the node's containerd because you do not own the lifecycle of the `desktop-control-plane` container; Docker Desktop provisions and supervises it internally.
-3. **Daemon Defaults Don't Propagate:** Even if you shell into the `docker-desktop` WSL distribution (`wsl -d docker-desktop`) and configure `nvidia` as the default OCI runtime globally, the Kubernetes node container remains bound to `sysbox-runc`.
+2. **Locked-Down Runtime Configuration:** You cannot simply configure the NVIDIA Container Toolkit inside the node's containerd because you do not own the lifecycle of the `desktop-control-plane` container; Docker Desktop provisions and supervises it internally.
+3. **Daemon Defaults Do Not Propagate:** Even if you shell into the `docker-desktop` WSL distribution (`wsl -d docker-desktop`) and configure `nvidia` as the default OCI runtime globally, the Kubernetes node container remains bound to `sysbox-runc`.
 
-Docker has an open, long-standing roadmap issue requesting native GPU passthrough for Docker Desktop Kubernetes. It is not a missing config toggle on your end; it is an architectural boundary Docker Desktop has not yet bridged.
+Docker has an open, long-standing roadmap issue requesting native GPU passthrough for Docker Desktop Kubernetes. It is not an omitted user toggle; it is an architectural boundary in the current setup.
 
 ---
 
@@ -251,7 +251,7 @@ Model choice for 8 GB VRAM: **Qwen3.5-0.8B** (`Qwen/Qwen3.5-0.8B`). Small enough
 
 When running vLLM via the Docker CLI, passing `--ipc=host` lets workers exchange tensors and state across processes using host shared memory. In Kubernetes, pods do not share the host IPC namespace by default, and Kubernetes provisions `/dev/shm` as a minimal 64 MB tmpfs mount.
 
-If vLLM attempts tensor parallel or multiprocessing allocation without enough shared memory, it crashes immediately. The Kubernetes solution is mounting an `emptyDir` volume backed by host RAM (`medium: Memory`) with a dedicated `sizeLimit`:
+Some PyTorch and vLLM multiprocessing workloads can require significantly more shared memory than Kubernetes' default `/dev/shm` (which defaults to a minimal 64 MB tmpfs mount). If insufficient shared memory is available, initialization or worker processes may fail. The Kubernetes solution is mounting an `emptyDir` volume backed by host RAM (`medium: Memory`) with a dedicated `sizeLimit`:
 
 ```yaml
 # vllm-qwen-k8s.yaml
@@ -273,7 +273,7 @@ spec:
     spec:
       containers:
         - name: vllm
-          image: vllm/vllm-openai:latest
+          image: vllm/vllm-openai:v0.28.0
           args:
             - "--model=Qwen/Qwen3.5-0.8B"
             - "--gpu-memory-utilization=0.7"
@@ -308,6 +308,10 @@ spec:
       targetPort: 8000
   type: ClusterIP
 ```
+
+Two practical notes on this manifest:
+- **Image version pinning:** I pin the image version (`v0.28.0`) here so the deployment remains reproducible. You can update the image tag after validating compatibility with your CUDA and model version.
+- **Hugging Face cache:** `emptyDir` is used here for simplicity. The Hugging Face model cache is lost when the pod is recreated. For repeated testing or larger models, consider using a PersistentVolumeClaim (PVC) or a host-mounted path.
 
 Apply the manifest and watch the deployment roll out:
 
@@ -395,27 +399,27 @@ In production Kubernetes clusters, manual node configuration does not scale. Whe
 
 This is why production setups deploy the **NVIDIA GPU Operator** instead of managing the device plugin directly.
 
-The GPU Operator uses the Kubernetes Operator pattern (driven by the `ClusterPolicy` Custom Resource Definition) to automate the full GPU software stack as containerized services:
+The GPU Operator automates the deployment and lifecycle management of the NVIDIA software stack required for GPU-enabled Kubernetes nodes. Driven by the `ClusterPolicy` Custom Resource Definition, it manages several components depending on your cluster configuration:
 
-1. **Automated Driver Management:** The Operator can compile and load the NVIDIA driver kernel modules inside a container matched to the node's exact Linux kernel version. If the node kernel updates, the Operator rebuilds the module automatically without requiring manual SSH intervention or baked OS images.
-2. **Container Toolkit Configuration:** It installs the NVIDIA Container Toolkit and automatically patches `/etc/containerd/config.toml` on worker nodes, restarting the runtime cleanly without breaking existing non-GPU pods.
-3. **Device Plugin Supervision:** It deploys and manages the lifecycle of the NVIDIA Kubernetes Device Plugin DaemonSet, keeping it in sync with driver availability.
+1. **Driver Management:** Depending on the operating environment, the Operator can compile and load the NVIDIA driver container matched to the node kernel, or use pre-installed host drivers (common in managed Kubernetes environments like GKE, EKS, or AKS).
+2. **Container Toolkit and CDI Configuration:** Depending on the Operator version and runtime configuration, GPU injection can be configured through direct NVIDIA runtime integration or CDI-based device injection (Container Device Interface), which modern releases enable by default.
+3. **Device Plugin Supervision:** It deploys and manages the lifecycle of the NVIDIA Kubernetes Device Plugin DaemonSet, keeping it in sync with driver and runtime availability.
 4. **Node Feature Discovery (GFD):** It automatically detects physical GPU capabilities and labels each node (such as `nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB` or `nvidia.com/gpu.family: ampere`). Workloads can then target specific GPU models using standard Kubernetes `nodeSelector` or affinity rules.
 5. **Cluster Metrics with DCGM Exporter:** It runs the Data Center GPU Manager (DCGM) exporter to collect metrics (GPU compute utilization, VRAM usage, temperature, power draw, and memory bandwidth) and expose them to Prometheus for cluster monitoring and alerting.
 6. **MIG Management:** On enterprise GPUs that support Multi-Instance GPU (MIG), the Operator can dynamically partition a single physical GPU into isolated hardware instances, allowing smaller workloads to share an A100 or H100 without memory interference.
 
-In short: the device plugin provides basic GPU scheduling for pods. The GPU Operator manages the entire operational lifecycle, monitoring, and driver stack required to run GPU infrastructure reliably in production.
+In short: the device plugin provides basic GPU scheduling for pods. The GPU Operator manages the operational lifecycle, monitoring, and driver stack required to run GPU infrastructure reliably in production.
 
 ---
 
 ### Key Takeaways
 
-1. **Docker Desktop's built-in Kubernetes cannot do GPU passthrough today.** Because `desktop-control-plane` is isolated in a nested `sysbox-runc` sandbox without GPU device passthrough, the NVIDIA device plugin will never discover any devices. Do not waste time debugging plugin manifests or containerd configs inside that container.
+1. **In tested Docker Desktop Kubernetes setups, GPU resources are not exposed to the node.** Because `desktop-control-plane` is isolated in a nested `sysbox-runc` sandbox without GPU passthrough flags, the device plugin cannot discover any GPU devices. Avoid spending hours trying to manually patch containerd or driver libraries inside that nested container.
 2. **Minikube on native Docker CE in WSL2 works reliably.** By installing native Docker CE inside Ubuntu WSL2 (where NVIDIA container runtime works out of the box), Minikube can launch with `--driver=docker --container-runtime=docker --gpus=all` and automatically provision the NVIDIA device plugin.
 3. **Understand the device plugin vs node prerequisites.** The device plugin only handles Kubelet discovery and allocation. The host worker node must already have the host NVIDIA kernel drivers, NVIDIA Container Toolkit, and configured runtime in place before the plugin can register `nvidia.com/gpu`.
 4. **Always size `/dev/shm` in Kubernetes.** PyTorch, vLLM, and Triton rely heavily on shared memory for inter-process tensor operations. Never rely on the default 64 MB Kubernetes tmpfs; always attach an `emptyDir` memory volume at `/dev/shm`.
 5. **Budget VRAM carefully.** On an 8 GB laptop GPU, setting `--gpu-memory-utilization 0.7` on a sub-billion parameter model like Qwen3.5-0.8B leaves enough VRAM for the KV cache without running into CUDA out-of-memory errors.
-6. **Move to the NVIDIA GPU Operator in production.** While running the standalone device plugin is fine for a dev box or Minikube, production multi-node clusters rely on the GPU Operator to automate driver builds, containerd toolkit patching, node labelling with GFD, DCGM Prometheus metrics, and MIG slicing.
+6. **Move to the NVIDIA GPU Operator in production.** While running the standalone device plugin is fine for a local dev setup or Minikube, production clusters rely on the GPU Operator to orchestrate the entire GPU stack: driver lifecycle (compiled or pre-installed), Container Toolkit and CDI configuration, node labelling with GFD, DCGM telemetry, and MIG partitioning.
 
 ---
 
