@@ -127,7 +127,7 @@ Because of these issues, I pivoted to running Minikube with WSL2 using native Do
 
 ---
 
-## Step 1: Installing Docker CE and Containerd Inside WSL2
+## Installing Docker CE and Containerd Inside WSL2
 
 To satisfy those node prerequisites and bypass Docker Desktop's VM isolation, we install the native Docker Community Edition engine directly inside the Ubuntu 24.04 WSL2 environment:
 
