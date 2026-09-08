@@ -1,8 +1,8 @@
 +++
-title = "vLLM on Kubernetes in WSL2: Why Docker Desktop's Cluster Can't See Your GPU (and What Actually Works)"
+title = "Running vLLM on Kubernetes in WSL2: GPU Setup with Minikube"
 date = '2026-09-08T13:30:00+08:00'
 draft = false
-description = "Why Docker Desktop's built-in Kubernetes fails GPU passthrough on WSL2, how to configure Minikube with the NVIDIA device plugin, and serving Qwen3.5 on vLLM."
+description = "A practical guide to running vLLM on Kubernetes in WSL2 using Minikube, setting up the NVIDIA device plugin, and serving Qwen3.5 on GPU."
 tags = ["ai", "local-llm", "vllm", "kubernetes", "minikube", "wsl2", "gpu", "nvidia"]
 ShowToc = true
 TocOpen = false
@@ -12,7 +12,7 @@ This is the [vLLM](https://github.com/vllm-project/vllm) entry in my local AI se
 
 The plan was simple: deploy vLLM, request `nvidia.com/gpu: 1`, expose an OpenAI-compatible API endpoint through a Service, and tie it into the Kubernetes workflows I write about regularly.
 
-Getting a GPU into Kubernetes on WSL2 turned into an investigation. Not because vLLM is hard, but because the failure modes around container runtimes and nested clusters are non-obvious and sparsely documented. Here is why Docker Desktop's built-in Kubernetes cannot see the GPU, and how to get a working GPU cluster running with Minikube.
+Getting a GPU into Kubernetes on WSL2 turned into an investigation. Not because vLLM is hard, but because container runtimes and nested clusters handle GPU passthrough in non-obvious ways. Here is what happened, how the device plugin and node prerequisites work, and how to get a working GPU cluster running with Minikube.
 
 ### The Test Rig
 
