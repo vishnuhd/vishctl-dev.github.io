@@ -88,21 +88,6 @@ In this tested Docker Desktop Kubernetes setup, GPU resources were not exposed t
 
 ---
 
-## Why Docker Desktop Kubernetes Cannot Detect My NVIDIA GPU
-
-Based on the runtime architecture observed in this setup, the issue comes down to how Docker Desktop isolates its cluster node.
-
-`desktop-control-plane` runs inside Docker Desktop's private utility VM (`docker-desktop`), isolated using **`sysbox-runc`** rather than the standard OCI runtime `runc`. Sysbox provides nested container virtualization to spin up systemd, kubelet, and containerd within an unprivileged container environment.
-
-In this setup, that isolation layer prevents GPU passthrough:
-- **Missing OCI Passthrough:** The node container was not launched with NVIDIA GPU passthrough flags (`--gpus all`). Inside the sandbox, containerd cannot access NVIDIA device nodes (`/dev/nvidia*`) or the WSL2 DirectX driver mapping (`/usr/lib/wsl/lib`).
-- **Locked-Down Lifecycle:** You cannot configure the NVIDIA Container Toolkit inside the node's containerd because Docker Desktop internally supervises the container.
-- **Daemon Defaults Do Not Propagate:** Setting `nvidia` as the default OCI runtime in `docker-desktop` WSL does not alter the `sysbox-runc` runtime used by the Kubernetes node container.
-
-Docker has an open roadmap issue requesting native GPU passthrough for Docker Desktop Kubernetes. It remains an architectural boundary in the current setup.
-
----
-
 ## How Kubernetes Detects NVIDIA GPUs Using the NVIDIA Device Plugin
 
 The [NVIDIA Kubernetes Device Plugin](https://github.com/NVIDIA/k8s-device-plugin) is a DaemonSet that exposes GPU hardware to the Kubernetes control plane. It does not run inference, and it does not install drivers or container runtimes.
@@ -122,6 +107,21 @@ Because the device plugin only handles discovery and Kubelet registration, it as
 3. **Runtime Configuration:** The node container runtime (containerd or Docker) must have the NVIDIA runtime configured in its daemon settings (such as `/etc/containerd/config.toml` or `/etc/docker/daemon.json`) and set up to handle CDI (Container Device Interface) or NVIDIA runtime hooks.
 
 If any of those three pieces is missing or unconfigured, the device plugin pod will fail during startup or report zero allocatable GPUs.
+
+---
+
+## Why Docker Desktop Kubernetes Cannot Detect My NVIDIA GPU
+
+Based on the runtime architecture observed in this setup, the issue comes down to how Docker Desktop isolates its cluster node.
+
+`desktop-control-plane` runs inside Docker Desktop's private utility VM (`docker-desktop`), isolated using **`sysbox-runc`** rather than the standard OCI runtime `runc`. Sysbox provides nested container virtualization to spin up systemd, kubelet, and containerd within an unprivileged container environment.
+
+In this setup, that isolation layer prevents GPU passthrough:
+- **Missing OCI Passthrough:** The node container was not launched with NVIDIA GPU passthrough flags (`--gpus all`). Inside the sandbox, containerd cannot access NVIDIA device nodes (`/dev/nvidia*`) or the WSL2 DirectX driver mapping (`/usr/lib/wsl/lib`).
+- **Locked-Down Lifecycle:** You cannot configure the NVIDIA Container Toolkit inside the node's containerd because Docker Desktop internally supervises the container.
+- **Daemon Defaults Do Not Propagate:** Setting `nvidia` as the default OCI runtime in `docker-desktop` WSL does not alter the `sysbox-runc` runtime used by the Kubernetes node container.
+
+Docker has an open roadmap issue requesting native GPU passthrough for Docker Desktop Kubernetes. It remains an architectural boundary in the current setup.
 
 Because of these issues, I pivoted to running Minikube with WSL2 using native Docker.
 
