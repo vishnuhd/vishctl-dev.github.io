@@ -1,10 +1,10 @@
 # vishctl
 
-Notes on infra, Kubernetes, and AI systems — hosted at [vishctl.dev](https://vishctl.dev).
+Notes on infra, Kubernetes, and AI systems, hosted at [vishctl.dev](https://vishctl.dev).
 
 ## About
 
-A personal blog built with [Hugo](https://gohugo.io/) and the [PaperMod](https://github.com/adityatelange/hugo-PaperMod) theme, deployed to GitHub Pages. The name is a play on `kubectl` — reflecting a decade of DevOps and Kubernetes work.
+A personal blog built with [Hugo](https://gohugo.io/) and the [PaperMod](https://github.com/adityatelange/hugo-PaperMod) theme, deployed to GitHub Pages. The name is a play on `kubectl`, reflecting a decade of DevOps and Kubernetes work.
 
 ## Tech stack
 
