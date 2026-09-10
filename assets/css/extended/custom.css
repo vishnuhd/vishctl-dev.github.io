@@ -241,8 +241,9 @@ body.light .first-entry.home-info {
     opacity: 0.9;
 }
 
-/* Screenshot figures inside posts */
-.md-content figure.post-screenshot {
+/* Screenshot figures inside posts and single post cover */
+.md-content figure.post-screenshot,
+.post-single .entry-cover {
     margin: 2rem 0;
     padding: 10px;
     border: 1px solid var(--border);
@@ -251,7 +252,8 @@ body.light .first-entry.home-info {
     box-shadow: 0 12px 28px -18px rgba(0, 0, 0, 0.65);
 }
 
-.md-content figure.post-screenshot img {
+.md-content figure.post-screenshot img,
+.post-single .entry-cover img {
     display: block;
     width: 100%;
     margin: 0;
@@ -260,12 +262,14 @@ body.light .first-entry.home-info {
 }
 
 .md-content figure.post-screenshot figcaption,
-.md-content figure.post-screenshot figcaption p {
+.md-content figure.post-screenshot figcaption p,
+.post-single .entry-cover figcaption {
     margin: 10px 4px 2px;
     color: var(--secondary);
     font-size: 13px;
     font-weight: 500;
     line-height: 1.45;
+    text-align: center;
 }
 
 /* Comments section */

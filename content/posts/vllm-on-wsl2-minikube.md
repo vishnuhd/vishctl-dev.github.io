@@ -6,6 +6,12 @@ description = "A practical guide to running vLLM on Kubernetes in WSL2 with Mini
 tags = ["ai", "local-llm", "vllm", "kubernetes", "minikube", "wsl2", "gpu", "nvidia"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/vllm-wsl2-minikube/00-vllm-wsl2-minikube-header.png"
+  alt = "Run vLLM on Kubernetes with Minikube, WSL2 and NVIDIA GPU"
+  caption = "vLLM on WSL2 + Minikube: Local GPU, Kubernetes, and LLMs"
+  relative = false
 +++
 
 This is the [vLLM](https://docs.vllm.ai/) entry in my local AI series. After testing [Ollama](/posts/running-ollama-on-32gb-macbook-air/), [llama.cpp](/posts/running-llama-cpp-on-32gb-macbook-air/), and [FreeToken](/posts/running-freetoken-on-8gb-laptop-gpu/), I wanted to run vLLM as a Kubernetes Deployment on my Windows/WSL2 setup.
