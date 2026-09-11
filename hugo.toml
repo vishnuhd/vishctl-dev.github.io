@@ -13,7 +13,7 @@ theme = "PaperMod"
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   ShowCodeCopyButtons = true
-  ShowWordCount = true
+  ShowWordCount = false
   ShowToc = true
   TocOpen = false
   ShowAllPagesInArchive = true
@@ -33,7 +33,7 @@ theme = "PaperMod"
 
   [params.homeInfoParams]
     Title = "Welcome to `vishctl`"
-    Content = "Hi I am Vishnu 👋. `vishctl` is a play on my name and `kubectl`, which felt right since that's basically what I've been running for the better part of a decade. I write about the DevOps and Kubernetes work I do day to day, container platforms, hybrid cloud, homelab setups, and the AI infra experiments I'm currently buried in, so neither of us has to solve the same headache twice."
+    Content = "Hi, I’m Vishnu. I write practical notes on Kubernetes, DevOps, and local AI experiments. [About me →](/posts/hello-world/)"
 
   [[params.socialIcons]]
     name = "linkedin"

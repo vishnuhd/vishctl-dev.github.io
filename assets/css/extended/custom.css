@@ -1,8 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
+    --card-surface: #f8fafc;
+    --card-border: #dbe3ec;
     --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     --font-family-code: 'JetBrains Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+}
+
+:root[data-theme="dark"] {
+    --card-surface: #1c2230;
+    --card-border: #2d394b;
 }
 
 body {
@@ -47,9 +54,11 @@ code, kbd, samp, pre {
 .first-entry.home-info {
     border: 1px solid rgba(56, 189, 248, 0.22);
     border-radius: 12px;
-    padding: 30px;
+    padding: 24px;
+    min-height: 0;
+    margin-top: 16px;
     margin-bottom: 24px;
-    background: #1c2230;
+    background: var(--card-surface);
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -68,7 +77,7 @@ body.light .first-entry.home-info {
     font-size: 32px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 14px;
+    margin-bottom: 4px;
 }
 
 /* Posts Section Header on Homepage */
@@ -111,11 +120,11 @@ body.light .first-entry.home-info {
 
 /* Post Cards */
 .post-entry {
-    border: 1px solid var(--border);
+    border: 1px solid var(--card-border);
     border-radius: 10px;
     margin-bottom: 20px;
     padding: 24px;
-    background: var(--entry);
+    background: var(--card-surface);
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -245,11 +254,11 @@ body.light .first-entry.home-info {
 .md-content figure.post-screenshot,
 .post-single .entry-cover {
     margin: 2rem 0;
-    padding: 10px;
-    border: 1px solid var(--border);
+    padding: 0;
+    border: 0;
     border-radius: 12px;
-    background: var(--entry);
-    box-shadow: 0 12px 28px -18px rgba(0, 0, 0, 0.65);
+    background: transparent;
+    box-shadow: none;
 }
 
 .md-content figure.post-screenshot img,
@@ -257,8 +266,8 @@ body.light .first-entry.home-info {
     display: block;
     width: 100%;
     margin: 0;
-    border: 1px solid rgba(56, 189, 248, 0.16);
-    border-radius: 7px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
 }
 
 .md-content figure.post-screenshot figcaption,
@@ -277,4 +286,84 @@ body.light .first-entry.home-info {
     margin-top: 2.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
+}
+
+/* Compact homepage cards preserve the full cover artwork. */
+.home-post-entry .entry-cover {
+    margin: 0 0 16px;
+}
+
+.home-post-entry .entry-cover img {
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: #101722;
+}
+
+.home-post-entry .entry-content {
+    display: block;
+    overflow: visible;
+    margin: 8px 0 12px;
+}
+
+.home-info .entry-content a {
+    color: var(--primary);
+    text-underline-offset: 4px;
+}
+
+.home-info .entry-content a:hover {
+    color: #38bdf8;
+}
+
+.home-post-entry:focus-within {
+    outline: 2px solid #38bdf8;
+    outline-offset: 3px;
+}
+
+@media screen and (min-width: 700px) {
+    .home-post-entry:has(.entry-cover) {
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1fr);
+        column-gap: 22px;
+        align-content: start;
+    }
+
+    .home-post-entry .entry-cover {
+        grid-column: 1;
+        grid-row: 1 / 4;
+        align-self: center;
+        margin: 0;
+    }
+
+    .home-post-entry:has(.entry-cover) > .entry-header,
+    .home-post-entry:has(.entry-cover) > .entry-content,
+    .home-post-entry:has(.entry-cover) > .entry-footer {
+        grid-column: 2;
+    }
+
+    .home-post-entry .entry-header h2 {
+        font-size: 21px;
+    }
+}
+
+@media screen and (max-width: 699px) {
+    .first-entry.home-info,
+    .home-post-entry {
+        padding: 20px;
+    }
+
+    .first-entry .entry-header h1 {
+        font-size: 28px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .post-entry,
+    .first-entry.home-info {
+        transition: none;
+    }
+
+    .post-entry:hover,
+    .post-entry:focus-within {
+        transform: none;
+    }
 }
