@@ -178,6 +178,8 @@ This is an example of a useful explanation, not a trace of the model's hidden in
 
 It would be a leap to say **"Your app definitely has a memory leak."** Our prompt gives no evidence of a leak. The model also has not inspected the cluster; it only has the information we supplied.
 
+This gap between a fluent answer and a verified one is often called **hallucination**: the model producing a plausible-sounding claim that isn't grounded in the given context or fact.
+
 ## 5. Context is the input. KV cache saves work.
 
 The **context window** limits how many tokens a request can accommodate, including input and generated output. Instructions, chat history, and supplied documents all take space.
@@ -239,7 +241,7 @@ GPUs accelerate the large matrix calculations. But the model also has to fit in 
 
 **Quantization** represents numbers using fewer bits. The chart shows ideal weight storage: parameters multiplied by bits, divided by eight. Actual formats add overhead and may keep some weights at higher precision.
 
-FP16 and BF16 both use 16 bits, with different numerical ranges and precision. INT4 uses 4-bit integers. AWQ and GPTQ are quantization methods.
+FP16 and BF16 both use 16 bits, with different numerical ranges and precision. **FP8 is an 8-bit floating-point format that newer GPUs can run natively.** INT4 uses 4-bit integers. AWQ and GPTQ are quantization methods.
 
 For our 2B model, 16-bit weights take about 4 GB; ideal 4-bit storage takes about 1 GB. The question stays the same. We store the learned numbers more compactly, leaving more of our 8 GB GPU for the cache and runtime. Whether it fits depends on the model, format, and context. Quality can fall; speed gains depend on hardware and software.
 
@@ -321,10 +323,11 @@ DATA PARALLELISM FOR SERVING
 
 Each replica can itself use multiple GPUs. For example, four GPUs could run two replicas, with two GPUs per replica.
 
+With four GPUs, one choice is TP across all four to run one larger model. Another is four independent replicas of a smaller model behind a load balancer, trading model size for more concurrent capacity. Which is better depends on whether the model fits on fewer GPUs and whether you need size or throughput more.
 
 For the same pod question: **TP** shares each layer's calculations across GPUs; **PP** passes the work through groups of layers; **DP** sends our whole request to one model replica while another serves someone else. These are possible layouts, not a claim that our small model needs multiple GPUs.
 
-**NCCL** is NVIDIA's GPU communication library. It can move and combine data over connections such as PCIe and NVLink. Extra GPUs can also add waiting time, so scaling is not automatically a speedup. [NVIDIA's overview](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/overview.html) describes that communication layer.
+**NCCL** is NVIDIA's GPU communication library. It can move and combine data over connections such as PCIe and NVLink. **PCIe is the general system interconnect GPUs already use; NVLink is a faster, GPU-to-GPU-only path available on some hardware.** More GPU-to-GPU communication generally wants the faster path. Extra GPUs can also add waiting time, so scaling is not automatically a speedup. [NVIDIA's overview](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/overview.html) describes that communication layer.
 
 ### How GPU communication connects the pieces
 
