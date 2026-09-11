@@ -6,6 +6,11 @@ description = "Install Ollama, pull and run local models, and call the local API
 tags = ["ai", "local-llm", "ollama", "apple-silicon", "homelab"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/ollama-32gb-macbook-air/00-pixel-art-cover.png"
+  alt = "Pixel art laptop running a local llama model, with a download arrow and answer bubble"
+  relative = false
 +++
 
 I have a 32 GB MacBook Air. It is not a workstation GPU box, but its unified memory makes it a surprisingly capable machine for local models, provided I choose models that fit and keep expectations sensible.

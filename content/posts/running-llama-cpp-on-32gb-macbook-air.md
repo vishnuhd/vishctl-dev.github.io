@@ -6,6 +6,11 @@ description = "Compile llama.cpp with Metal support on Apple Silicon, serve loca
 tags = ["ai", "local-llm", "llama-cpp", "ollama", "apple-silicon", "benchmarks"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/llama-cpp-32gb-macbook-air/00-pixel-art-cover.png"
+  alt = "Pixel art terminal and build gear connected to a chip containing a llama"
+  relative = false
 +++
 
 In the [previous post](/posts/running-ollama-on-32gb-macbook-air/), I ran Ornith 1.5 9B on my 32 GB MacBook Air using Ollama and recorded baseline token-generation speeds on short prompts. Ollama is great for getting up and running quickly, but under the hood, its inference engine is built on [llama.cpp](https://github.com/ggml-org/llama.cpp).

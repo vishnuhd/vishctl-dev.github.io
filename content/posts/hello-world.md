@@ -6,6 +6,11 @@ description = "A quick intro to vishctl, my background in Kubernetes and AI infr
 tags = ["devops", "kubernetes", "infrastructure", "ai", "homelab"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/hello-world/00-pixel-art-cover.png"
+  alt = "Pixel art terminal connected to servers and an AI chip, introducing the vishctl blog"
+  relative = false
 +++
 
 Hey, I'm Vishnu. Welcome to my little corner of the internet.

@@ -6,6 +6,11 @@ description = "Kubernetes 1.37 makes KYAML stable: how flow style eliminates sil
 tags = ["kubernetes", "yaml", "devops"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/kubernetes-kyaml/00-pixel-art-cover.png"
+  alt = "Pixel art showing indented configuration transforming into a structured document with braces"
+  relative = false
 +++
 
 Kubernetes 1.37 ("Garhwal") just made KYAML Stable. YAML with a K bolted on, and it's a genuinely useful feature.

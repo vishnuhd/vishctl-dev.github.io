@@ -6,6 +6,11 @@ description = "Testing FreeToken on an RTX 4070 Laptop GPU: running Qwen 3.6 35B
 tags = ["ai", "local-llm", "freetoken", "gpu", "homelab", "nvidia"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/freetoken-8gb-laptop-gpu/00-pixel-art-cover.png"
+  alt = "Pixel art laptop sharing model data between host RAM and GPU memory"
+  relative = false
 +++
 
 Running large language models locally usually comes down to a hard hardware boundary: video RAM. If a model does not fit into your GPU's VRAM, performance usually falls off a cliff as soon as standard runtimes fall back to system memory over the PCIe bus.

@@ -6,6 +6,11 @@ description = "My notes on Kubernetes v1.37: native HPA scale-to-zero, tracking 
 tags = ["kubernetes", "devops", "cloudnative", "infrastructure"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/kubernetes-v1-37-stability/00-pixel-art-cover.png"
+  alt = "Pixel art Kubernetes wheel above connected servers against Himalayan mountains"
+  relative = false
 +++
 
 Kubernetes v1.37 landed recently under the release theme **Garhwal**, named after the Himalayan region of Uttarakhand, India. The release packages 67 enhancements across alpha, beta, and stable.
