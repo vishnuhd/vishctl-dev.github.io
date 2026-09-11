@@ -1,5 +1,5 @@
 +++
-title = "LLM Basics: A Visual Guide from Tokens to GPUs"
+title = "What Happens When You Ask an LLM a Question"
 date = '2026-09-11T12:00:00+08:00'
 draft = false
 description = "My visual notes on how LLMs work: tokens, parameters, attention, reasoning, KV cache, quantization, and serving models on GPUs."
