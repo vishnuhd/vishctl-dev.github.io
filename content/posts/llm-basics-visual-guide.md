@@ -19,7 +19,7 @@ A learning chat turned into these notes. Let's follow one request all the way th
 
 > Why did my Kubernetes pod restart? The container's last termination reason is OOMKilled.
 
-This is an illustrative example, not a live diagnosis. We will use a hypothetical **2B model** throughout. Technically, the container restarted within the pod.
+This is an illustrative example, not a live diagnosis. We will use a hypothetical **2B model** throughout.
 
 ## 1. An answer grows one token at a time
 
@@ -62,6 +62,7 @@ Our pod question + the OOMKilled clue
      Final answer   Process chosen token
                     through the model
                     using the KV cache
+                    (more on this in §5)
                          |
                          +--> Score and choose again
 ```
@@ -179,7 +180,7 @@ It would be a leap to say **"Your app definitely has a memory leak."** Our promp
 
 ## 5. Context is the input. KV cache saves work.
 
-The **context window** limits how many tokens a request can accommodate, including input and generated output. Instructions, included chat history, and supplied documents all take space.
+The **context window** limits how many tokens a request can accommodate, including input and generated output. Instructions, chat history, and supplied documents all take space.
 
 ```text
 Our question + OOMKilled clue
@@ -240,7 +241,7 @@ GPUs accelerate the large matrix calculations. But the model also has to fit in 
 
 FP16 and BF16 both use 16 bits, with different numerical ranges and precision. INT4 uses 4-bit integers. AWQ and GPTQ are quantization methods.
 
-For our 2B model, 16-bit weights take about 4 GB; ideal 4-bit storage takes about 1 GB. The question stays the same. We store the learned numbers more compactly, leaving more of my 8 GB GPU for the cache and runtime. Whether it fits depends on the model, format, and context. Quality can fall; speed gains depend on hardware and software.
+For our 2B model, 16-bit weights take about 4 GB; ideal 4-bit storage takes about 1 GB. The question stays the same. We store the learned numbers more compactly, leaving more of our 8 GB GPU for the cache and runtime. Whether it fits depends on the model, format, and context. Quality can fall; speed gains depend on hardware and software.
 
 ## 7. What does vLLM add?
 
@@ -278,6 +279,8 @@ Our pod question (request A)
 **Continuous batching** updates the active batch as requests finish and capacity becomes available. **PagedAttention** manages KV cache in blocks that need not sit together in memory, reducing wasted space. The [vLLM team's explanation](https://vllm-project.github.io/2023/06/20/vllm.html) connects these ideas to serving more requests.
 
 If B finishes while our restart explanation is still generating, D can join when capacity allows. Our request A continues, with its own KV blocks.
+
+This section goes deeper into multi-GPU serving; skip to the summary if you just want the core model.
 
 ## 8. More GPUs, and fewer active experts
 
