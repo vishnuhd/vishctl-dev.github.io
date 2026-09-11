@@ -6,6 +6,11 @@ description = "My visual notes on how LLMs work: tokens, parameters, attention, 
 tags = ["ai", "local-llm", "llm-basics", "gpu", "vllm"]
 ShowToc = true
 TocOpen = false
+
+[cover]
+  image = "/images/posts/llm-basics/00-pixel-art-cover.png"
+  alt = "Pixel art showing a question becoming tokens, passing through a neural-network chip, and emerging as an answer"
+  relative = false
 +++
 
 I have been running models with [Ollama](/posts/running-ollama-on-32gb-macbook-air/) and [vLLM](/posts/vllm-on-wsl2-minikube/). Then I stopped to ask: what is actually happening behind that API call?
