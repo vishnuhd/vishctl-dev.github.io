@@ -19,7 +19,7 @@
 }
 
 body,
-body.list {
+:root[data-theme] body.list {
     font-family: var(--font-family-base);
     letter-spacing: -0.01em;
     background-color: var(--theme);
@@ -30,6 +30,12 @@ body.list {
     background-size: auto, 56px 56px, 56px 56px;
     background-position: center top, -1px -1px, -1px -1px;
     background-attachment: fixed;
+}
+
+/* Give the homepage grid enough contrast to frame the large opening section. */
+body.list:has(.home-info) {
+    --pattern-line: rgba(56, 189, 248, 0.07);
+    --pattern-glow: rgba(56, 189, 248, 0.12);
 }
 
 code, kbd, samp, pre {
@@ -304,6 +310,174 @@ body.light .first-entry.home-info {
 
 .toc a:hover {
     color: #38bdf8;
+}
+
+/* Desktop reading rail. The original collapsible TOC remains on smaller screens. */
+.post-toc {
+    display: none;
+}
+
+.toc-mobile {
+    display: block;
+}
+
+@media screen and (min-width: 1200px) {
+    .main:has(.post-toc) {
+        max-width: calc(1080px + var(--gap) * 2);
+    }
+
+    .post-single:has(.post-toc) {
+        display: grid;
+        grid-template-columns: minmax(0, 720px) minmax(240px, 280px);
+        column-gap: 48px;
+        align-items: start;
+    }
+
+    .post-single:has(.post-toc) > *:not(.post-toc) {
+        grid-column: 1;
+    }
+
+    .post-toc {
+        position: sticky;
+        top: 94px;
+        grid-column: 2;
+        grid-row: 1 / span 10;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 118px);
+        padding: 20px 18px 16px;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        background: linear-gradient(145deg, var(--card-surface), color-mix(in srgb, var(--card-surface) 94%, #38bdf8));
+        box-shadow: 0 18px 48px -38px rgba(14, 165, 233, 0.75);
+    }
+
+    .toc-mobile {
+        display: none;
+    }
+
+    .post-toc-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        color: var(--primary);
+        font-family: var(--font-family-code);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .post-toc-percent {
+        color: #38bdf8;
+        font-size: 11px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .post-toc-progress {
+        overflow: hidden;
+        height: 2px;
+        margin: 13px 0 17px;
+        border-radius: 999px;
+        background: var(--card-border);
+    }
+
+    .post-toc-progress span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: #38bdf8;
+        transition: width 0.12s linear;
+    }
+
+    .post-toc-list {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--card-border) transparent;
+    }
+
+    .post-toc-list nav > ul,
+    .post-toc-list ul ul {
+        margin: 0;
+        padding: 0 0 0 10px;
+        border-left: 1px solid var(--card-border);
+        list-style: none;
+    }
+
+    .post-toc-list ul {
+        list-style: none;
+    }
+
+    .post-toc-list li {
+        position: relative;
+        margin: 0;
+    }
+
+    .post-toc-list a {
+        position: relative;
+        display: block;
+        margin-left: -11px;
+        padding: 6px 8px 6px 18px;
+        border-radius: 6px;
+        color: var(--secondary);
+        font-size: 12px;
+        line-height: 1.45;
+        transition: color 0.18s ease, background-color 0.18s ease;
+    }
+
+    .post-toc-list nav > ul > li > a {
+        color: var(--content);
+        font-weight: 600;
+    }
+
+    .post-toc-list a::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 7px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--card-border);
+        transform: translateY(-50%);
+        transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    .post-toc-list a:hover {
+        color: var(--primary);
+        background: rgba(56, 189, 248, 0.07);
+    }
+
+    .post-toc-list a.is-active {
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.1);
+        font-weight: 600;
+    }
+
+    .post-toc-list a.is-active::before {
+        background: #38bdf8;
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.13);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .post-toc-top {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 14px;
+        padding-top: 13px;
+        border-top: 1px solid var(--card-border);
+        color: var(--secondary);
+        font-family: var(--font-family-code);
+        font-size: 11px;
+    }
+
+    .post-toc-top:hover {
+        color: #38bdf8;
+    }
 }
 
 /* Search input polish */

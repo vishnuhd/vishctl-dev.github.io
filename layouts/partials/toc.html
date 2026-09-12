@@ -1,0 +1,25 @@
+{{- $headers := findRE "<h[1-6].*?>(.|\n])+?</h[1-6]>" .Content -}}
+{{- if ge (len $headers) 1 -}}
+<aside class="post-toc" aria-label="Table of contents">
+    <div class="post-toc-heading">
+        <span>On this page</span>
+        <span class="post-toc-percent" data-toc-progress>0%</span>
+    </div>
+    <div class="post-toc-progress" aria-hidden="true">
+        <span data-toc-progress-bar></span>
+    </div>
+    <div class="post-toc-list">
+        {{- .TableOfContents -}}
+    </div>
+    <a class="post-toc-top" href="#top">Back to top <span aria-hidden="true">↑</span></a>
+</aside>
+
+<details class="toc toc-mobile" {{ if (.Param "TocOpen") }}open{{ end }}>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">{{- i18n "toc" | default "Table of Contents" }}</span>
+    </summary>
+    <div class="inner">
+        {{- .TableOfContents -}}
+    </div>
+</details>
+{{- end }}
