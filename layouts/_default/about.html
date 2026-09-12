@@ -1,0 +1,183 @@
+{{- define "main" }}
+
+<article class="about-page">
+  <section class="about-hero" aria-labelledby="about-title">
+    <div class="about-hero-copy">
+      <p class="about-eyebrow">DevOps · Platform Engineering · AI Infrastructure</p>
+      <h1 id="about-title">I build platforms that stay calm under pressure.</h1>
+      <p class="about-lead">
+        I’m Vishnu, a DevOps and Platform Lead in Singapore. For more than nine years,
+        I’ve helped teams design, automate, and operate infrastructure across Kubernetes,
+        public cloud, private cloud, and GPU platforms.
+      </p>
+      <div class="about-actions">
+        <a class="about-button about-button-primary" href="#selected-impact">View selected work</a>
+        <a class="about-button" href="mailto:vishnuharidadhich@gmail.com">Let’s talk</a>
+      </div>
+    </div>
+
+    <aside class="about-terminal" aria-label="Professional profile">
+      <div class="about-terminal-bar" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="about-terminal-body">
+        <p><span class="about-prompt">$</span> whoami</p>
+        <strong>Vishnu Hari Dadhich</strong>
+        <p>DevOps &amp; Platform Lead</p>
+        <p>Singapore</p>
+        <p class="about-terminal-command"><span class="about-prompt">$</span> focus --current</p>
+        <p>Kubernetes · Cloud · AI/GPU</p>
+      </div>
+    </aside>
+  </section>
+
+  <section class="about-stats" aria-label="Career highlights">
+    <div><strong>9+</strong><span>years building production systems</span></div>
+    <div><strong>760K+</strong><span>daily users supported by a 5G platform</span></div>
+    <div><strong>90%+</strong><span>automation in a major AWS migration</span></div>
+    <div><strong>v1.26→1.33</strong><span>Kubernetes platform upgrade journey</span></div>
+  </section>
+
+  <section class="about-section about-intro">
+    <p class="about-section-label">About</p>
+    <div>
+      <h2>Infrastructure is most valuable when it becomes invisible.</h2>
+      <p>
+        My work sits where reliability, automation, and delivery meet. I’ve led platforms
+        for telecom, government, media, and international enterprise clients across APAC—
+        from greenfield data centres and air-gapped Kubernetes to cloud migrations and
+        production AI inference.
+      </p>
+      <p>
+        I enjoy turning complicated environments into systems that teams can understand,
+        operate, and improve. That means getting the architecture right, automating the
+        repeatable work, documenting the sharp edges, and helping engineers grow around it.
+      </p>
+    </div>
+  </section>
+
+  <section class="about-section" id="selected-impact">
+    <div class="about-section-heading">
+      <p class="about-section-label">Selected impact</p>
+      <h2>Platforms built for real-world constraints</h2>
+    </div>
+
+    <div class="about-work-grid">
+      <article class="about-work-card">
+        <p class="about-work-index">01 · TELCO</p>
+        <h3>Kubernetes for a 5G core</h3>
+        <p>Provisioned high-throughput, low-latency Kubernetes clusters on VMware for cloud-native network functions serving more than 760,000 daily users.</p>
+        <ul><li>Kubernetes</li><li>VMware</li><li>5G CNF</li></ul>
+      </article>
+
+      <article class="about-work-card">
+        <p class="about-work-index">02 · GOVERNMENT</p>
+        <h3>Seven-version platform upgrade</h3>
+        <p>Led a multi-cycle Tanzu Kubernetes upgrade from v1.26 to v1.33 while maintaining stability for high-stakes workloads.</p>
+        <ul><li>Tanzu</li><li>Zero downtime</li><li>Platform ops</li></ul>
+      </article>
+
+      <article class="about-work-card">
+        <p class="about-work-index">03 · PRIVATE CLOUD</p>
+        <h3>Air-gapped Kubernetes platform</h3>
+        <p>Delivered a production platform on SUSE Harvester with RKE2, Rancher Prime, Cilium, Traefik, MetalLB, and enterprise storage.</p>
+        <ul><li>SUSE</li><li>RKE2</li><li>Air-gapped</li></ul>
+      </article>
+
+      <article class="about-work-card">
+        <p class="about-work-index">04 · AI INFRASTRUCTURE</p>
+        <h3>GPU workloads across clouds</h3>
+        <p>Led infrastructure for vLLM workloads spanning data centres, AWS, OCI, and government cloud, alongside MLOps pipelines on SageMaker.</p>
+        <ul><li>vLLM</li><li>GPU</li><li>MLOps</li></ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="about-section about-experience">
+    <div class="about-section-heading">
+      <p class="about-section-label">Experience</p>
+      <h2>A builder first, with a platform-wide view</h2>
+    </div>
+
+    <div class="about-timeline">
+      <article>
+        <div class="about-timeline-marker" aria-hidden="true"></div>
+        <div class="about-timeline-meta">
+          <span>2019 — Present</span>
+          <span>Singapore</span>
+        </div>
+        <h3>Lead — DevOps &amp; Platform</h3>
+        <p class="about-company">Material+</p>
+        <p>Leading infrastructure engagements across Kubernetes, VMware, SUSE, cloud migrations, DevOps delivery, security, and AI platforms for clients across APAC.</p>
+      </article>
+
+      <article>
+        <div class="about-timeline-marker" aria-hidden="true"></div>
+        <div class="about-timeline-meta">
+          <span>2017 — 2019</span>
+          <span>India</span>
+        </div>
+        <h3>DevOps Engineer</h3>
+        <p class="about-company">Infogain India</p>
+        <p>Built and managed Jenkins delivery pipelines for more than 100 .NET applications and developed a live operations dashboard that reduced incident response time.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="about-section-heading">
+      <p class="about-section-label">Toolkit</p>
+      <h2>Deep infrastructure range, one operating mindset</h2>
+    </div>
+
+    <div class="about-skill-grid">
+      <article><h3>Platforms</h3><p>AWS, Azure, OCI, Singapore GCC 2.0, VMware, SUSE Harvester, on-prem</p></article>
+      <article><h3>Kubernetes</h3><p>EKS, AKS, RKE2, Tanzu, Rancher, Helm, Istio, Cilium, KEDA, Traefik</p></article>
+      <article><h3>AI infrastructure</h3><p>vLLM, LiteLLM, KubeRay, Kubeflow, NVIDIA and AMD GPUs, Ollama, Bedrock</p></article>
+      <article><h3>Automation</h3><p>Terraform, CloudFormation, Packer, Ansible, Bash, PowerShell, Python</p></article>
+      <article><h3>Delivery</h3><p>Jenkins, Spinnaker, Argo CD, GitLab CI, GitHub Actions, SonarQube</p></article>
+      <article><h3>Observability</h3><p>Prometheus, Grafana, ELK, Fluent Bit, New Relic</p></article>
+    </div>
+  </section>
+
+  <section class="about-section about-credentials">
+    <div>
+      <p class="about-section-label">Credentials</p>
+      <h2>Certifications</h2>
+      <ul class="about-check-list">
+        <li>VMware Certified VCF Administrator</li>
+        <li>SUSE Certified Administrator</li>
+        <li>Rancher Manager 2.7 &amp; 2.8 for Rancher Prime</li>
+        <li>HashiCorp Certified: Terraform Associate</li>
+        <li>HashiCorp Ambassador, 2025</li>
+        <li>Certified Kubernetes Administrator, 2023</li>
+      </ul>
+    </div>
+    <div>
+      <p class="about-section-label">Foundation</p>
+      <h2>Education</h2>
+      <p><strong>B.Tech, Computer Science</strong><br>Uttar Pradesh Technical University<br><span class="about-muted">2013 — 2017 · India</span></p>
+    </div>
+  </section>
+
+  <section class="about-section about-writing">
+    <p class="about-section-label">Beyond delivery</p>
+    <div>
+      <h2>I write from the workbench.</h2>
+      <p>This site is where I turn infrastructure lessons and local AI experiments into practical notes—specific enough to reproduce, honest about the constraints, and useful when the same problem returns six months later.</p>
+      <a class="about-text-link" href="/posts/">Read the latest notes <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <section class="about-contact">
+    <p class="about-section-label">Get in touch</p>
+    <h2>Building something difficult?</h2>
+    <p>I’m always glad to compare notes on Kubernetes, platform engineering, cloud infrastructure, or production AI systems.</p>
+    <div class="about-actions">
+      <a class="about-button about-button-primary" href="mailto:vishnuharidadhich@gmail.com">Send an email</a>
+      <a class="about-button" href="https://www.linkedin.com/in/vishnuhd/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </section>
+</article>
+
+{{- end }}
