@@ -41,7 +41,7 @@ This is also why "build your own agent" and "build your own harness" are the sam
 
 **Example.** Two different harnesses wrapping the same underlying model can behave nothing alike. One harness might cap the loop at 5 iterations and summarize aggressively to save context. Another might allow 50 iterations, keep full history, and let the model spawn sub-agents. Same model, same weights, same API calls to it, wildly different agent because the harness around it is different.
 
-![The agent harness surrounds the LLM with context management, tool execution, loop control, and a stop condition.](/images/posts/ai-agent-basics/02-agent-harness.svg)
+![The agent harness cycles from the LLM to tool execution, through context management, and back through a combined loop control and stop decision.](/images/posts/ai-agent-basics/02-agent-harness.svg)
 
 ## The four things a harness provides
 
@@ -84,6 +84,7 @@ Frameworks like [CrewAI](https://www.crewai.com/) and [LangGraph](https://www.la
 **Open source / self-hostable harnesses**
 
 - **[Pi (pi.dev)](https://pi.dev/)**, a minimal, aggressively extensible terminal coding-agent harness. Deliberately skips features like sub-agents, plan mode, and MCP support out of the box, the pitch is you build those in yourself with extensions rather than accept whatever the harness maker decided. It also makes the model-vs-harness split from earlier concrete: it supports 15+ model providers and lets you switch mid-session, the harness stays constant, the model underneath it doesn't have to.
+- **[Hermes Agent](https://hermes-agent.nousresearch.com/)**, an open-source agent from Nous Research that can run locally or on a server and build reusable skills from previous work.
 - **[OpenHands](https://www.openhands.dev/)** (formerly OpenDevin), an open-source autonomous software engineer harness, the open equivalent of Devin below.
 - **[OpenClaw](https://openclaw.ai/)**, a fast-growing self-hosted personal agent harness, notable for running locally with your own model of choice.
 - **[AutoGPT](https://www.agpt.co/)**, the original viral agent demo, now a maturer platform with a visual builder and self-hosting support. Still the reference point most people mean when they say "autonomous agent."
