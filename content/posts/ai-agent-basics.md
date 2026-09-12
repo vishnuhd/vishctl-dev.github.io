@@ -1,5 +1,5 @@
 ---
-title: "What Agentic AI Actually Means"
+title: "What the heck is an AI Agent?"
 date: 2026-09-13T02:45:00+08:00
 draft: false
 description: "A practical explanation of agentic AI, agent harnesses, tool loops, context growth, and why agents cost more to run."
