@@ -21,7 +21,9 @@ A learning chat turned into these notes. Let's follow one request all the way th
 
 This is an illustrative example, not a live diagnosis. We will use a hypothetical **2B model** throughout.
 
-## 1. An answer grows one token at a time
+## Part 1: The Mechanics
+
+### 1. An answer grows one token at a time
 
 An **LLM**, or large language model, is a neural network trained on language. For the text-generating models here, the basic loop is: use the text so far to predict what comes next.
 
@@ -73,7 +75,7 @@ For our prompt, a tokenizer might split `OOMKilled` into smaller pieces. Exact s
 
 The answer might grow as `The` → ` container` → ` was` → ` killed`. These are illustrative token boundaries. The model chooses from next-token scores using its generation settings, then repeats.
 
-## 2. What does a 2B model actually contain?
+### 2. What does a 2B model actually contain?
 
 **About two billion adjustable numbers**, called parameters. Most are weights used in the network's calculations. They collectively encode learned patterns, rather than one fact per number.
 
@@ -110,7 +112,7 @@ During training, examples about containers and memory can shape these numbers. O
 
 **Training changes the parameters. Ordinary inference uses them.** Chatting adds context; it does not normally retrain the model. A bigger parameter count alone does not guarantee better answers.
 
-## 3. Transformers connect the relevant pieces
+### 3. Transformers connect the relevant pieces
 
 A **Transformer** is the architecture behind many LLMs. Its layers combine attention with other neural-network calculations.
 
@@ -150,7 +152,7 @@ In our request, `OOMKilled` is a useful clue for explaining `restart`. Attention
 
 The diagram is an intuition, not a measured attention map. **Q, K, and V are learned numerical representations**, not literal questions or database entries. Multiple attention heads can capture different relationships. [Google's Transformer introduction](https://developers.google.com/machine-learning/crash-course/llm/transformers) explains the architecture further.
 
-## 4. Why can it reason, and still be wrong?
+### 4. Why can it reason, and still be wrong?
 
 Learning to predict language can build useful patterns for code, maths, and problem solving. Further training can improve instruction following and reasoning.
 
@@ -180,7 +182,9 @@ It would be a leap to say **"Your app definitely has a memory leak."** Our promp
 
 This gap between a fluent answer and a verified one is often called **hallucination**: the model producing a plausible-sounding claim that isn't grounded in the given context or fact.
 
-## 5. Context is the input. KV cache saves work.
+## Part 2: Serving & Scaling
+
+### 5. Context is the input. KV cache saves work.
 
 The **context window** limits how many tokens a request can accommodate, including input and generated output. Instructions, chat history, and supplied documents all take space.
 
@@ -233,7 +237,7 @@ Two useful measurements:
 | Time to first token (TTFT) | Wait until "The" appears, including queueing and prompt processing |
 | Output tokens per second | How quickly the rest of the restart explanation appears |
 
-## 6. Why does a model need so much memory?
+### 6. Why does a model need so much memory?
 
 GPUs accelerate the large matrix calculations. But the model also has to fit in memory.
 
@@ -245,7 +249,7 @@ FP16 and BF16 both use 16 bits, with different numerical ranges and precision. *
 
 For our 2B model, 16-bit weights take about 4 GB; ideal 4-bit storage takes about 1 GB. The question stays the same. We store the learned numbers more compactly, leaving more of our 8 GB GPU for the cache and runtime. Whether it fits depends on the model, format, and context. Quality can fall; speed gains depend on hardware and software.
 
-## 7. What does vLLM add?
+### 7. What does vLLM add?
 
 ```text
 Our pod question (request A)
@@ -284,9 +288,9 @@ If B finishes while our restart explanation is still generating, D can join when
 
 This section goes deeper into multi-GPU serving; skip to the summary if you just want the core model.
 
-## 8. More GPUs, and fewer active experts
+### 8. More GPUs, and fewer active experts
 
-### Split maths, split layers, or serve separate requests
+#### Split maths, split layers, or serve separate requests
 
 ```text
 TENSOR PARALLELISM
@@ -329,7 +333,7 @@ For the same pod question: **TP** shares each layer's calculations across GPUs; 
 
 **NCCL** is NVIDIA's GPU communication library. It can move and combine data over connections such as PCIe and NVLink. **PCIe is the general system interconnect GPUs already use; NVLink is a faster, GPU-to-GPU-only path available on some hardware.** More GPU-to-GPU communication generally wants the faster path. Extra GPUs can also add waiting time, so scaling is not automatically a speedup. [NVIDIA's overview](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/overview.html) describes that communication layer.
 
-### How GPU communication connects the pieces
+#### How GPU communication connects the pieces
 
 ```text
 GPU 1 partial result       GPU 2 partial result
@@ -348,7 +352,7 @@ Communication travels over available connections,
 such as NVLink or PCIe, depending on the hardware.
 ```
 
-### MoE routes work to selected experts
+#### MoE routes work to selected experts
 
 ```text
 Representation of a token from our question
@@ -376,7 +380,9 @@ in this illustrative MoE layer.
 
 Memory capacity answers **"Will it fit?"** Memory bandwidth answers **"How fast can data move?"** Compute throughput answers **"How fast can the maths run?"** Any of these, plus GPU communication, can limit performance.
 
-## The whole conversation flow
+## 9. The Big Picture
+
+### The whole conversation flow
 
 The app supplies the conversation history it wants the model to use. The next turn is another request, with an updated context.
 
@@ -420,7 +426,7 @@ Load model on GPU(s)                  Tokenize and schedule
 
 Cache reuse between requests depends on the engine and matching context. Even without reuse, the app can send the history again and the engine can recompute it.
 
-## The five things I want to remember
+### The five things I want to remember
 
 | Term | My reminder |
 | --- | --- |
