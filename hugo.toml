@@ -32,8 +32,8 @@ theme = "PaperMod"
     apple_touch_icon = "/apple-touch-icon.png"
 
   [params.homeInfoParams]
-    Title = "Welcome to `vishctl`"
-    Content = "Hi, I’m Vishnu. I write practical notes on Kubernetes, DevOps, and local AI experiments. [About me →](/posts/hello-world/)"
+    Title = "Practical notes on infrastructure and local AI"
+    Content = "Hi, I’m Vishnu. I document hands-on experiments with Kubernetes, DevOps, GPUs, and local models. [About me →](/posts/hello-world/)"
 
   [[params.socialIcons]]
     name = "linkedin"

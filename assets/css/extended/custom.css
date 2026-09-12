@@ -21,6 +21,13 @@ code, kbd, samp, pre {
     font-family: var(--font-family-code) !important;
 }
 
+/* Consistent keyboard focus across navigation and interactive content. */
+:where(a, button, summary, input, textarea, select):focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
 /* Header & Logo styling */
 .logo a {
     font-family: var(--font-family-code);
@@ -302,7 +309,36 @@ body.light .first-entry.home-info {
 .home-post-entry .entry-content {
     display: block;
     overflow: visible;
-    margin: 8px 0 12px;
+    margin: 8px 0 10px;
+}
+
+.home-post-tags {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 0 0 12px;
+    list-style: none;
+}
+
+.home-post-tags a {
+    display: inline-flex;
+    padding: 3px 8px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    color: var(--secondary);
+    font-family: var(--font-family-code);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.home-post-tags a:hover {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
 }
 
 .home-info .entry-content a {
@@ -329,13 +365,14 @@ body.light .first-entry.home-info {
 
     .home-post-entry .entry-cover {
         grid-column: 1;
-        grid-row: 1 / 4;
+        grid-row: 1 / 5;
         align-self: center;
         margin: 0;
     }
 
     .home-post-entry:has(.entry-cover) > .entry-header,
     .home-post-entry:has(.entry-cover) > .entry-content,
+    .home-post-entry:has(.entry-cover) > .home-post-tags,
     .home-post-entry:has(.entry-cover) > .entry-footer {
         grid-column: 2;
     }
@@ -346,6 +383,39 @@ body.light .first-entry.home-info {
 }
 
 @media screen and (max-width: 699px) {
+    :root {
+        --header-height: 108px;
+    }
+
+    .header-nav {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        justify-content: flex-start;
+        row-gap: 0;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        line-height: 52px;
+    }
+
+    .logo {
+        justify-content: space-between;
+        min-width: 0;
+    }
+
+    .menu {
+        width: 100%;
+        min-width: 0;
+        column-gap: 22px;
+        overflow-x: auto;
+        line-height: 40px;
+        scrollbar-width: none;
+    }
+
+    .menu::-webkit-scrollbar {
+        display: none;
+    }
+
     .first-entry.home-info,
     .home-post-entry {
         padding: 20px;

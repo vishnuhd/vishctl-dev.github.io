@@ -19,7 +19,7 @@
 
 {{- if and .IsHome (gt (len $paginator.Pages) 0) (eq $paginator.PageNumber 1) }}
 <div class="posts-section-header">
-  <h2 class="posts-section-title">Posts:</h2>
+  <h2 class="posts-section-title">Latest notes</h2>
 </div>
 {{- end }}
 
@@ -47,6 +47,13 @@
   <div class="entry-content">
     <p>{{ with .Description }}{{ . | plainify | htmlUnescape }}{{ else }}{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}{{ end }}</p>
   </div>
+  {{- end }}
+  {{- with .GetTerms "tags" }}
+  <ul class="home-post-tags" aria-label="Topics">
+    {{- range first 2 . }}
+    <li><a href="{{ .RelPermalink }}">{{ .Data.Term }}</a></li>
+    {{- end }}
+  </ul>
   {{- end }}
   {{- if not (.Param "hideMeta") }}
   <footer class="entry-footer">
