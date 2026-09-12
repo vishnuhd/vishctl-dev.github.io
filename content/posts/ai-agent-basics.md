@@ -79,21 +79,21 @@ The cost isn't "the model thinks harder." It's "the model re-processes a longer 
 
 ## Some harnesses and agents you've probably heard of
 
-Frameworks like CrewAI and LangGraph are toolkits for building your own harness, not already-built ones. Since the interesting question is which finished harnesses and agents are worth knowing, here's a rough split, open source and paid, as of when this was written:
+Frameworks like [CrewAI](https://www.crewai.com/) and [LangGraph](https://www.langchain.com/langgraph) are toolkits for building your own harness, not already-built ones. Since the interesting question is which finished harnesses and agents are worth knowing, here's a rough split, open source and paid, as of when this was written:
 
 **Open source / self-hostable harnesses**
 
-- **Pi (pi.dev)**, a minimal, aggressively extensible terminal coding-agent harness. Deliberately skips features like sub-agents, plan mode, and MCP support out of the box, the pitch is you build those in yourself with extensions rather than accept whatever the harness maker decided. It also makes the model-vs-harness split from earlier concrete: it supports 15+ model providers and lets you switch mid-session, the harness stays constant, the model underneath it doesn't have to.
-- **OpenHands** (formerly OpenDevin), an open-source autonomous software engineer harness, the open equivalent of Devin below.
-- **OpenClaw**, a fast-growing self-hosted personal agent harness, notable for running locally with your own model of choice.
-- **AutoGPT**, the original viral agent demo, now a maturer platform with a visual builder and self-hosting support. Still the reference point most people mean when they say "autonomous agent."
+- **[Pi (pi.dev)](https://pi.dev/)**, a minimal, aggressively extensible terminal coding-agent harness. Deliberately skips features like sub-agents, plan mode, and MCP support out of the box, the pitch is you build those in yourself with extensions rather than accept whatever the harness maker decided. It also makes the model-vs-harness split from earlier concrete: it supports 15+ model providers and lets you switch mid-session, the harness stays constant, the model underneath it doesn't have to.
+- **[OpenHands](https://www.openhands.dev/)** (formerly OpenDevin), an open-source autonomous software engineer harness, the open equivalent of Devin below.
+- **[OpenClaw](https://openclaw.ai/)**, a fast-growing self-hosted personal agent harness, notable for running locally with your own model of choice.
+- **[AutoGPT](https://www.agpt.co/)**, the original viral agent demo, now a maturer platform with a visual builder and self-hosting support. Still the reference point most people mean when they say "autonomous agent."
 
 **Paid / proprietary harnesses and agents**
 
-- **Claude Code**, Anthropic's coding agent harness, runs in a terminal, reads and edits across a whole codebase, runs tests, commits changes.
-- **Devin**, a fully autonomous coding agent from Cognition, runs in its own sandboxed cloud environment rather than your terminal.
-- **OpenAI Codex / ChatGPT Agent**, OpenAI's equivalents, spanning terminal, cloud, and chat surfaces.
-- **Perplexity Comet**, a browsing agent that navigates and completes tasks inside the browser rather than a terminal.
+- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code/getting-started)**, Anthropic's coding agent harness, runs in a terminal, reads and edits across a whole codebase, runs tests, commits changes.
+- **[Devin](https://cognition.com/blog/introducing-devin)**, a fully autonomous coding agent from Cognition, runs in its own sandboxed cloud environment rather than your terminal.
+- **[OpenAI Codex](https://openai.com/codex/) / [ChatGPT Agent](https://help.openai.com/en/articles/11752874-chatgpt-agent)**, OpenAI's equivalents, spanning terminal, cloud, and chat surfaces.
+- **[Perplexity Comet](https://www.perplexity.ai/comet)**, a browsing agent that navigates and completes tasks inside the browser rather than a terminal.
 
 Coding is where agents and harnesses are most mature right now, since code execution gives the loop a fast, checkable signal of whether the last action actually worked. That's not a coincidence, it's the same reason the log-file-size example earlier in this post works cleanly: shell commands succeed or fail in an unambiguous way, which is exactly the kind of feedback a harness's loop needs to decide what to do next.
 
