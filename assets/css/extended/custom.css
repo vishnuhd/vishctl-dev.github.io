@@ -3,6 +3,7 @@
 :root {
     --card-surface: #f8fafc;
     --card-border: #dbe3ec;
+    --header-surface: rgba(255, 255, 255, 0.82);
     --pattern-line: rgba(2, 132, 199, 0.055);
     --pattern-glow: rgba(14, 165, 233, 0.09);
     --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -12,6 +13,7 @@
 :root[data-theme="dark"] {
     --card-surface: #1c2230;
     --card-border: #2d394b;
+    --header-surface: rgba(29, 30, 32, 0.84);
     --pattern-line: rgba(56, 189, 248, 0.04);
     --pattern-glow: rgba(56, 189, 248, 0.07);
 }
@@ -41,6 +43,21 @@ code, kbd, samp, pre {
     border-radius: 4px;
 }
 
+/* Shared site chrome */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-border) 70%, transparent);
+    background: var(--header-surface);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.footer {
+    border-top: 1px solid var(--card-border);
+}
+
 /* Header & Logo styling */
 .logo a {
     font-family: var(--font-family-code);
@@ -54,7 +71,7 @@ code, kbd, samp, pre {
 }
 
 .logo a:hover {
-    opacity: 0.85;
+    color: #38bdf8;
 }
 
 /* Nav Menu active and hover states */
@@ -64,40 +81,56 @@ code, kbd, samp, pre {
     transition: color 0.2s ease;
 }
 
+.menu a:hover {
+    color: #38bdf8;
+}
+
 .menu .active {
     font-weight: 600;
-    border-bottom: 2px solid var(--primary);
+    border-bottom: 2px solid #38bdf8;
     padding-bottom: 2px;
 }
 
 /* Home Info Card (Welcome / Intro Section) */
 .first-entry.home-info {
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    border-radius: 12px;
-    padding: 24px;
+    border: 0;
+    border-bottom: 1px solid var(--card-border);
+    border-radius: 0;
+    padding: 64px 0 54px;
     min-height: 0;
-    margin-top: 16px;
-    margin-bottom: 24px;
-    background: var(--card-surface);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    margin-top: 26px;
+    margin-bottom: 34px;
+    background: transparent;
 }
 
 :root[data-theme="light"] .first-entry.home-info,
 body.light .first-entry.home-info {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
+    background: transparent;
 }
 
 .first-entry.home-info:hover {
-    border-color: rgba(56, 189, 248, 0.45);
-    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.3);
+    border-color: var(--card-border);
+    box-shadow: none;
+}
+
+.home-info .entry-header::before {
+    content: "VISHCTL · FIELD NOTES";
+    display: block;
+    margin-bottom: 16px;
+    color: #38bdf8;
+    font-family: var(--font-family-code);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
 }
 
 .first-entry .entry-header h1 {
-    font-size: 32px;
+    max-width: 660px;
+    font-size: clamp(38px, 6vw, 54px);
     font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 4px;
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+    margin-bottom: 12px;
 }
 
 /* Posts Section Header on Homepage */
@@ -109,11 +142,13 @@ body.light .first-entry.home-info {
 }
 
 .posts-section-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--primary);
-    letter-spacing: -0.02em;
+    color: #38bdf8;
+    font-family: var(--font-family-code);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     margin: 0;
+    text-transform: uppercase;
 }
 
 .posts-section-header::after {
@@ -125,8 +160,9 @@ body.light .first-entry.home-info {
 }
 
 .first-entry .entry-content {
-    font-size: 16px;
-    line-height: 1.65;
+    max-width: 650px;
+    font-size: 17px;
+    line-height: 1.7;
     color: var(--content);
 }
 
@@ -144,7 +180,7 @@ body.light .first-entry.home-info {
     border-radius: 10px;
     margin-bottom: 20px;
     padding: 24px;
-    background: var(--card-surface);
+    background: linear-gradient(145deg, var(--card-surface), color-mix(in srgb, var(--card-surface) 94%, #38bdf8));
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -152,6 +188,10 @@ body.light .first-entry.home-info {
     transform: translateY(-2px);
     border-color: rgba(56, 189, 248, 0.35);
     box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.2);
+}
+
+.post-entry .entry-cover img {
+    border: 1px solid color-mix(in srgb, var(--card-border) 80%, transparent);
 }
 
 /* Post Card Titles */
@@ -164,16 +204,38 @@ body.light .first-entry.home-info {
 
 /* Single Post Page Title */
 .post-title {
-    font-size: 34px;
+    font-size: clamp(38px, 6vw, 54px);
     font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -0.025em;
-    margin-bottom: 12px;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    margin-bottom: 16px;
+}
+
+.post-header {
+    padding: 38px 0 16px;
+}
+
+.post-description {
+    max-width: 680px;
+    color: var(--content);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.breadcrumbs {
+    color: #38bdf8;
+    font-family: var(--font-family-code);
+    font-size: 12px;
+}
+
+.breadcrumbs a {
+    color: inherit;
+    font-size: inherit;
 }
 
 @media screen and (max-width: 768px) {
     .post-title {
-        font-size: 28px;
+        font-size: 36px;
     }
     .post-entry .entry-header h2 {
         font-size: 21px;
@@ -208,10 +270,10 @@ body.light .first-entry.home-info {
 
 /* Table of Contents */
 .toc {
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
     padding: 16px 20px;
-    background: var(--entry);
+    background: linear-gradient(145deg, var(--card-surface), color-mix(in srgb, var(--card-surface) 94%, #38bdf8));
 }
 
 .toc summary {
@@ -308,6 +370,84 @@ body.light .first-entry.home-info {
     border-top: 1px solid var(--border);
 }
 
+/* Shared page and article language */
+.page-header {
+    padding: 42px 0 24px;
+    border-bottom: 1px solid var(--card-border);
+}
+.page-header h1 {
+    font-size: clamp(38px, 6vw, 54px);
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+}
+
+.post-content h2,
+.post-content h3,
+.post-content h4 {
+    letter-spacing: -0.025em;
+}
+
+.post-content h2 {
+    padding-top: 10px;
+    font-size: clamp(28px, 4vw, 36px);
+}
+
+.post-content h3 {
+    font-size: clamp(21px, 3vw, 27px);
+}
+
+.post-content a {
+    color: #38bdf8;
+    text-underline-offset: 4px;
+}
+
+.post-content blockquote {
+    padding: 16px 18px;
+    border: 1px solid var(--card-border);
+    border-left: 3px solid #38bdf8;
+    border-radius: 0 9px 9px 0;
+    background: color-mix(in srgb, var(--card-surface) 94%, #38bdf8);
+}
+
+.post-content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.post-content .highlight:not(table),
+.post-content > pre {
+    border: 1px solid var(--card-border);
+    box-shadow: 0 14px 36px -28px rgba(14, 165, 233, 0.55);
+}
+
+.post-content table:not(.highlighttable) {
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--card-surface) 96%, transparent);
+}
+
+.terms-tags a {
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--card-surface);
+    font-family: var(--font-family-code);
+    font-size: 13px;
+}
+
+.terms-tags a:hover {
+    border-color: rgba(56, 189, 248, 0.55);
+    color: #38bdf8;
+}
+
+.archive-year:not(:last-of-type),
+.archive-month:not(:last-of-type) {
+    border-color: var(--card-border);
+}
+
+.archive-entry-title a:hover,
+.footer a:hover {
+    color: #38bdf8;
+}
+
 /* Compact homepage cards preserve the full cover artwork. */
 .home-post-entry .entry-cover {
     margin: 0 0 16px;
@@ -357,6 +497,7 @@ body.light .first-entry.home-info {
 .home-info .entry-content a {
     color: var(--primary);
     text-underline-offset: 4px;
+    white-space: nowrap;
 }
 
 .home-info .entry-content a:hover {
