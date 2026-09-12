@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">Context growth across an agent loop</title>
+  <desc id="desc">A line chart showing context tokens rising from about 500 at iteration one to about 3500 at iteration ten.</desc>
+  <rect width="1200" height="640" rx="28" fill="#091426"/>
+  <rect x="92" y="54" width="1016" height="502" rx="22" fill="#0d1d33" stroke="#223b59" stroke-width="2"/>
+
+  <g stroke="#1d3652" stroke-width="2">
+    <path d="M190 112H1048"/>
+    <path d="M190 224H1048"/>
+    <path d="M190 336H1048"/>
+    <path d="M190 448H1048"/>
+  </g>
+
+  <g fill="#8ea6bf" font-family="Inter, system-ui, sans-serif" font-size="20">
+    <text x="164" y="119" text-anchor="end">3,500</text>
+    <text x="164" y="231" text-anchor="end">2,500</text>
+    <text x="164" y="343" text-anchor="end">1,500</text>
+    <text x="164" y="455" text-anchor="end">500</text>
+  </g>
+
+  <g fill="#8ea6bf" font-family="Inter, system-ui, sans-serif" font-size="18" text-anchor="middle">
+    <text x="208" y="487">1</text>
+    <text x="300" y="487">2</text>
+    <text x="392" y="487">3</text>
+    <text x="484" y="487">4</text>
+    <text x="576" y="487">5</text>
+    <text x="668" y="487">6</text>
+    <text x="760" y="487">7</text>
+    <text x="852" y="487">8</text>
+    <text x="944" y="487">9</text>
+    <text x="1036" y="487">10</text>
+  </g>
+
+  <path d="M208 448 L300 411 L392 374 L484 336 L576 299 L668 262 L760 224 L852 187 L944 150 L1036 112"
+        fill="none" stroke="#45d6ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#091426" stroke="#45d6ff" stroke-width="5">
+    <circle cx="208" cy="448" r="9"/>
+    <circle cx="300" cy="411" r="9"/>
+    <circle cx="392" cy="374" r="9"/>
+    <circle cx="484" cy="336" r="9"/>
+    <circle cx="576" cy="299" r="9"/>
+    <circle cx="668" cy="262" r="9"/>
+    <circle cx="760" cy="224" r="9"/>
+    <circle cx="852" cy="187" r="9"/>
+    <circle cx="944" cy="150" r="9"/>
+    <circle cx="1036" cy="112" r="9"/>
+  </g>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <text x="620" y="535" fill="#d8e7f5" font-size="22" font-weight="700" text-anchor="middle">Loop Iteration</text>
+    <text x="44" y="280" fill="#d8e7f5" font-size="22" font-weight="700" text-anchor="middle" transform="rotate(-90 44 280)">Context Tokens (KV Cache)</text>
+    <text x="215" y="91" fill="#a9f1ff" font-size="19" font-weight="700">Context grows with every tool round trip</text>
+  </g>
+</svg>

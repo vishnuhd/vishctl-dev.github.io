@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">Chatbot compared with an AI agent</title>
+  <desc id="desc">A chatbot follows a single path from input to model to output. An agent loops through observe, decide, act, and observe again.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0l10 5-10 5z" fill="#38bdf8"/></marker>
+    <style>
+      .panel{fill:#111d30;stroke:#2b425f;stroke-width:2}.box{fill:#17263d;stroke:#36516f;stroke-width:2}.agent{stroke:#8b7cf6}.flow{fill:none;stroke:#38bdf8;stroke-width:4;marker-end:url(#arrow)}.label{fill:#eef6ff;font:600 25px Inter,system-ui,sans-serif;text-anchor:middle}.small{fill:#a8b8cc;font:500 18px Inter,system-ui,sans-serif;text-anchor:middle}.heading{fill:#38bdf8;font:700 17px 'JetBrains Mono',monospace;letter-spacing:3px;text-anchor:middle}.note{fill:#8194aa;font:500 15px Inter,system-ui,sans-serif;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1200" height="560" rx="22" fill="#0a1424"/>
+  <rect class="panel" x="38" y="38" width="535" height="484" rx="18"/>
+  <rect class="panel" x="627" y="38" width="535" height="484" rx="18"/>
+  <text class="heading" x="305" y="91">CHATBOT</text>
+  <text class="heading" x="895" y="91">AGENT</text>
+
+  <rect class="box" x="75" y="217" width="125" height="82" rx="12"/>
+  <rect class="box" x="243" y="217" width="125" height="82" rx="12"/>
+  <rect class="box" x="411" y="217" width="125" height="82" rx="12"/>
+  <text class="label" x="137" y="267">Input</text>
+  <text class="label" x="305" y="267">Model</text>
+  <text class="label" x="473" y="267">Output</text>
+  <path class="flow" d="M200 258h39"/>
+  <path class="flow" d="M368 258h39"/>
+  <text class="note" x="305" y="352">One pass</text>
+
+  <rect class="box agent" x="830" y="121" width="130" height="74" rx="12"/>
+  <rect class="box agent" x="986" y="243" width="130" height="74" rx="12"/>
+  <rect class="box agent" x="830" y="365" width="130" height="74" rx="12"/>
+  <rect class="box agent" x="674" y="243" width="130" height="74" rx="12"/>
+  <text class="small" x="895" y="166">Observe</text>
+  <text class="small" x="1051" y="288">Decide</text>
+  <text class="small" x="895" y="410">Act</text>
+  <text class="small" x="739" y="276"><tspan x="739">Observe</tspan><tspan x="739" dy="22">again</tspan></text>
+  <path class="flow" d="M960 158c48 8 75 35 84 80"/>
+  <path class="flow" d="M1051 317c-8 48-35 75-84 84"/>
+  <path class="flow" d="M830 402c-48-8-75-35-84-80"/>
+  <path class="flow" d="M739 243c8-48 35-75 84-84"/>
+  <text class="note" x="895" y="482">Runs until the task is done or stopped</text>
+</svg>

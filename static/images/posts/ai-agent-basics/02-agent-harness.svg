@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">The agent harness around an LLM</title>
+  <desc id="desc">An outer agent harness contains the LLM, tool execution, context management, loop control, and stop condition.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0l10 5-10 5z" fill="#38bdf8"/></marker>
+    <style>
+      .outer{fill:#101c2e;stroke:#38bdf8;stroke-width:3}.box{fill:#182840;stroke:#395574;stroke-width:2}.core{fill:#26234a;stroke:#8b7cf6;stroke-width:3}.flow{fill:none;stroke:#38bdf8;stroke-width:3;marker-end:url(#arrow)}.heading{fill:#38bdf8;font:700 18px 'JetBrains Mono',monospace;letter-spacing:3px}.label{fill:#eef6ff;font:600 22px Inter,system-ui,sans-serif;text-anchor:middle}.coretext{fill:#fff;font:700 34px 'JetBrains Mono',monospace;text-anchor:middle}.small{fill:#a8b8cc;font:500 16px Inter,system-ui,sans-serif;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1200" height="680" rx="22" fill="#0a1424"/>
+  <rect class="outer" x="42" y="38" width="1116" height="604" rx="22"/>
+  <text class="heading" x="76" y="82">AGENT HARNESS</text>
+
+  <rect class="box" x="102" y="142" width="250" height="92" rx="13"/>
+  <rect class="box" x="848" y="142" width="250" height="92" rx="13"/>
+  <rect class="box" x="102" y="447" width="250" height="92" rx="13"/>
+  <rect class="box" x="848" y="447" width="250" height="92" rx="13"/>
+  <rect class="core" x="456" y="265" width="288" height="145" rx="18"/>
+
+  <text class="label" x="227" y="181"><tspan x="227">Context</tspan><tspan x="227" dy="27">Management</tspan></text>
+  <text class="label" x="973" y="181"><tspan x="973">Tool</tspan><tspan x="973" dy="27">Execution</tspan></text>
+  <text class="label" x="227" y="486"><tspan x="227">Loop</tspan><tspan x="227" dy="27">Control</tspan></text>
+  <text class="label" x="973" y="486"><tspan x="973">Stop</tspan><tspan x="973" dy="27">Condition</tspan></text>
+  <text class="coretext" x="600" y="337">LLM</text>
+  <text class="small" x="600" y="371">decision-maker</text>
+
+  <path class="flow" d="M352 188C430 188 435 259 479 281"/>
+  <path class="flow" d="M721 281c45-22 51-93 127-93"/>
+  <path class="flow" d="M973 234v205"/>
+  <path class="flow" d="M848 493c-76 0-82-71-127-93"/>
+  <path class="flow" d="M479 400c-44 22-49 93-127 93"/>
+  <path class="flow" d="M227 447V242"/>
+
+  <path class="flow" d="M42 319h398"/>
+  <text class="small" x="217" y="303">prompt + current state</text>
+  <path class="flow" d="M760 356h398"/>
+  <text class="small" x="965" y="340">response or tool call</text>
+  <text class="small" x="600" y="599">The harness owns the loop. The LLM makes one decision at a time.</text>
+</svg>
