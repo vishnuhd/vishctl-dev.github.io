@@ -1,7 +1,7 @@
 ---
 title: "What Agentic AI Actually Means"
-date: 2026-09-13
-draft: true
+date: 2026-09-13T02:45:00+08:00
+draft: false
 description: "A practical explanation of agentic AI, agent harnesses, tool loops, context growth, and why agents cost more to run."
 series: ["AI Infra"]
 tags: ["agentic-ai", "llm", "agent-harness", "infra"]
