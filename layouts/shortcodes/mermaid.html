@@ -1,0 +1,8 @@
+<figure class="mermaid-figure">
+  <div class="mermaid">
+    {{- .Inner | strings.TrimSpace | safeHTML -}}
+  </div>
+  {{- with .Get "caption" }}
+  <figcaption>{{ . }}</figcaption>
+  {{- end }}
+</figure>

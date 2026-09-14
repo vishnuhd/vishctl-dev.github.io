@@ -1253,3 +1253,41 @@ body.light .first-entry.home-info {
         transform: none;
     }
 }
+
+/* Editable, responsive architecture diagrams used in technical posts. */
+.mermaid-figure {
+    margin: 32px 0 38px;
+}
+
+.post-content .mermaid {
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    padding: 28px 20px;
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 14px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.10), transparent 60%),
+        #081225;
+    box-shadow: 0 16px 40px rgba(2, 8, 23, 0.20);
+}
+
+.post-content .mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.mermaid-figure figcaption {
+    margin-top: 10px;
+    color: var(--secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+@media screen and (max-width: 699px) {
+    .post-content .mermaid {
+        justify-content: flex-start;
+        padding: 20px 14px;
+    }
+}

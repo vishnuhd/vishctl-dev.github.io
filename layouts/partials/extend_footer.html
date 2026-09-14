@@ -57,3 +57,44 @@
     updateToc();
 })();
 </script>
+
+<script type="module">
+const diagrams = document.querySelectorAll('.mermaid');
+
+if (diagrams.length) {
+    const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs');
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme: 'base',
+        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+        flowchart: {
+            curve: 'basis',
+            htmlLabels: true,
+            nodeSpacing: 34,
+            rankSpacing: 46,
+            useMaxWidth: true
+        },
+        themeVariables: {
+            background: '#081225',
+            primaryColor: '#13264a',
+            primaryTextColor: '#e6f6ff',
+            primaryBorderColor: '#38bdf8',
+            secondaryColor: '#261e52',
+            secondaryTextColor: '#f1edff',
+            secondaryBorderColor: '#a78bfa',
+            tertiaryColor: '#302410',
+            tertiaryTextColor: '#fff3cf',
+            tertiaryBorderColor: '#fbbf24',
+            lineColor: '#7dd3fc',
+            clusterBkg: '#0b1730',
+            clusterBorder: '#334d77',
+            edgeLabelBackground: '#081225',
+            fontSize: '15px'
+        }
+    });
+
+    await mermaid.run({ nodes: diagrams });
+}
+</script>
