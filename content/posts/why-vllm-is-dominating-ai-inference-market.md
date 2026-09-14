@@ -1,7 +1,7 @@
 ---
 title: "Why vLLM Is Dominating the AI Inference Market"
 date: 2026-09-15T00:00:00+08:00
-draft: true
+draft: false
 description: "How PagedAttention, continuous batching, hardware portability, and an open ecosystem made vLLM the default engine for high-throughput LLM serving."
 series: ["AI Infra"]
 tags: ["vllm", "inference", "ai-infra", "kubernetes"]
