@@ -6,6 +6,11 @@ description = "A beginner-friendly AI and LLM glossary with short definitions, e
 tags = ["ai", "llm-basics", "glossary", "local-llm", "agents"]
 ShowToc = true
 TocOpen = true
+
+[cover]
+  image = "/images/posts/ai-llm-glossary/00-pixel-art-cover.png"
+  alt = "Pixel-art glossary book with a neural-network chip, chat bubble, and connected tokens"
+  relative = false
 +++
 
 AI conversations come with a lot of new words. Here is a broad collection of common AI and LLM terms, each explained in one or two sentences, with examples wherever useful.
