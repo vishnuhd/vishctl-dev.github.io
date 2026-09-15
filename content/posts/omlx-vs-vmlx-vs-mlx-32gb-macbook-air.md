@@ -1,8 +1,8 @@
 +++
-title = "oMLX vs vMLX vs MLX: Running Local LLMs on My 32 GB MacBook Air"
+title = "oMLX vs Ollama vs vMLX vs MLX-LM: Local LLMs on Apple Silicon"
 date = '2026-09-15T15:00:00+08:00'
 draft = false
-description = "Running local LLMs on a 32 GB MacBook Air: simple MLX-LM setup, vMLX serving controls, oMLX model management, and Ollama MLX."
+description = "My local LLM picks for Apple Silicon: oMLX first, Ollama second, vMLX third, and official MLX-LM fourth. Setup commands and the benefits of each."
 tags = ["ai", "local-llm", "mlx", "omlx", "vmlx", "ollama", "apple-silicon"]
 ShowToc = true
 TocOpen = false
@@ -16,6 +16,8 @@ TocOpen = false
 I've been playing with local LLMs on my **32 GB MacBook Air**. Three names kept coming up: **MLX, vMLX, and oMLX**. Then there is **Ollama's own MLX engine**.
 
 The names sound similar. The real difference is how much help each gives you around running the model.
+
+**My preference: oMLX first, Ollama second, vMLX third, and official MLX-LM fourth.** That order reflects what I want from an everyday local AI setup.
 
 For MLX-LM, vMLX, and oMLX, I used the same [4-bit Qwen3 model](https://huggingface.co/mlx-community/Qwen3-8B-4bit):
 
@@ -146,15 +148,15 @@ Ollama MLX may work better for some people, especially when their apps already i
 
 ## Which would I choose?
 
-| Tool | Clearest benefit | Where I would use it |
+| My ranking | Tool | Why I would choose it |
 | --- | --- | --- |
-| **MLX-LM** | Direct, flexible LLM tools | Learning, scripting, fine-tuning |
-| **vMLX** | Serving and cache controls | Local apps and concurrent requests |
-| **oMLX** | Model management and persistent caching | Everyday local AI and coding assistants |
-| **Ollama MLX** | Familiar commands and integrations | Existing Ollama workflows |
+| **1** | **oMLX** | Model management and persistent caching for everyday local AI |
+| **2** | **Ollama** | Familiar commands and integrations, with MLX for supported models |
+| **3** | **vMLX** | Serving and cache controls for local apps and concurrent requests |
+| **4** | **Official MLX-LM** | Direct tools for learning, scripting, and fine-tuning |
 
-**For experiments, I would start with MLX-LM. For everyday management, I lean toward oMLX.**
+**oMLX is my first choice. Ollama is my next choice** for its familiar workflow and integrations.
 
-vMLX is appealing when I want more serving controls. Ollama MLX is appealing when I want to keep the workflow I already have.
+vMLX comes third when I want more serving controls. Official MLX-LM comes fourth for my everyday setup, while remaining useful for direct experiments and learning.
 
 On a 32 GB Air, I would start with one loaded model and a modest context limit. Then increase context and concurrency while watching memory pressure and response time.
