@@ -8,7 +8,7 @@ ShowToc = true
 TocOpen = false
 
 [cover]
-  image = "/images/posts/vllm-wsl2-minikube/00-vllm-wsl2-minikube-header.png"
+  image = "images/posts/vllm-wsl2-minikube/00-vllm-wsl2-minikube-header.png"
   alt = "Run vLLM on Kubernetes with Minikube, WSL2 and NVIDIA GPU"
   caption = "vLLM on WSL2 + Minikube: Local GPU, Kubernetes, and LLMs"
   relative = false
