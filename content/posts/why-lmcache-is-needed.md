@@ -5,6 +5,10 @@ draft: false
 description: "An example-driven guide to LMCache: repeated prefill, KV cache reuse, CPU offloading, multi-replica serving, and where caching actually helps."
 series: ["AI Infra"]
 tags: ["lmcache", "vllm", "kv-cache", "inference", "ai-infra", "rag"]
+cover:
+  image: "/images/posts/lmcache/00-pixel-art-cover.png"
+  alt: "Pixel art cache vault reusing stored memory blocks across three GPU servers"
+  relative: false
 ---
 
 Imagine an internal assistant that answers questions about your Kubernetes platform. Every request includes the same long operations runbook.
