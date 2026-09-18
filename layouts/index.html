@@ -51,7 +51,7 @@
   {{- with .GetTerms "tags" }}
   <ul class="home-post-tags" aria-label="Topics">
     {{- range first 2 . }}
-    <li><a href="{{ .RelPermalink }}">{{ .Data.Term }}</a></li>
+    <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
     {{- end }}
   </ul>
   {{- end }}

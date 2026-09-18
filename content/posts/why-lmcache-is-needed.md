@@ -19,6 +19,18 @@ The questions differ. Most of the input is identical. Yet whenever the serving s
 
 **LMCache helps preserve and reuse that prompt-processing work, including beyond GPU memory and across compatible serving instances.** The payoff is less repeated computation and potentially a shorter wait for the first token. It plugs into the serving stack; the model still generates an answer to each new question. [The LMCache project](https://github.com/LMCache/LMCache) describes this as a KV cache management layer.
 
+## Which kind of cache are we talking about?
+
+Three different caches can appear in the same LLM application:
+
+| Cache | What it reuses | Example |
+|---|---|---|
+| Retrieval or embedding cache | Search-related work | Reuse a query embedding or retrieved document list |
+| Response cache | A completed answer | Return an answer previously generated for a matching request |
+| KV cache | Intermediate model attention state | Reuse runbook processing while answering a different question |
+
+LMCache's KV layer addresses the third row. Your vector database still retrieves context, and the model still reasons over the supplied input to produce output.
+
 ## First, where does the waiting happen?
 
 For a typical decoder-only language model, serving a request has two main phases:
@@ -26,7 +38,7 @@ For a typical decoder-only language model, serving a request has two main phases
 - **Prefill:** process the input tokens and build the attention state needed to generate an answer.
 - **Decode:** generate output tokens one step at a time, using that state and extending it.
 
-The attention state includes **keys and values**, stored as tensors across the model's layers. This is the **KV cache**. It lets later tokens attend to earlier tokens without rebuilding all their keys and values each time.
+The attention state includes **keys and values**, stored as tensors across the model's layers. This is the **[KV cache](/posts/llm-basics-visual-guide/#5-context-is-the-input-kv-cache-saves-work)**, covered in more detail in my visual guide, *What Happens When You Ask an LLM a Question*. It lets later tokens attend to earlier tokens without rebuilding all their keys and values each time.
 
 {{< mermaid caption="The first answer token comes after prompt processing. Long repeated inputs create an opportunity to reuse that work." >}}
 flowchart TD
@@ -174,17 +186,7 @@ Request B: system + document B + document A + question B
 
 The documents repeat, but the document prefix does not. Attention state depends on preceding context, so moving a document is not equivalent to reusing an unchanged prefix.
 
-**CacheBlend** extends reuse to repeated chunks outside the prefix by selectively recomputing part of the state. It requires explicit configuration; ordinary prefix caching does not acquire this behavior automatically. Evaluate answer quality as well as latency when using it. The current [CacheBlend documentation](https://docs.lmcache.ai/kv_cache_optimizations/cacheblend.html) describes the blend engine.
-
-It also helps to separate three different caches:
-
-| Cache | What it reuses | Example |
-|---|---|---|
-| Retrieval or embedding cache | Search-related work | Reuse a query embedding or retrieved document list |
-| Response cache | A completed answer | Return an answer previously generated for a matching request |
-| KV cache | Intermediate model attention state | Reuse runbook processing while answering a different question |
-
-LMCache's KV layer addresses the third row. Your vector database still retrieves context, and the model still reasons over the supplied input to produce output.
+**CacheBlend** extends reuse to repeated chunks outside the prefix by selectively recomputing part of the state. It requires explicit configuration; ordinary prefix caching does not acquire this behavior automatically. Selective recomputation adds work to recover interactions between chunks that their cached states did not capture. Recomputing too little can hurt answer quality; recomputing more spends some of the latency saving. This is a quality-versus-compute tradeoff, so compare both against full prefill on your own workload. The [CacheBlend paper](https://arxiv.org/abs/2405.16444) explains the mechanism and its evaluated results. The current [CacheBlend documentation](https://docs.lmcache.ai/kv_cache_optimizations/cacheblend.html) describes the blend engine.
 
 ## The tradeoff: moving data versus doing math
 
