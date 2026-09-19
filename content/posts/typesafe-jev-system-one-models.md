@@ -1,5 +1,5 @@
 ---
-title: "It's All About Attention?"
+title: "TypeSafe’s Jev: An ‘Attention Is All You Need’ Moment for AI Automation?"
 date: 2026-09-19T14:00:00+08:00
 draft: false
 description: "Who founded TypeSafe AI, how Jev differs from chat models, and why fast typed decisions could matter for production software. A look at the claims and their limits."
