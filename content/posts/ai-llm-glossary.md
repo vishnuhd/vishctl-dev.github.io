@@ -3,7 +3,7 @@ title = "AI and LLM Glossary: Common Terms in Plain English"
 date = '2026-09-15T09:00:00+08:00'
 draft = false
 description = "A beginner-friendly AI and LLM glossary with short definitions, everyday examples, and a clickable table of contents for every term."
-tags = ["ai", "llm-basics", "glossary", "local-llm", "agents"]
+tags = ["ai", "llm-basics", "glossary"]
 ShowToc = true
 TocOpen = true
 

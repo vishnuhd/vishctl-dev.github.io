@@ -3,7 +3,7 @@ title = "Kubernetes v1.37: An Operator's Look at Garhwal"
 date = '2026-09-02T20:30:00+08:00'
 draft = false
 description = "My notes on Kubernetes v1.37: native HPA scale-to-zero, tracking unused PVCs, ClusterTrustBundles, and etcd streaming."
-tags = ["kubernetes", "devops", "cloudnative", "infrastructure"]
+tags = ["kubernetes", "devops", "cloud-native", "infrastructure"]
 ShowToc = true
 TocOpen = false
 

@@ -3,7 +3,7 @@ date = '2026-09-02T15:17:58+08:00'
 draft = false
 title = 'Hello World'
 description = "A quick intro to vishctl, my background in Kubernetes and AI infra, and why this blog exists."
-tags = ["devops", "kubernetes", "infrastructure", "ai", "homelab"]
+tags = ["devops", "kubernetes", "ai", "homelab"]
 ShowToc = true
 TocOpen = false
 
