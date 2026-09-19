@@ -19,17 +19,9 @@ That is the part of AI infrastructure that makes TypeSafe interesting to me.
 
 On September 15, 2026, TypeSafe AI announced **Jev**, its first **System One model**, in early access. It describes a new architecture and parallel sampler built for decisions. [Launch announcement](https://typesafe.ai/blog/introducing-system-one-models-and-jev).
 
-The promise is simple: make small AI judgments cheap and fast enough for everyday software. Whether Jev delivers on your workload needs testing.
+The title asks whether this could change how we build AI software. The comparison is about potential impact: Jev's launch does not establish an architectural breakthrough on the scale of the transformer.
 
-## Who is behind TypeSafe?
-
-TypeSafe has three founders: **Diogo Almeida, CEO; Sasha Sheng, COO; and Erik Gafni, CTO**.
-
-Almeida worked at OpenAI and Google Brain. Sheng was a research engineer at Meta/FAIR. Gafni founded Ravel and has a background in production AI systems. [TypeSafe team](https://typesafe.ai/team).
-
-Almeida co-authored the 2022 **InstructGPT** paper, which used human demonstrations and feedback to improve instruction following. His contribution was part of a broader research team. [InstructGPT paper](https://arxiv.org/abs/2203.02155).
-
-Now he is applying that experience to models whose answers feed directly into software.
+**In simple terms, Jev makes small decisions your software can use immediately.** Give it context and allowed choices; it returns answers with probabilities. Your code decides what happens next, including when to ask a person.
 
 ## What does a System One model do?
 
@@ -64,6 +56,53 @@ flowchart LR
 
 Ownership rules, escalation permissions, and audit logging stay explicit in code. A permission change does not depend on the model interpreting a revised prompt correctly.
 
+### A documented request and its answers
+
+TypeSafe's [Python SDK guide](https://docs.typesafe.ai/sdk/python) includes this three-question support example. Install `typesafe-sdk` and set `TYPESAFE_API_KEY` in your environment first. The request below follows that example; the print statements expose the returned probabilities too.
+
+```python
+from typesafe_sdk import Choice, Noul, Score, TypeSafeClient
+
+with TypeSafeClient() as client:
+    response = client.system_one(
+        state={"document": "I was charged twice. Please fix this ASAP."},
+        questions={
+            "billing": Noul(instructions="Is this ticket about billing?"),
+            "tone": Choice(
+                instructions="What is the customer's tone?",
+                criteria={"calm": None, "frustrated": None, "angry": None},
+            ),
+            "urgency": Score(
+                instructions="How urgent is this ticket?",
+                criteria=["can wait", "this week", "today"],
+            ),
+        },
+    )
+
+print(response.nouls["billing"].noul)
+print(response.choices["tone"].choice)
+print(response.choices["tone"].probabilities)
+print(response.scores["urgency"].score)
+print(response.scores["urgency"].probabilities)
+```
+
+One call evaluates the same ticket three ways. The response exposes a yes probability, a distribution over tones, and a distribution over urgency levels. These are response fields, not a recorded run from my account.
+
+For a numeric example, TypeSafe's [quick start](https://docs.typesafe.ai/introduction/quickstart) publishes this Choice answer for a **different ticket about a failing Stripe connection**. This is an excerpt of their sample response, not output from the code above:
+
+```json
+{
+  "department": {
+    "type": "choice",
+    "choice": "billing",
+    "probabilities": {"billing": 0.84, "technical": 0.159, "sales": 0.001},
+    "confidence": 0.596
+  }
+}
+```
+
+Notice that `billing` wins even though the ticket describes an integration failure. The sample shows the interface, not proof of correct routing. It also shows why a choice's probability and its `confidence` are different numbers.
+
 ## How is it different from an LLM with structured outputs?
 
 LLMs can already enforce output structure. OpenAI's Structured Outputs constrains generated tokens to a supplied schema, with separate handling for refusals and interrupted responses.
@@ -91,7 +130,7 @@ The real question: can this specialization improve latency, cost, and uncertaint
 
 TypeSafe reports **70 to 500 milliseconds** end-to-end latency, **$0.042 per million input tokens** at launch, and no output-token charge.
 
-Its headline workflow results are **193.6 times faster** and **444.6 times cheaper**. These are company-reported figures; I have not measured them myself. [Launch figures](https://typesafe.ai/blog/introducing-system-one-models-and-jev).
+Its headline workflow results are **193.6 times faster** and **444.6 times cheaper**. [Launch figures](https://typesafe.ai/blog/introducing-system-one-models-and-jev).
 
 Five dependent 200-millisecond calls take one second. Five two-second calls take ten, before any other work.
 
@@ -101,7 +140,7 @@ Independent questions can run together. Dependent decisions still need later sta
 
 ### Uncertainty becomes something code can use
 
-Calibration means outcomes assigned an 80% probability should occur roughly 80% of the time across comparable predictions. It is a central training goal, not a guarantee about any single answer. [Calibration explanation](https://docs.typesafe.ai/introduction/machine-learning-primer).
+Calibration means outcomes assigned an 80% probability should occur roughly 80% of the time across comparable predictions. It describes groups of predictions. [Calibration explanation](https://docs.typesafe.ai/introduction/machine-learning-primer).
 
 Jev's `confidence` for Choice and Score summarizes the probability distribution's shape. It is not automatically the measured probability that an answer is correct.
 
@@ -117,6 +156,8 @@ Jev encourages evaluating AI as a software component with a specific job. Constr
 
 ## What the benchmarks do and do not establish
 
+**The performance figures are TypeSafe's own results. I have not independently benchmarked Jev.** Treat them as a reason to evaluate it, not a production guarantee.
+
 TypeSafe tests security incidents, agent trace observability, invoice processing, and customer service. It compares structured workflows with standalone prompts.
 
 Reference labels average GPT-6 Astra and Claude Fable 5.1 responses at high thinking settings. Other models use provider-default reasoning settings. [Workflow evaluation methodology](https://evals.typesafe.ai/).
@@ -125,7 +166,7 @@ The score measures agreement with other models. It does not independently verify
 
 TypeSafe says the headline gains are at the high end of expectations. Its team built the workflows, and the LLM comparison adapter requests probabilities, adding cost and latency. [Benchmark caveats](https://typesafe.ai/blog/introducing-system-one-models-and-jev).
 
-The results justify testing. Gains will depend on the task, region, input length, and load.
+Gains will depend on the task, region, input length, and load.
 
 ## Does type safety eliminate mistakes?
 
@@ -137,6 +178,12 @@ The launch's hallucination guarantee concerns schema matching. It does not estab
 
 Bad context, ambiguous policies, and incomplete choices still cause problems. An `other` option and a review path give uncertain cases somewhere to go.
 
+## Who is behind TypeSafe?
+
+The founders are **Diogo Almeida, CEO; Sasha Sheng, COO; and Erik Gafni, CTO**. Almeida worked at OpenAI and Google Brain, Sheng at Meta/FAIR, and Gafni founded Ravel. [TypeSafe team](https://typesafe.ai/team).
+
+Almeida also co-authored the 2022 **InstructGPT** paper on learning to follow instructions using human feedback. That experience makes his shift toward software-consumed decisions interesting. [InstructGPT paper](https://arxiv.org/abs/2203.02155).
+
 ## Where I would start
 
 I would start with **incident routing in shadow mode**. Jev proposes a team and urgency; the existing process makes the actual decision.
@@ -147,6 +194,4 @@ Measure routing accuracy, missed urgent cases, review volume, p95 and p99 latenc
 
 Explanations, remediation code, and deeper investigation remain separate tasks. The decision layer can choose when to invoke them.
 
-Jev is worth watching if it can reduce waiting and manual work while maintaining decision quality on production data.
-
-**In simple terms, it is AI built to make small decisions your software can use immediately.** Give it context and allowed choices; it returns an answer with probabilities. Your code decides what happens next, including when to ask a person. The promise is faster automation, with mistakes still possible.
+**I would adopt it if it cut latency and cost without increasing missed urgent incidents or manual review. If those errors rose, the speedup would not be worth it.**
