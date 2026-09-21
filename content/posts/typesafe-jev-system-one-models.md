@@ -25,6 +25,10 @@ The title asks whether this could change how we build AI software. The compariso
 
 ## What does a System One model do?
 
+**Jev is not a typical chat model.** It returns typed decisions and probabilities rather than generating conversational replies. Your application uses those answers to choose actions or hand work to tools, other models, or a person. [TypeSafe's model introduction](https://docs.typesafe.ai/introduction).
+
+{{< figure src="/images/posts/typesafe-jev/01-jev-software-workflow.png" alt="Three-panel diagram: application state and typed questions enter Jev, which returns decisions and probabilities to application code. The code applies thresholds, selects branches, calls tools or models, routes to a person, and logs results." caption="Jev supplies narrow judgments. Application code controls execution and escalation; the brain illustration is symbolic." class="post-screenshot" >}}
+
 You provide **state** and **typed questions**. State is the information to inspect, such as a support conversation and account record. Questions define the judgments to make.
 
 Each question is evaluated independently against the same state. Application code combines those judgments into a workflow. [Model introduction](https://docs.typesafe.ai/introduction).
