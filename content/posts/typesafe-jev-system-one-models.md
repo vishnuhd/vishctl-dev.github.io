@@ -1,8 +1,9 @@
 ---
-title: "TypeSafe’s Jev: An ‘Attention Is All You Need’ Moment for AI Automation?"
+title: "TypeSafe’s Jev: Early Access to AI Built for Decisions"
 date: 2026-09-19T14:00:00+08:00
+lastmod: 2026-09-21
 draft: false
-description: "Who founded TypeSafe AI, how Jev differs from chat models, and why fast typed decisions could matter for production software. A look at the claims and their limits."
+description: "My early-access look at TypeSafe’s Jev: Noul, Choice, and Score in the playground, the coding-agent skill, and what the performance claims do and do not establish."
 series: ["AI Infra"]
 tags: ["ai", "inference", "ai-infra", "typesafe", "automation"]
 ShowToc: true
@@ -19,7 +20,7 @@ That is the part of AI infrastructure that makes TypeSafe interesting to me.
 
 On September 15, 2026, TypeSafe AI announced **Jev**, its first **System One model**, in early access. It describes a new architecture and parallel sampler built for decisions. [Launch announcement](https://typesafe.ai/blog/introducing-system-one-models-and-jev).
 
-The title asks whether this could change how we build AI software. The comparison is about potential impact: Jev's launch does not establish an architectural breakthrough on the scale of the transformer.
+I now have early access. On September 21, I tried the playground's Noul, Choice, and Score examples. The screenshots below show those runs with `jev-latest`; they make the interface concrete, but they do not establish production accuracy or validate the headline speedups.
 
 **In simple terms, Jev makes small decisions your software can use immediately.** Give it context and allowed choices; it returns answers with probabilities. Your code decides what happens next, including when to ask a person.
 
@@ -92,20 +93,59 @@ print(response.scores["urgency"].probabilities)
 
 One call evaluates the same ticket three ways. The response exposes a yes probability, a distribution over tones, and a distribution over urgency levels. These are response fields, not a recorded run from my account.
 
-For a numeric example, TypeSafe's [quick start](https://docs.typesafe.ai/introduction/quickstart) publishes this Choice answer for a **different ticket about a failing Stripe connection**. This is an excerpt of their sample response, not output from the code above:
+## What I saw in early access
 
-```json
-{
-  "department": {
-    "type": "choice",
-    "choice": "billing",
-    "probabilities": {"billing": 0.84, "technical": 0.159, "sales": 0.001},
-    "confidence": 0.596
-  }
-}
+The console home brings together the playground, example workflows, API keys, usage, and an agent setup link. In the playground, state and questions sit on the left, with typed answers on the right.
+
+{{< figure src="/images/posts/typesafe-jev/02-early-access-home.png" link="/images/posts/typesafe-jev/02-early-access-home.png" alt="TypeSafe early-access console home with playground examples, agent setup, API keys, and usage" caption="My early-access console on September 21, 2026. Open any screenshot for the full-size view." class="post-screenshot" >}}
+
+### Noul: an ice cream sandwich gets 35% true
+
+The first example asks whether an ice cream sandwich is a sandwich. The state describes ice cream between cookies, wafers, or cake. The criteria matter: the true condition refers to a filling between structural starch, while the false condition explicitly includes wafers and cookies as non-bread wrappers. Those descriptions leave room for conflicting interpretations.
+
+The result is **35% true**. This is the model's probability for the yes/no question under those definitions. It is not a measure of how much of the dessert is a sandwich, and a single answer cannot tell us whether the probabilities are calibrated.
+
+{{< figure src="/images/posts/typesafe-jev/03-noul-sandwich.png" link="/images/posts/typesafe-jev/03-noul-sandwich.png" alt="Jev playground showing the ice cream sandwich state, true and false criteria, and a Noul result of 35 percent true" caption="Noul returns a probability for a defined yes/no judgment. The definition needs as much attention as the result." class="post-screenshot" >}}
+
+### Choice: richer descriptions change the leading option
+
+The next example uses a short state about an approaching tornado and asks for the sky's color. With simple option labels, **seafoam green leads at 63%**, followed by gray at 34% and indigo at 3%. The displayed confidence is **56%**.
+
+A second question in the same request uses structured instructions and richer option descriptions. There, **indigo leads at 42%**, followed by seafoam green at 34% and gray at 24%, with **31% confidence**.
+
+This is a useful reminder that question design is part of the application. Both the instructions and criteria differ here, so this run does not isolate which change caused the shift or establish which answer is better. It does show why I would version the questions and evaluate changes against known cases.
+
+{{< figure src="/images/posts/typesafe-jev/04-choice-sky-color.png" link="/images/posts/typesafe-jev/04-choice-sky-color.png" alt="Two sky-color Choice answers: seafoam green leads at 63 percent with 56 percent confidence, while the question with descriptions selects indigo at 42 percent with 31 percent confidence" caption="Choice exposes the distribution as well as the selected option. The winning probability and confidence are different quantities." class="post-screenshot" >}}
+
+### Score: a distribution across five levels
+
+The third example describes the Naruto macaque photograph scenario and asks two separate questions about contribution to the image. On five levels from None (0) to Completely (4), the result gives **Naruto 3.46 out of 4** with **55% confidence**, and **the human photographer 1.18 out of 4** with **69% confidence**.
+
+The distributions make the scores easier to read: Naruto's answer concentrates on levels 3 and 4, while the photographer's concentrates on level 1. These are separate judgments against the supplied scenario and rubric; they are not shares that must add up to 100% or determinations of copyright ownership.
+
+{{< figure src="/images/posts/typesafe-jev/05-score-contribution.png" link="/images/posts/typesafe-jev/05-score-contribution.png" alt="Score playground results showing Naruto at 3.46 out of 4 and the photographer at 1.18 out of 4, with probabilities across five contribution levels" caption="Score can fall between levels. The full distribution preserves information that a single rounded rating would hide." class="post-screenshot" >}}
+
+TypeSafe defines the score as the probability-weighted average of the level indices. The UI rounds the displayed probabilities, so recomputing from the screenshot can differ slightly from the displayed score. [Score documentation](https://docs.typesafe.ai/primitives/score).
+
+The three playground captures display timing pairs of `84ms + 278ms`, `160ms + 233ms`, and `158ms + 234ms`. I am preserving the UI's notation: the screenshots alone do not explain the components. These few example runs are not a latency benchmark.
+
+## Using the TypeSafe agent skill
+
+TypeSafe also provides an [agent skill](https://docs.typesafe.ai/agent-skill) for coding agents, including Codex and Claude Code. It supplies API context, question types, workflow patterns, and evaluation guidance for writing integrations.
+
+The documented installation command for Codex and other supported agents is:
+
+```bash
+npx skills add typesafe-ai/skills --skill typesafe-ai
 ```
 
-Notice that `billing` wins even though the ticket describes an integration failure. The sample shows the interface, not proof of correct routing. It also shows why a choice's probability and its `confidence` are different numbers.
+Select your agent when prompted; installation is project-local by default. The linked guide also covers Claude Code's plugin installation and updates. Choose one installation method.
+
+For an incident-routing experiment, I would start with a prompt like:
+
+> Use the TypeSafe skill to propose an incident-routing experiment in shadow mode. Batch independent questions about the same incident into one request. Keep questions and thresholds together for review, and compare proposed routes against historical labels.
+
+The skill helps an agent use the API. Questions, criteria, and thresholds still need review and evaluation on the application's own data.
 
 ## How is it different from an LLM with structured outputs?
 
@@ -188,9 +228,9 @@ The founders are **Diogo Almeida, CEO; Sasha Sheng, COO; and Erik Gafni, CTO**. 
 
 Almeida also co-authored the 2022 **InstructGPT** paper on learning to follow instructions using human feedback. That experience makes his shift toward software-consumed decisions interesting. [InstructGPT paper](https://arxiv.org/abs/2203.02155).
 
-## Where I would start
+## What I would test next
 
-I would start with **incident routing in shadow mode**. Jev proposes a team and urgency; the existing process makes the actual decision.
+After these playground examples, my next test would be **incident routing in shadow mode**. Jev proposes a team and urgency; the existing process makes the actual decision.
 
 I would compare Jev, existing rules, and a constrained-output LLM on the same held-out incidents.
 
