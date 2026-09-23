@@ -1058,10 +1058,16 @@ body.light .first-entry.home-info {
     font-weight: 600;
 }
 
-.about-timeline article > p:last-child {
+.about-experience-list {
     max-width: 760px;
+    margin: 0;
+    padding-left: 22px;
     font-size: 16px;
     line-height: 1.7;
+}
+
+.about-experience-list li + li {
+    margin-top: 8px;
 }
 
 .about-skill-grid {
