@@ -790,6 +790,11 @@ body.light .first-entry.home-info {
     text-transform: uppercase;
 }
 
+.about-page .about-section-label {
+    color: var(--about-accent);
+    font-size: 14px;
+}
+
 .about-hero h1 {
     max-width: 740px;
     margin: 18px 0 24px;
