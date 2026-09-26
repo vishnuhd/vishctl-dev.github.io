@@ -1,0 +1,80 @@
+{{- /* Use the current partial directory so Hugo's watcher preserves the override. */ -}}
+{{- with site.Params.homeInfoParams }}
+<section class="first-entry home-info lab-hero" aria-labelledby="home-title">
+    <div class="lab-intro">
+        <p class="lab-eyebrow"><span class="lab-status-dot" aria-hidden="true"></span> Vishnu's engineering notebook</p>
+        <header class="entry-header">
+            <h1 id="home-title">Infrastructure.<br>Local AI.<br><span class="lab-title-accent">Learning by doing.</span></h1>
+        </header>
+        <div class="entry-content md-content">
+            {{ .Content | $.Page.RenderString (dict "display" "block") }}
+        </div>
+        <div class="lab-actions">
+            <a class="lab-button lab-button-primary" href="#latest-notes">Explore the notes <span aria-hidden="true">↗</span></a>
+            <a class="lab-button lab-button-secondary" href="{{ "search/" | relURL }}"><span aria-hidden="true">⌕</span> Search the notebook</a>
+        </div>
+        <div class="lab-socials">
+            {{ partial "social_icons.html" (dict "align" site.Params.homeInfoParams.AlignSocialIconsTo) }}
+            <span class="lab-location">Singapore · UTC+8</span>
+        </div>
+    </div>
+
+    <aside class="lab-terminal" aria-label="Explore the lab" data-visible="true">
+        <div class="lab-terminal-bar">
+            <span class="lab-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>vishnu@lab: ~</span>
+            <span class="lab-terminal-shell">zsh</span>
+        </div>
+        <div class="lab-terminal-body">
+            <p class="lab-command"><span aria-hidden="true">❯</span> cat interests.md<span class="lab-cursor" aria-hidden="true"></span></p>
+            <div class="lab-terminal-tabs" aria-label="Choose a topic">
+                <button type="button" data-lab-tab="infra" aria-pressed="true" hidden>01 / infrastructure</button>
+                <button type="button" data-lab-tab="ai" aria-pressed="false" hidden>02 / local AI</button>
+            </div>
+            <div data-lab-panel="infra">
+                <p class="lab-code-comment"># From the cluster to the cloud</p>
+                <dl class="lab-output">
+                    <div><dt>exploring</dt><dd>Kubernetes &amp; platforms</dd></div>
+                    <div><dt>building</dt><dd>repeatable infrastructure</dd></div>
+                    <div><dt>sharing</dt><dd>what actually worked</dd></div>
+                </dl>
+                <div class="lab-pipeline" aria-label="Build, ship, learn">
+                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 5-6 7 6 7m8-14 6 7-6 7m-3-16-2 18"/></svg>build</span>
+                    <i class="lab-packet-track" aria-hidden="true"></i>
+                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7Zm0 10 9-5M3 7l9 5v10"/></svg>ship</span>
+                    <i class="lab-packet-track" aria-hidden="true"></i>
+                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 17h8m-7 4h6M8 14a7 7 0 1 1 8 0v3H8Z"/></svg>learn</span>
+                </div>
+                <a class="lab-terminal-link" href="{{ "tags/kubernetes/" | relURL }}">Explore Kubernetes notes <span aria-hidden="true">↗</span></a>
+            </div>
+            <div data-lab-panel="ai" hidden>
+                <p class="lab-code-comment"># Models running on my own hardware</p>
+                <dl class="lab-output">
+                    <div><dt>exploring</dt><dd>local models &amp; inference</dd></div>
+                    <div><dt>building</dt><dd>GPU-powered experiments</dd></div>
+                    <div><dt>sharing</dt><dd>benchmarks &amp; field notes</dd></div>
+                </dl>
+                <div class="lab-pipeline" aria-label="Model, GPU, serve">
+                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7Zm0 10 9-5M3 7l9 5v10"/></svg>model</span>
+                    <i class="lab-packet-track" aria-hidden="true"></i>
+                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6v6H9ZM9 1v4m6-4v4M9 19v4m6-4v4M1 9h4m-4 6h4m14-6h4m-4 6h4"/></svg>GPU</span>
+                    <i class="lab-packet-track" aria-hidden="true"></i>
+                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-8Z"/></svg>serve</span>
+                </div>
+                <a class="lab-terminal-link" href="{{ "tags/local-llm/" | relURL }}">Explore local AI notes <span aria-hidden="true">↗</span></a>
+            </div>
+        </div>
+        <div class="lab-terminal-footer"><span><span class="lab-status-dot" aria-hidden="true"></span> Always learning</span><span>~/build / break / repeat</span></div>
+    </aside>
+</section>
+<div class="lab-index-bar">
+    <span class="lab-index-label"><span aria-hidden="true">⌘</span> Jump into</span>
+    <nav aria-label="Notebook topics">
+        <a href="{{ "tags/kubernetes/" | relURL }}">Kubernetes</a>
+        <a href="{{ "tags/local-llm/" | relURL }}">Local AI</a>
+        <a href="{{ "tags/ai-infra/" | relURL }}">AI infrastructure</a>
+        <a href="{{ "tags/" | relURL }}">All topics <span aria-hidden="true">↗</span></a>
+    </nav>
+    <button type="button" class="lab-index-motion" data-motion-toggle aria-pressed="false" hidden>Motion: on</button>
+</div>
+{{- end -}}

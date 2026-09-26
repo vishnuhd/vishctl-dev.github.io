@@ -18,16 +18,19 @@
 {{- end }}
 
 {{- if and .IsHome (gt (len $paginator.Pages) 0) (eq $paginator.PageNumber 1) }}
-<div class="posts-section-header">
-  <h2 class="posts-section-title">Latest notes</h2>
+<div class="posts-section-header" id="latest-notes">
+  <div><p class="lab-section-kicker">$ ls -t ./notes</p><h2 class="posts-section-title">Latest field notes<span class="lab-heading-dot">.</span></h2></div>
+  <a class="lab-all-notes" href="{{ "posts/" | relURL }}">All notes <span aria-hidden="true">↗</span></a>
 </div>
 {{- end }}
 
+<div class="home-notes-grid">
 {{- range $index, $page := $paginator.Pages }}
 
 {{- $class := "post-entry home-post-entry" }}
 
 <article class="{{ $class }}">
+  <div class="lab-card-index" aria-hidden="true"><span>FIELD NOTE / {{ .Date.Format "2006.01.02" }}</span><span>↗</span></div>
   {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
   {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
   <header class="entry-header">
@@ -63,6 +66,7 @@
   <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
 </article>
 {{- end }}
+</div>
 
 {{- if gt $paginator.TotalPages 1 }}
 <footer class="page-footer">

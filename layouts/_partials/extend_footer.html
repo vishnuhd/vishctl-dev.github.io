@@ -1,3 +1,7 @@
+<div class="lab-motion-control"><button type="button" data-motion-toggle aria-pressed="false" hidden>Motion: on</button></div>
+{{- $labScript := resources.Get "js/lab.js" | minify | fingerprint }}
+<script defer src="{{ $labScript.RelPermalink }}" integrity="{{ $labScript.Data.Integrity }}"></script>
+
 <script>
 (() => {
     const toc = document.querySelector('.post-toc');
@@ -16,6 +20,16 @@
     const progressText = toc.querySelector('[data-toc-progress]');
     let currentLink = null;
     let ticking = false;
+
+    const motionPaused = () => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
+        if (document.documentElement.dataset.motion) return document.documentElement.dataset.motion === 'paused';
+        try {
+            return localStorage.getItem('vishctl-motion') === 'paused';
+        } catch (_) {
+            return false;
+        }
+    };
 
     const updateToc = () => {
         const readingLine = window.scrollY + Math.min(180, window.innerHeight * 0.25);
@@ -36,7 +50,7 @@
             currentLink = current.link;
 
             const target = current.link.offsetTop - (list.clientHeight / 2) + (current.link.clientHeight / 2);
-            list.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+            list.scrollTo({ top: Math.max(0, target), behavior: motionPaused() ? 'auto' : 'smooth' });
         }
 
         const available = document.documentElement.scrollHeight - window.innerHeight;
