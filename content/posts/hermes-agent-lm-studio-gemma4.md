@@ -203,6 +203,8 @@ I also connected Telegram during the earlier setup. Hermes's messaging settings 
 
 This gives you a messaging interface to the agent while the model can continue running locally. The host machine, Hermes gateway, and local model server need to remain available. Messages still pass through Telegram, so this is a network-connected extension of the setup.
 
+{{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/10-telegram-hermes-bot.jpg" link="/images/posts/hermes-agent-lm-studio-gemma4/10-telegram-hermes-bot.jpg" alt="Telegram conversation with Hermes Bot showing a greeting, a web search for the Jev model, and a generated reply" caption="Hermes receives the Telegram message, runs a web search, and returns a reply through the bot. This demonstrates the message and tool route, not the factual accuracy of the generated answer." class="post-screenshot post-screenshot-portrait" >}}
+
 ## If something does not work
 
 | Symptom | What to check first |

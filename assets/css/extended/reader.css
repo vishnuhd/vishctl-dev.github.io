@@ -79,10 +79,12 @@ body:has(.post-single .post-content) {
 .post-content .highlight pre.chroma .line .cl, .post-content .chroma .ln { padding-inline: 16px; }
 .post-content .chroma :is(.c,.ch,.cm,.c1,.cs,.cp,.cpf,.sd,.sh) { color: #99adb9; }
 .post-content pre :focus-visible { outline-color: #66e3b4; outline-offset: -3px; }
-.post-content table:not(.highlighttable, .highlight table) { display: block; max-width: 100%; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--secondary) var(--card-surface); }
+.post-content .table-scroll { width: 100%; max-width: 100%; margin: 1.75rem 0; overflow-x: auto; border: 1px solid var(--card-border); border-radius: 10px; background: color-mix(in srgb, var(--card-surface) 96%, transparent); box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.3); scrollbar-width: thin; scrollbar-color: var(--secondary) var(--card-surface); }
+.post-content .table-scroll table:not(.highlighttable, .highlight table) { display: table; width: 100%; min-width: 100%; max-width: none; margin: 0; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .post-content table:not(.highlighttable, .highlight table) th { background: color-mix(in srgb, var(--card-surface) 96%, var(--accent)); }
 .post-content table:not(.highlighttable, .highlight table) td { font-size: 14px; line-height: 1.7; }
 .post-content figure figcaption, .post-content figure figcaption p { color: var(--secondary); font-size: 12px; font-weight: 400; line-height: 1.65; }
+.post-content figure.post-screenshot-portrait { width: 100%; max-width: 430px; margin-inline: auto; }
 .mermaid-fallback { padding: 20px; border: 1px solid var(--card-border); border-radius: 9px; background: var(--card-surface); color: var(--secondary); font-size: 14px; }
 .post-content .mermaid-fallback > p { margin-bottom: 8px; }
 .mermaid-fallback summary { color: var(--accent); font-size: 12px; }
