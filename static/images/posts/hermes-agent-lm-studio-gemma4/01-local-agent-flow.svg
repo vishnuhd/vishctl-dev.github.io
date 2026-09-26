@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1220" viewBox="0 0 800 1220" role="img" aria-labelledby="title description">
+  <title id="title">Hermes Agent with a local Gemma model through LM Studio Bionic</title>
+  <desc id="description">Inside the local machine, Hermes Agent sends requests and receives responses through the loopback HTTP endpoint http://localhost:1234/v1 to LM Studio Bionic, whose local runtime runs Gemma 4 E4B in GGUF Q4_K_M format. Bidirectional arrows indicate requests and responses. A separate dashed branch from Hermes Agent reaches optional network services such as web search and Telegram outside the machine. These services use the network; they are not part of the local model inference path.</desc>
+  <defs>
+    <marker id="mint-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="#66e3b4" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="cyan-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="#7fc9e8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect width="800" height="1220" rx="20" fill="#0c1218"/>
+  <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="400" y="49" fill="#e7eef3" font-size="29" font-weight="650">Local inference, optional network tools</text>
+
+    <rect x="42" y="82" width="666" height="854" rx="18" fill="#111c25" stroke="#38535b" stroke-width="2"/>
+    <text x="77" y="123" text-anchor="start" fill="#97aab9" font-size="22" font-weight="600" letter-spacing="2">YOUR MACHINE</text>
+
+    <rect x="83" y="153" width="584" height="131" rx="12" fill="#182f2d" stroke="#66e3b4" stroke-width="2"/>
+    <text x="375" y="207" fill="#e7eef3" font-size="32" font-weight="650">Hermes Agent</text>
+    <text x="375" y="249" fill="#becbd5" font-size="25">Chat and tool orchestration</text>
+
+    <path d="M375 302V333" fill="none" stroke="#66e3b4" stroke-width="2.5" marker-start="url(#mint-arrow)" marker-end="url(#mint-arrow)"/>
+
+    <rect x="83" y="352" width="584" height="112" rx="12" fill="#0d1820" stroke="#38535b" stroke-width="2"/>
+    <text x="375" y="392" fill="#97aab9" font-size="24">Loopback HTTP</text>
+    <text x="375" y="433" fill="#81efc3" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="26">http://localhost:1234/v1</text>
+
+    <path d="M375 483V515" fill="none" stroke="#66e3b4" stroke-width="2.5" marker-start="url(#mint-arrow)" marker-end="url(#mint-arrow)"/>
+
+    <rect x="83" y="535" width="584" height="132" rx="12" fill="#152530" stroke="#7fc9e8" stroke-width="2"/>
+    <text x="375" y="589" fill="#e7eef3" font-size="32" font-weight="650">LM Studio Bionic</text>
+    <text x="375" y="631" fill="#becbd5" font-size="25">Local model API + runtime</text>
+
+    <path d="M375 687V719" fill="none" stroke="#66e3b4" stroke-width="2.5" marker-start="url(#mint-arrow)" marker-end="url(#mint-arrow)"/>
+
+    <rect x="83" y="739" width="584" height="129" rx="12" fill="#0d1820" stroke="#38535b" stroke-width="2"/>
+    <text x="375" y="792" fill="#e7eef3" font-size="32" font-weight="650">Gemma 4 E4B</text>
+    <text x="375" y="833" fill="#becbd5" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="25">GGUF · Q4_K_M</text>
+    <text x="375" y="910" fill="#97aab9" font-size="22">Two-way arrows: requests and responses</text>
+
+    <path d="M685 218H756V1068H671" fill="none" stroke="#7fc9e8" stroke-width="2.5" stroke-dasharray="9 8" stroke-linejoin="round" marker-start="url(#cyan-arrow)" marker-end="url(#cyan-arrow)"/>
+
+    <rect x="83" y="995" width="584" height="147" rx="12" fill="#101d25" stroke="#7fc9e8" stroke-width="2" stroke-dasharray="8 7"/>
+    <text x="375" y="1043" fill="#7fc9e8" font-size="29" font-weight="650">Optional network services</text>
+    <text x="375" y="1085" fill="#e7eef3" font-size="27">Web search · Telegram</text>
+    <text x="375" y="1120" fill="#becbd5" font-size="23">Outside the local inference path</text>
+    <text x="400" y="1185" fill="#97aab9" font-size="23">Enabled tools may send data over the network.</text>
+  </g>
+</svg>
