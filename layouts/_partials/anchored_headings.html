@@ -1,0 +1,6 @@
+{{- /* Keep section permalinks available to keyboard and assistive technology. */ -}}
+{{ . | replaceRE
+    "(<h[1-6] id=\"([^\"]+)\".+)(</h[1-6]+>)"
+    "${1}<a class=\"anchor\" aria-label=\"Link to this section\" href=\"#${2}\">#</a>${3}"
+    | safeHTML
+}}

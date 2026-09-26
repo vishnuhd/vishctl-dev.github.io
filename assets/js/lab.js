@@ -2,7 +2,7 @@
     const root = document.documentElement;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionButtons = document.querySelectorAll('[data-motion-toggle]');
-    const revealTargets = document.querySelectorAll('.home-post-entry, .about-work-card, .about-skill-grid article');
+    const revealTargets = document.querySelectorAll('.home-post-entry, .about-work-card, .about-skill-grid article, .post-single > .post-header, .post-single > .entry-cover, .post-content > figure');
     const revealed = new WeakSet();
     const animations = new Set();
     let preference = 'running';
@@ -20,12 +20,13 @@
                 if (!isIntersecting || revealed.has(target)) return;
                 revealed.add(target);
                 revealObserver.unobserve(target);
+                const isArticle = Boolean(target.closest('.post-single'));
                 const animation = target.animate([
-                    { opacity: 0.35, transform: 'translateY(14px)' },
+                    { opacity: isArticle ? 0.65 : 0.35, transform: isArticle ? 'translateY(6px)' : 'translateY(14px)' },
                     { opacity: 1, transform: 'translateY(0)' }
                 ], {
-                    duration: 480,
-                    delay: Math.min(index, 3) * 55,
+                    duration: isArticle ? 360 : 480,
+                    delay: isArticle ? 0 : Math.min(index, 3) * 55,
                     easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
                 });
                 animations.add(animation);

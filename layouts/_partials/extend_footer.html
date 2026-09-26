@@ -2,80 +2,15 @@
 {{- $labScript := resources.Get "js/lab.js" | minify | fingerprint }}
 <script defer src="{{ $labScript.RelPermalink }}" integrity="{{ $labScript.Data.Integrity }}"></script>
 
-<script>
-(() => {
-    const toc = document.querySelector('.post-toc');
-    if (!toc) return;
-
-    const links = Array.from(toc.querySelectorAll('.post-toc-list a[href^="#"]'));
-    const sections = links.map((link) => {
-        const id = decodeURIComponent(link.hash.slice(1));
-        return { link, heading: document.getElementById(id) };
-    }).filter((item) => item.heading);
-
-    if (!sections.length) return;
-
-    const list = toc.querySelector('.post-toc-list');
-    const progressBar = toc.querySelector('[data-toc-progress-bar]');
-    const progressText = toc.querySelector('[data-toc-progress]');
-    let currentLink = null;
-    let ticking = false;
-
-    const motionPaused = () => {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
-        if (document.documentElement.dataset.motion) return document.documentElement.dataset.motion === 'paused';
-        try {
-            return localStorage.getItem('vishctl-motion') === 'paused';
-        } catch (_) {
-            return false;
-        }
-    };
-
-    const updateToc = () => {
-        const readingLine = window.scrollY + Math.min(180, window.innerHeight * 0.25);
-        let current = sections[0];
-
-        for (const section of sections) {
-            if (section.heading.offsetTop <= readingLine) current = section;
-            else break;
-        }
-
-        if (current.link !== currentLink) {
-            sections.forEach(({ link }) => {
-                const active = link === current.link;
-                link.classList.toggle('is-active', active);
-                if (active) link.setAttribute('aria-current', 'location');
-                else link.removeAttribute('aria-current');
-            });
-            currentLink = current.link;
-
-            const target = current.link.offsetTop - (list.clientHeight / 2) + (current.link.clientHeight / 2);
-            list.scrollTo({ top: Math.max(0, target), behavior: motionPaused() ? 'auto' : 'smooth' });
-        }
-
-        const available = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = available > 0 ? Math.min(100, Math.max(0, (window.scrollY / available) * 100)) : 100;
-        progressBar.style.width = `${progress}%`;
-        progressText.textContent = `${Math.round(progress)}%`;
-        ticking = false;
-    };
-
-    const requestUpdate = () => {
-        if (ticking) return;
-        ticking = true;
-        window.requestAnimationFrame(updateToc);
-    };
-
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-    updateToc();
-})();
-</script>
+{{- $readerScript := resources.Get "js/reader.js" | minify | fingerprint }}
+<script defer src="{{ $readerScript.RelPermalink }}" integrity="{{ $readerScript.Data.Integrity }}"></script>
 
 <script type="module">
 const diagrams = document.querySelectorAll('.mermaid');
 
 if (diagrams.length) {
+    const sources = new Map(Array.from(diagrams, (diagram) => [diagram, diagram.textContent.trim()]));
+    try {
     const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs');
 
     mermaid.initialize({
@@ -110,5 +45,24 @@ if (diagrams.length) {
     });
 
     await mermaid.run({ nodes: diagrams });
+    } catch {
+        diagrams.forEach((diagram) => {
+            const message = document.createElement('p');
+            message.textContent = 'Diagram preview is unavailable.';
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.textContent = 'View diagram source';
+            const pre = document.createElement('pre');
+            const code = document.createElement('code');
+            code.textContent = sources.get(diagram);
+            code.tabIndex = 0;
+            code.setAttribute('role', 'region');
+            code.setAttribute('aria-label', 'Diagram source');
+            pre.append(code);
+            details.append(summary, pre);
+            diagram.className = 'mermaid-fallback';
+            diagram.replaceChildren(message, details);
+        });
+    }
 }
 </script>

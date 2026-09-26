@@ -1,0 +1,137 @@
+/* Quiet article surfaces, with the notebook character in navigation and code. */
+body:has(.post-single .post-content) {
+    --pattern-line: rgba(94, 162, 153, 0.018);
+    --pattern-glow: rgba(47, 182, 146, 0.035);
+}
+
+.post-single { --code-block-bg: #101c25; }
+.post-single > .post-header { margin: 16px 0 22px; padding: 24px 0 0; }
+.post-header .breadcrumbs { margin-bottom: 17px; font-size: 11px; }
+.post-header .post-title { font-size: clamp(32px, 4.1vw, 48px); line-height: 1.14; letter-spacing: -0.045em; text-wrap: pretty; }
+.post-header .post-description { font-size: 17px; line-height: 1.75; color: var(--secondary); }
+.post-header .post-meta {
+    margin-top: 22px;
+    padding: 13px 0;
+    border-block: 1px solid var(--card-border);
+    font-family: var(--font-family-code);
+    font-size: 11px;
+    line-height: 1.8;
+}
+.post-single > .entry-cover { margin: 6px 0 12px; }
+.post-single > .entry-cover img { box-shadow: none; }
+.post-single > .post-content { margin-top: 28px; font-size: 17px; line-height: 1.85; }
+.post-content > :is(h1,h2,h3,h4,h5,h6) { scroll-margin-top: calc(var(--reading-header-height, var(--header-height)) + 24px); }
+.post-content h2 { margin-top: 2.4em; padding-top: 22px; border-top: 1px solid var(--card-border); font-size: clamp(26px, 3vw, 32px); line-height: 1.25; }
+.post-content h3 { margin-top: 1.9em; font-size: clamp(22px, 2.5vw, 26px); line-height: 1.35; }
+.post-content :is(h1,h2,h3,h4,h5,h6) .anchor,
+.post-content :is(h1,h2,h3,h4,h5,h6):hover .anchor {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    min-height: 28px;
+    margin-inline-start: 0.3em;
+    color: var(--accent);
+    font-family: var(--font-family-code);
+    font-size: 0.65em;
+    font-weight: 400;
+    vertical-align: middle;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+.post-content :is(h1,h2,h3,h4,h5,h6):hover .anchor,
+.post-content :is(h1,h2,h3,h4,h5,h6):focus-within .anchor { opacity: 1; }
+.post-content a:not(.anchor) { text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); transition: text-decoration-color 160ms ease; }
+.post-content a:not(.anchor):hover { text-decoration-color: var(--accent); }
+.post-content li::marker { color: var(--accent); }
+.post-content blockquote { background: var(--card-surface); font-size: 0.95em; }
+
+/* A static toolbar makes Copy available to touch and keyboard users too. */
+.post-content .highlight:not(table) { border: 1px solid #30434f; box-shadow: none; border-radius: 9px; overflow: hidden; }
+.post-code-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 14px; border-bottom: 1px solid #30434f; background: #172731; }
+.post-code-language { color: #acc2ce; font-family: var(--font-family-code); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.post-single .post-content .copy-code {
+    display: block;
+    position: static;
+    padding: 4px 10px;
+    min-height: 30px;
+    border: 1px solid #3d5765;
+    border-radius: 4px;
+    background: #101c25;
+    color: #a0ebce;
+    font-family: var(--font-family-code);
+    font-size: 11px;
+    cursor: pointer;
+    transition: border-color 160ms ease, background-color 160ms ease;
+}
+.post-single .copy-code:hover { border-color: #66e3b4; background: #213a3b; }
+.post-single .copy-code:focus-visible { outline-color: #66e3b4; }
+.post-content pre { scrollbar-width: thin; scrollbar-color: #46616e #101c25; }
+.post-content pre code {
+    font-size: 13px;
+    line-height: 1.75;
+    border-radius: 0;
+    color: #d6e1e8;
+    scrollbar-width: thin;
+    scrollbar-color: #46616e #101c25;
+}
+.post-content .highlight pre.chroma code { padding-block: 16px; }
+.post-content .highlight pre.chroma .line .cl, .post-content .chroma .ln { padding-inline: 16px; }
+.post-content .chroma :is(.c,.ch,.cm,.c1,.cs,.cp,.cpf,.sd,.sh) { color: #99adb9; }
+.post-content pre :focus-visible { outline-color: #66e3b4; outline-offset: -3px; }
+.post-content table:not(.highlighttable, .highlight table) { display: block; max-width: 100%; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--secondary) var(--card-surface); }
+.post-content table:not(.highlighttable, .highlight table) th { background: color-mix(in srgb, var(--card-surface) 96%, var(--accent)); }
+.post-content table:not(.highlighttable, .highlight table) td { font-size: 14px; line-height: 1.7; }
+.post-content figure figcaption, .post-content figure figcaption p { color: var(--secondary); font-size: 12px; font-weight: 400; line-height: 1.65; }
+.mermaid-fallback { padding: 20px; border: 1px solid var(--card-border); border-radius: 9px; background: var(--card-surface); color: var(--secondary); font-size: 14px; }
+.post-content .mermaid-fallback > p { margin-bottom: 8px; }
+.mermaid-fallback summary { color: var(--accent); font-size: 12px; }
+.mermaid-fallback pre { margin: 14px 0 0; }
+.post-content .mermaid:not([data-processed]) { white-space: pre-wrap; font-family: var(--font-family-code); font-size: 12px; justify-content: flex-start; }
+
+/* Article progress stays useful on mobile without another sticky toolbar. */
+.post-reading-progress { position: absolute; inset: auto 0 -1px; height: 2px; overflow: hidden; pointer-events: none; }
+.post-reading-progress span { display: block; width: 100%; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 100ms linear; }
+.post-toc-progress span { width: 100%; transform: scaleX(0); transform-origin: left; transition: transform 100ms linear; }
+.post-toc [hidden] { display: none; }
+.post-toc { background: var(--card-surface); box-shadow: none; }
+.post-toc-heading { font-size: 11px; letter-spacing: 0.06em; }
+.post-toc-list a { font-size: 12px; line-height: 1.65; font-weight: 400; }
+.post-toc-list a.is-active { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.post-toc-list a.is-active::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent); }
+.post-toc-list a:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.post-toc-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--card-border); }
+.post-toc-actions .post-toc-top { gap: 9px; margin: 0; padding: 0; border: 0; }
+.post-toc-actions [data-motion-toggle] { padding: 4px 7px; font-size: 9px; }
+.post-single details.toc { padding: 0; background: var(--card-surface); }
+.post-single details.toc summary { padding: 15px 18px; font-family: var(--font-family-code); font-size: 12px; }
+.post-single details.toc .inner { margin: 0; padding: 0 18px 16px; font-size: 13px; line-height: 1.65; }
+.post-single details.toc a { display: inline-block; padding-block: 4px; }
+.post-single details.toc a.is-active { color: var(--accent); }
+.post-single > .post-footer { padding-top: 22px; border-top: 1px solid var(--card-border); }
+.post-footer .paginav { margin-top: 24px; background: var(--card-surface); }
+.post-footer .paginav a { gap: 12px; padding: 22px; font-size: 15px; line-height: 1.55; transition: background-color 160ms ease; }
+.post-footer .paginav a + a { border-left: 1px solid var(--card-border); }
+.post-footer .paginav .title { font-family: var(--font-family-code); font-size: 10px; color: var(--accent); }
+.post-footer .share-buttons { border: 0; background: transparent; margin-top: 20px; }
+
+@media (min-width: 1200px) {
+    .post-toc { top: calc(var(--reading-header-height, 60px) + 28px); max-height: calc(100vh - var(--reading-header-height, 60px) - 52px); }
+}
+@media (max-width: 699px) {
+    .post-single > .post-header { margin-top: 8px; padding-top: 16px; }
+    .post-header .post-title { font-size: 32px; line-height: 1.16; }
+    .post-header .post-description { font-size: 15px; line-height: 1.75; }
+    .post-header .post-meta { font-size: 10px; margin-top: 18px; }
+    .post-single > .post-content { font-size: 16px; line-height: 1.8; }
+    .post-single > .entry-cover { margin-bottom: 24px; }
+    .post-content h2 { margin-top: 2em; }
+    .post-content pre code { font-size: 12px; }
+    .post-content .highlight pre.chroma .line .cl { padding-inline: 12px; }
+    .post-footer .paginav { flex-direction: column; }
+    .post-footer .paginav a { width: 100%; padding: 18px; }
+    .post-footer .paginav a + a { border-left: 0; border-top: 1px solid var(--card-border); }
+}
+@media (hover: none) {
+    .post-content :is(h1,h2,h3,h4,h5,h6) .anchor { opacity: 0.6; }
+}
