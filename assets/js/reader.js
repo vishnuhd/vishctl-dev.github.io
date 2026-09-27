@@ -69,7 +69,7 @@
         block.prepend(toolbar);
     });
 
-    const scrollableElements = Array.from(content.querySelectorAll('pre, pre > code, table:not(.highlighttable)'));
+    const scrollableElements = Array.from(content.querySelectorAll('pre, pre > code, .table-scroll, table:not(.highlighttable)'));
     const enhancedScrollers = new Map();
     const updateScrollableElements = () => {
         scrollableElements.forEach((element) => {
@@ -85,7 +85,8 @@
                 if (element.tagName !== 'TABLE') addAttribute('role', 'region');
                 if (!element.hasAttribute('aria-label') && !element.hasAttribute('aria-labelledby') && !element.querySelector('caption')) {
                     const code = element.matches('code') ? element : element.querySelector('code');
-                    const label = element.tagName === 'TABLE' ? 'Table' : `${codeLanguages.get(code) || 'Source'} code`;
+                    const isTable = element.tagName === 'TABLE' || element.classList.contains('table-scroll');
+                    const label = isTable ? 'Table' : `${codeLanguages.get(code) || 'Source'} code`;
                     addAttribute('aria-label', `${label}, horizontally scrollable`);
                 }
                 enhancedScrollers.set(element, original);

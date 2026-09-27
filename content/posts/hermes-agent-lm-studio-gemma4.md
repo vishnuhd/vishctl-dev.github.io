@@ -39,7 +39,7 @@ This walkthrough follows my September setup, with the working configuration capt
 
 {{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/01-local-agent-flow.svg" link="/images/posts/hermes-agent-lm-studio-gemma4/01-local-agent-flow.svg" alt="Hermes Agent sends requests over localhost to LM Studio Bionic, which runs Gemma 4 E4B on the same machine. Optional web search and Telegram connect separately to Hermes over the network." caption="The inference path stays on the machine. Network tools are a separate part of the agent workflow." class="post-screenshot" >}}
 
-The interface is **OpenAI-compatible**: it uses a familiar request format while sending requests to `localhost`. It does not require an OpenAI-hosted model. LM Studio documents both the model-listing and chat-completion endpoints used below. [API compatibility documentation](https://lmstudio.ai/docs/developer/openai-compat).
+The interface is **OpenAI-compatible**: it uses a familiar request format while sending requests to `localhost`. It does not require an OpenAI-hosted model. LM Studio documents both the model-listing and chat-completion endpoints in its [API compatibility documentation](https://lmstudio.ai/docs/developer/openai-compat).
 
 ## 1. Install Hermes and download the model
 
@@ -62,7 +62,7 @@ In Bionic, open **Settings → Local Models → Explore**, find **Gemma 4 E4B**,
 
 {{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/03-gemma4-model-download.png" link="/images/posts/hermes-agent-lm-studio-gemma4/03-gemma4-model-download.png" alt="Bionic Explore page with Gemma 4 E4B selected and a 6.33 GB instruction-tuned download available locally" caption="Gemma 4 E4B downloaded in Bionic. The model page advertises vision, tools, and reasoning capabilities." class="post-screenshot" >}}
 
-The **E** in E4B means *effective*. Google's model card lists approximately 4.5 billion effective parameters and 8 billion with embeddings. That is why treating E4B as a conventional 4-billion-parameter weight file can give the wrong memory expectation. [Google's Gemma 4 model card](https://ai.google.dev/gemma/docs/core/model_card_4).
+The **E** in E4B means *effective*. Google's model card lists approximately 4.5 billion effective parameters and 8 billion with embeddings. That is why treating E4B as a conventional 4-billion-parameter weight file can give the wrong memory expectation, as detailed in [Google's Gemma 4 model card](https://ai.google.dev/gemma/docs/core/model_card_4).
 
 Also distinguish the local serving name from the upstream repository. Google's instruction-tuned model card is [google/gemma-4-E4B-it](https://huggingface.co/google/gemma-4-E4B-it); the endpoint in my screenshots serves it as `google/gemma-4-e4b`. Use the name your local server reports.
 
@@ -102,13 +102,13 @@ In Hermes, open **Settings → Providers → Custom Endpoints**. Create a named 
 
 Use the **base URL**, including `/v1`, in the endpoint field. Do not paste the full `/v1/chat/completions` request URL there.
 
-Authentication depends on the server configuration. LM Studio's API documentation says authentication is disabled by default; if you enable it, supply the matching local API token in Hermes. A placeholder saying "Leave blank to keep current key" does not reveal whether an existing key is stored. [LM Studio authentication](https://lmstudio.ai/docs/developer/core/authentication).
+Authentication depends on the server configuration. LM Studio's API documentation says authentication is disabled by default; if you enable it, supply the matching local API token in Hermes. A placeholder saying "Leave blank to keep current key" does not reveal whether an existing key is stored, as noted in the [LM Studio authentication documentation](https://lmstudio.ai/docs/developer/core/authentication).
 
 Click **Test**, then **Save**, and activate the endpoint with **Use** if needed. Check the active profile as well: my screen has separate `default` and `work` scopes.
 
 {{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/06-endpoint-test.png" link="/images/posts/hermes-agent-lm-studio-gemma4/06-endpoint-test.png" alt="Earlier Hermes endpoint configuration with a notification that the endpoint is reachable and two models were found" caption="An earlier September 1 check returned: Endpoint is reachable. Found 2 models. Your count depends on the local model inventory." class="post-screenshot" >}}
 
-Current Hermes also documents a built-in **LM Studio** provider through `hermes model`. The custom endpoint route above is the desktop configuration used in these screenshots. [Hermes provider guide](https://hermes-agent.nousresearch.com/docs/integrations/providers).
+Current Hermes also documents a built-in **LM Studio** provider through `hermes model`, described in the [Hermes provider guide](https://hermes-agent.nousresearch.com/docs/integrations/providers). The custom endpoint route above is the desktop configuration used in these screenshots.
 
 ## 4. Check the request from both sides
 
@@ -173,9 +173,9 @@ After the greeting worked, I asked Hermes about the weather in Singapore. The co
 
 {{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/08-hermes-weather-tool.png" link="/images/posts/hermes-agent-lm-studio-gemma4/08-hermes-weather-tool.png" alt="Hermes conversation with a greeting and a Singapore weather question, showing a web search action and Gemma 4 E4B selected" caption="A chat reply followed by a tool-assisted weather answer. The model is local; the search needs the network." class="post-screenshot" >}}
 
-That is the interesting step beyond plain local chat: the agent can obtain information through a tool and use it in the conversation. This example shows the interaction working; it does not establish search accuracy or reliability across longer tasks. For current weather, follow the source rather than treating the generated summary as a measurement.
+That is the interesting step beyond plain local chat: the agent can obtain information through a tool and use it in the conversation. This example shows the interaction working; it does not establish search accuracy or reliability across longer tasks. For current weather, follow the source rather than treating the generated summary as live ground truth.
 
-Hermes exposes its skills and tools through **Capabilities**. The Skills Hub is useful for discovering workflows, but an installed skill can still call an external service or require separate credentials. Read what it uses before assuming the whole workflow stays on the machine. [Hermes web-tool documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search).
+Hermes exposes its skills and tools through **Capabilities**. This allows connecting local CLI tools (such as developer utilities or sandboxes) alongside broader integrations. The Skills Hub is useful for discovering workflows, but an installed skill can still call external services or require separate credentials. Check which endpoints or external services a skill calls before assuming the whole workflow stays on the machine, as covered in the [Hermes web-tool documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search).
 
 {{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/09-hermes-skills.png" link="/images/posts/hermes-agent-lm-studio-gemma4/09-hermes-skills.png" alt="Hermes Capabilities view showing installed skills, tool tabs, and the Skills Hub browser" caption="Capabilities adds workflows around the local model. Catalog availability is separate from what has been installed and tested." class="post-screenshot" >}}
 
@@ -210,7 +210,7 @@ This gives you a messaging interface to the agent while the model can continue r
 | Symptom | What to check first |
 | --- | --- |
 | Connection refused | Bionic is running, the Local Model API is on, and the port matches. |
-| Endpoint works in PowerShell but not Hermes | Base URL, active endpoint, profile, and selected conversation model. |
+| Endpoint works in PowerShell but not in Hermes | Base URL, active endpoint, profile, and selected conversation model. |
 | Model not found | Copy the exact ID from `/v1/models`; a display name or upstream repository name may differ. |
 | HTTP 401 or missing authorization | Confirm which provider received the request, then check its authentication requirements. |
 | Unexpected API-format errors | The shown setup uses Auto-detect. If detection fails, explicitly try Chat Completions, which the server supports. |
@@ -222,4 +222,4 @@ The part I wanted to prove here was straightforward: **Hermes can use my locally
 
 From here, I would evaluate it task by task: local file summaries, log analysis, and small coding changes, checking both the answers and the tool actions. Getting the agent connected is the starting point; learning which work this model handles well is the next experiment.
 
-If you are building up the same stack, my [AI agent basics](/posts/ai-agent-basics/) explains the model/tool loop, and [running llama.cpp locally](/posts/running-llama-cpp-on-32gb-macbook-air/) looks at the runtime side more directly.
+If you are building up the same stack, my [AI agent basics](/posts/ai-agent-basics/) guide explains the model/tool loop, and [running llama.cpp locally](/posts/running-llama-cpp-on-32gb-macbook-air/) looks at the runtime side more directly.
