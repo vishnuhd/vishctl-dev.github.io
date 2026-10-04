@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-worker
+  namespace: temporal
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: order-worker}
+  template:
+    metadata:
+      labels: {app: order-worker}
+    spec:
+      containers:
+        - name: worker
+          image: order-worker:v2
+          imagePullPolicy: Never
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: temporal-frontend.temporal.svc.cluster.local:7233

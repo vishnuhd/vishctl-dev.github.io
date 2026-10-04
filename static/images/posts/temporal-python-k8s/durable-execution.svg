@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1030 430" role="img" aria-label="Animated diagram: a workflow survives a worker crash and resumes on a new worker">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker></defs>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+.lbl { fill: #e2e8f0; font-size: 17px; font-weight: 600; }
+.sm { fill: #94a3b8; font-size: 13px; }
+.cap { font-size: 22px; font-weight: 700; }
+@keyframes k_box0 { 0.00% { fill: #1e293b; } 13.27% { fill: #1e293b; } 13.33% { fill: #14532d; } 96.67% { fill: #14532d; } 99.33% { fill: #1e293b; } 100% { fill: #1e293b; } }
+@keyframes s_box0 { 0.00% { stroke: #94a3b8; } 13.27% { stroke: #94a3b8; } 13.33% { stroke: #22c55e; } 96.67% { stroke: #22c55e; } 99.33% { stroke: #94a3b8; } 100% { stroke: #94a3b8; } }
+.box0 { animation: k_box0 15.0s linear infinite, s_box0 15.0s linear infinite; }
+@keyframes k_box1 { 0.00% { fill: #1e293b; } 21.93% { fill: #1e293b; } 22.00% { fill: #14532d; } 96.67% { fill: #14532d; } 99.33% { fill: #1e293b; } 100% { fill: #1e293b; } }
+@keyframes s_box1 { 0.00% { stroke: #94a3b8; } 21.93% { stroke: #94a3b8; } 22.00% { stroke: #22c55e; } 96.67% { stroke: #22c55e; } 99.33% { stroke: #94a3b8; } 100% { stroke: #94a3b8; } }
+.box1 { animation: k_box1 15.0s linear infinite, s_box1 15.0s linear infinite; }
+@keyframes k_box2 { 0.00% { fill: #1e293b; } 75.27% { fill: #1e293b; } 75.33% { fill: #14532d; } 96.67% { fill: #14532d; } 99.33% { fill: #1e293b; } 100% { fill: #1e293b; } }
+@keyframes s_box2 { 0.00% { stroke: #94a3b8; } 75.27% { stroke: #94a3b8; } 75.33% { stroke: #22c55e; } 96.67% { stroke: #22c55e; } 99.33% { stroke: #94a3b8; } 100% { stroke: #94a3b8; } }
+.box2 { animation: k_box2 15.0s linear infinite, s_box2 15.0s linear infinite; }
+@keyframes k_box3 { 0.00% { fill: #1e293b; } 83.93% { fill: #1e293b; } 84.00% { fill: #14532d; } 96.67% { fill: #14532d; } 99.33% { fill: #1e293b; } 100% { fill: #1e293b; } }
+@keyframes s_box3 { 0.00% { stroke: #94a3b8; } 83.93% { stroke: #94a3b8; } 84.00% { stroke: #22c55e; } 96.67% { stroke: #22c55e; } 99.33% { stroke: #94a3b8; } 100% { stroke: #94a3b8; } }
+.box3 { animation: k_box3 15.0s linear infinite, s_box3 15.0s linear infinite; }
+@keyframes k_box4 { 0.00% { fill: #1e293b; } 91.93% { fill: #1e293b; } 92.00% { fill: #14532d; } 96.67% { fill: #14532d; } 99.33% { fill: #1e293b; } 100% { fill: #1e293b; } }
+@keyframes s_box4 { 0.00% { stroke: #94a3b8; } 91.93% { stroke: #94a3b8; } 92.00% { stroke: #22c55e; } 96.67% { stroke: #22c55e; } 99.33% { stroke: #94a3b8; } 100% { stroke: #94a3b8; } }
+.box4 { animation: k_box4 15.0s linear infinite, s_box4 15.0s linear infinite; }
+@keyframes k_tok { 0.00% { transform: translate(25.0px, 0px); } 4.00% { transform: translate(135.0px, 0px); } 12.00% { transform: translate(135.0px, 0px); } 16.00% { transform: translate(325.0px, 0px); } 23.33% { transform: translate(325.0px, 0px); } 26.67% { transform: translate(515.0px, 0px); } 75.33% { transform: translate(515.0px, 0px); } 79.33% { transform: translate(705.0px, 0px); } 85.33% { transform: translate(705.0px, 0px); } 88.67% { transform: translate(895.0px, 0px); } 94.67% { transform: translate(895.0px, 0px); } 100% { transform: translate(895.0px, 0px); } }
+@keyframes k_tokc { 0.00% { fill: #38bdf8; } 40.00% { fill: #38bdf8; } 40.33% { fill: #ef4444; } 54.67% { fill: #ef4444; } 55.00% { fill: #38bdf8; } 95.33% { fill: #38bdf8; } 96.00% { fill: #22c55e; } 100.00% { fill: #22c55e; } }
+@keyframes k_tokop { 0.00% { opacity: 0; } 2.00% { opacity: 1; } 97.33% { opacity: 1; } 99.67% { opacity: 0; } 100% { opacity: 0; } }
+.tok { animation: k_tok 15s linear infinite, k_tokc 15s linear infinite, k_tokop 15s linear infinite; }
+@keyframes k_prog { 0.00% { transform: scaleX(0); } 26.67% { transform: scaleX(0); } 40.00% { transform: scaleX(0.3); } 56.00% { transform: scaleX(0.3); } 74.67% { transform: scaleX(1); } 96.67% { transform: scaleX(1); } 99.33% { transform: scaleX(0); } 100% { transform: scaleX(0); } }
+.prog { transform-box: fill-box; transform-origin: left; animation: k_prog 15.0s linear infinite; }
+@keyframes k_wa { 0.00% { opacity: 1; } 40.00% { opacity: 1; } 40.67% { opacity: 0.25; } 100.00% { opacity: 0.25; } }
+@keyframes k_wax { 0.00% { opacity: 0; } 39.67% { opacity: 0; } 40.00% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes k_wb { 0.00% { opacity: 0; } 53.33% { opacity: 0; } 56.00% { opacity: 1; } 100.00% { opacity: 1; } }
+.wa { animation: k_wa 15.0s linear infinite; } .wax { animation: k_wax 15.0s linear infinite; } .wb { animation: k_wb 15.0s linear infinite; }
+@keyframes k_hist { 0.00% { opacity: 0.9; } 100.00% { opacity: 0.9; } }
+@keyframes k_cap0 { 0.00% { opacity: 0; } 2.00% { opacity: 0; } 4.00% { opacity: 1; } 23.33% { opacity: 1; } 25.33% { opacity: 0; } 100.00% { opacity: 0; } }
+.cap0 { animation: k_cap0 15.0s linear infinite; opacity: 0; }
+@keyframes k_cap1 { 0.00% { opacity: 0; } 25.33% { opacity: 0; } 27.33% { opacity: 1; } 38.00% { opacity: 1; } 40.00% { opacity: 0; } 100.00% { opacity: 0; } }
+.cap1 { animation: k_cap1 15.0s linear infinite; opacity: 0; }
+@keyframes k_cap2 { 0.00% { opacity: 0; } 40.67% { opacity: 0; } 42.67% { opacity: 1; } 51.33% { opacity: 1; } 53.33% { opacity: 0; } 100.00% { opacity: 0; } }
+.cap2 { animation: k_cap2 15.0s linear infinite; opacity: 0; }
+@keyframes k_cap3 { 0.00% { opacity: 0; } 53.33% { opacity: 0; } 55.33% { opacity: 1; } 73.33% { opacity: 1; } 75.33% { opacity: 0; } 100.00% { opacity: 0; } }
+.cap3 { animation: k_cap3 15.0s linear infinite; opacity: 0; }
+@keyframes k_cap4 { 0.00% { opacity: 0; } 78.67% { opacity: 0; } 80.67% { opacity: 1; } 95.33% { opacity: 1; } 97.33% { opacity: 0; } 100.00% { opacity: 0; } }
+.cap4 { animation: k_cap4 15.0s linear infinite; opacity: 0; }
+</style>
+<rect width="1030" height="430" rx="16" fill="#0f172a"/>
+<text x="60" y="52" class="lbl" style="font-size:22px">Durable execution: the workflow outlives the process</text>
+<rect class="box0" x="60" y="120" width="150" height="54" rx="10" stroke-width="2"/><text x="135.0" y="153" text-anchor="middle" class="lbl">charge_card</text>
+<path d="M216 147 h28" stroke="#94a3b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect class="box1" x="250" y="120" width="150" height="54" rx="10" stroke-width="2"/><text x="325.0" y="153" text-anchor="middle" class="lbl">reserve_stock</text>
+<path d="M406 147 h28" stroke="#94a3b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect class="box2" x="440" y="120" width="150" height="54" rx="10" stroke-width="2"/><text x="515.0" y="153" text-anchor="middle" class="lbl">pack_items</text>
+<path d="M596 147 h28" stroke="#94a3b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect class="box3" x="630" y="120" width="150" height="54" rx="10" stroke-width="2"/><text x="705.0" y="153" text-anchor="middle" class="lbl">wait: approve</text>
+<path d="M786 147 h28" stroke="#94a3b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect class="box4" x="820" y="120" width="150" height="54" rx="10" stroke-width="2"/><text x="895.0" y="153" text-anchor="middle" class="lbl">send_email</text>
+<circle class="tok" cx="0" cy="98" r="11"/>
+<rect x="440" y="186" width="150" height="8" rx="4" fill="#1e293b"/>
+<rect class="prog" x="440" y="186" width="150" height="8" rx="4" fill="#f59e0b"/>
+<text x="515.0" y="212" text-anchor="middle" class="sm">heartbeat progress</text>
+<g class="wa"><rect x="60" y="285" width="250" height="52" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/><text x="185" y="317" text-anchor="middle" class="lbl">Worker pod A</text></g>
+<g class="wax"><path d="M286 275 l24 24 m0 -24 l-24 24" stroke="#ef4444" stroke-width="5" stroke-linecap="round" transform="translate(-12 -2)"/></g>
+<g class="wb"><rect x="440" y="285" width="250" height="52" rx="10" fill="#1e293b" stroke="#22c55e" stroke-width="2"/><text x="565" y="317" text-anchor="middle" class="lbl">Worker pod B</text></g>
+<rect x="60" y="215" width="910" height="46" rx="10" fill="#0b3b52" stroke="#38bdf8" stroke-width="2"/><text x="515" y="244" text-anchor="middle" class="lbl">Temporal server: durable event history (survives any worker crash)</text>
+<text class="cap0 cap" x="515" y="395" text-anchor="middle" fill="#e2e8f0">Workflow runs step by step. Every step is recorded.</text>
+<text class="cap1 cap" x="515" y="395" text-anchor="middle" fill="#e2e8f0">pack_items is running... heartbeating progress.</text>
+<text class="cap2 cap" x="515" y="395" text-anchor="middle" fill="#ef4444">CRASH. The worker pod is gone, mid-activity.</text>
+<text class="cap3 cap" x="515" y="395" text-anchor="middle" fill="#22c55e">A new worker replays history and resumes at step 3, not step 1.</text>
+<text class="cap4 cap" x="515" y="395" text-anchor="middle" fill="#22c55e">Waits for a human signal, then finishes. Nothing lost.</text>
+</svg>

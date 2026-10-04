@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1030 400" role="img" aria-label="Animated architecture: client, Temporal server, workers, Postgres and Web UI">
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+.lbl { fill: #e2e8f0; font-size: 18px; font-weight: 600; }
+.sm { fill: #94a3b8; font-size: 13px; }
+</style>
+<rect width="1030" height="400" rx="16" fill="#0f172a"/>
+<text x="40" y="52" class="lbl" style="font-size:22px">How the pieces fit</text>
+<rect x="40" y="120" width="200" height="80" rx="12" fill="#1e293b" stroke="#94a3b8" stroke-width="2"/><text x="140.0" y="158.0" text-anchor="middle" class="lbl">Client</text><text x="140.0" y="180.0" text-anchor="middle" class="sm">starter / signal scripts</text>
+<rect x="380" y="90" width="260" height="140" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/><text x="510.0" y="158.0" text-anchor="middle" class="lbl">Temporal server</text><text x="510.0" y="180.0" text-anchor="middle" class="sm">frontend · history · matching</text>
+<rect x="780" y="120" width="210" height="80" rx="12" fill="#1e293b" stroke="#22c55e" stroke-width="2"/><text x="885.0" y="158.0" text-anchor="middle" class="lbl">Worker pods</text><text x="885.0" y="180.0" text-anchor="middle" class="sm">your Python code</text>
+<rect x="380" y="290" width="260" height="70" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/><text x="510.0" y="323.0" text-anchor="middle" class="lbl">Postgres</text><text x="510.0" y="345.0" text-anchor="middle" class="sm">event history + visibility</text>
+<rect x="40" y="290" width="200" height="70" rx="12" fill="#1e293b" stroke="#94a3b8" stroke-width="2"/><text x="140.0" y="323.0" text-anchor="middle" class="lbl">Web UI</text><text x="140.0" y="345.0" text-anchor="middle" class="sm">see every workflow</text>
+<path id="p1" d="M240 160 H380" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 6" opacity="0.7"/>
+<text x="310" y="148" text-anchor="middle" class="sm">start / signal</text>
+<path id="p2" d="M780 140 H640" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="6 6" opacity="0.7"/>
+<text x="710" y="128" text-anchor="middle" class="sm">poll for tasks</text>
+<path id="p3" d="M640 185 H780" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="6 6" opacity="0.7"/>
+<text x="710" y="208" text-anchor="middle" class="sm">run steps, report back</text>
+<path id="p4" d="M510 230 V290" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 6" opacity="0.7"/>
+<text x="590" y="262" text-anchor="middle" class="sm">persist every event</text>
+<path id="p5" d="M380 215 L240 300" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 6" opacity="0.7"/>
+<text x="280" y="246" text-anchor="middle" class="sm">read</text>
+<circle r="6" fill="#38bdf8"><animateMotion dur="6.0s" begin="0.0s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion></circle>
+<circle r="6" fill="#22c55e"><animateMotion dur="6.0s" begin="0.9s" repeatCount="indefinite"><mpath href="#p2"/></animateMotion></circle>
+<circle r="6" fill="#22c55e"><animateMotion dur="6.0s" begin="1.8s" repeatCount="indefinite"><mpath href="#p3"/></animateMotion></circle>
+<circle r="6" fill="#f59e0b"><animateMotion dur="6.0s" begin="2.7s" repeatCount="indefinite"><mpath href="#p4"/></animateMotion></circle>
+<circle r="6" fill="#94a3b8"><animateMotion dur="6.0s" begin="3.6s" repeatCount="indefinite"><mpath href="#p5"/></animateMotion></circle>
+<text x="515" y="385" text-anchor="middle" class="sm">The server owns the state; workers are stateless and replaceable.</text>
+</svg>
