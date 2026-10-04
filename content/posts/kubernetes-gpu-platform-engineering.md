@@ -282,27 +282,35 @@ Distributed GPU jobs move huge amounts of data. If the network is slow, the GPU 
 
 ### GPUDirect RDMA
 
-Without it, GPU data takes a detour:
+Without GPUDirect RDMA, data is staged through host memory on both servers:
 
 ```text
-GPU memory → host memory → NIC
+Server A: GPU memory → host memory → RDMA NIC
+                                       ↓
+                              InfiniBand / RoCE
+                                       ↓
+Server B: GPU memory ← host memory ← RDMA NIC
 ```
 
-With GPUDirect RDMA, the NIC reads GPU memory directly:
+With GPUDirect RDMA, the sending NIC reads GPU memory directly and the receiving NIC writes directly into the other GPU's memory. Both paths below use RDMA across the network; the difference is whether they need host-memory staging.
 
-{{< mermaid caption="Left: the detour through host memory. Right: GPUDirect RDMA skips the host copy." >}}
+{{< mermaid caption="Full path from Server A's GPU to Server B's GPU. Left: staging through host memory on both servers. Right: GPUDirect RDMA avoids those copies." >}}
 flowchart LR
-    subgraph S["Without GPUDirect"]
-        direction LR
-        G1["GPU memory"] e1@--> H1["Host memory"]
-        H1 e2@--> N1["NIC"]
+    subgraph S["Without GPUDirect RDMA"]
+        direction TB
+        G1["Server A<br/>GPU memory"] e1@-->|GPU-to-host copy| H1["Server A<br/>Host memory"]
+        H1 e2@--> N1["Server A<br/>RDMA NIC"]
+        N1 e3@--> F1["InfiniBand / RoCE fabric"]
+        F1 e4@--> N2["Server B<br/>RDMA NIC"]
+        N2 e5@--> H2["Server B<br/>Host memory"]
+        H2 e6@-->|Host-to-GPU copy| G2["Server B<br/>GPU memory"]
     end
     subgraph D["With GPUDirect RDMA"]
-        direction LR
-        G2["GPU memory"] e3@-->|PCIe| N2["RDMA NIC"]
-        N2 e4@--> F["Fabric"]
-        F e5@--> N3["RDMA NIC"]
-        N3 e6@--> G3["GPU memory"]
+        direction TB
+        G3["Server A<br/>GPU memory"] e7@-->|Direct PCIe access| N3["Server A<br/>RDMA NIC"]
+        N3 e8@--> F2["InfiniBand / RoCE fabric"]
+        F2 e9@--> N4["Server B<br/>RDMA NIC"]
+        N4 e10@-->|Direct PCIe access| G4["Server B<br/>GPU memory"]
     end
     e1@{ animate: true }
     e2@{ animate: true }
@@ -310,13 +318,17 @@ flowchart LR
     e4@{ animate: true }
     e5@{ animate: true }
     e6@{ animate: true }
-    classDef k8s fill:#13264a,stroke:#38bdf8,color:#e6f6ff;
+    e7@{ animate: true }
+    e8@{ animate: true }
+    e9@{ animate: true }
+    e10@{ animate: true }
+    S ~~~ D
     classDef gpu fill:#173f59,stroke:#22d3ee,color:#ecfeff;
     classDef net fill:#281d48,stroke:#a78bfa,color:#f1edff;
     classDef host fill:#302410,stroke:#fbbf24,color:#fff3cf;
-    class G1,G2,G3 gpu;
-    class H1 host;
-    class N1,N2,N3,F net;
+    class G1,G2,G3,G4 gpu;
+    class H1,H2 host;
+    class N1,N2,N3,N4,F1,F2 net;
 {{< /mermaid >}}
 
 Topology still matters here. A GPU and NIC far apart lose much of the benefit.
