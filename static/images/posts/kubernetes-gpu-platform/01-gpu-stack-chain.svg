@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="760" viewBox="0 0 800 760" role="img" aria-labelledby="t d">
+  <title id="t">GPU access checkpoints, from hardware to CUDA application</title>
+  <desc id="d">A glowing pulse highlights eight troubleshooting checkpoints: GPU hardware, NVIDIA driver, Container Toolkit, Device Plugin, kubelet, scheduler, Pod, and CUDA application. Each layer shows the question it answers.</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    .box { fill: #0b1730; stroke: #334d77; stroke-width: 2; }
+    .name { fill: #e6f6ff; font-size: 22px; font-weight: 650; }
+    .note { fill: #9db4d6; font-size: 16px; }
+    .line { stroke: #334d77; stroke-width: 3; }
+    .glow { fill: #173f59; stroke: #22d3ee; stroke-width: 3; opacity: 0; }
+    .pulse { fill: #22d3ee; }
+    @media (prefers-reduced-motion: no-preference) {
+      .glow { animation: lit 9s infinite; }
+      .g1 { animation-delay: 0s } .g2 { animation-delay: 1s } .g3 { animation-delay: 2s } .g4 { animation-delay: 3s }
+      .g5 { animation-delay: 4s } .g6 { animation-delay: 5s } .g7 { animation-delay: 6s } .g8 { animation-delay: 7s }
+      @keyframes lit { 0% { opacity: 0 } 3% { opacity: 1 } 11% { opacity: 1 } 16% { opacity: 0 } 100% { opacity: 0 } }
+    }
+    @media (prefers-reduced-motion: reduce) { circle { display: none; } }
+  </style>
+  <rect width="800" height="760" rx="20" fill="#081225"/>
+  <text x="400" y="46" text-anchor="middle" fill="#e6f6ff" font-size="28" font-weight="650">GPU access: eight checkpoints</text>
+  <line class="line" x1="400" y1="76" x2="400" y2="716"/>
+  <g transform="translate(0,0)">
+    <g><rect class="box" x="140" y="76" width="520" height="62" rx="12"/><rect class="glow g1" x="140" y="76" width="520" height="62" rx="12"/><text class="name" x="170" y="104">GPU hardware</text><text class="note" x="170" y="126">Is the card on the PCIe bus?</text></g>
+    <g><rect class="box" x="140" y="156" width="520" height="62" rx="12"/><rect class="glow g2" x="140" y="156" width="520" height="62" rx="12"/><text class="name" x="170" y="184">NVIDIA driver</text><text class="note" x="170" y="206">Does the host see it? (nvidia-smi)</text></g>
+    <g><rect class="box" x="140" y="236" width="520" height="62" rx="12"/><rect class="glow g3" x="140" y="236" width="520" height="62" rx="12"/><text class="name" x="170" y="264">Container Toolkit</text><text class="note" x="170" y="286">Can a container reach the device?</text></g>
+    <g><rect class="box" x="140" y="316" width="520" height="62" rx="12"/><rect class="glow g4" x="140" y="316" width="520" height="62" rx="12"/><text class="name" x="170" y="344">Device Plugin</text><text class="note" x="170" y="366">Is the GPU offered to Kubernetes?</text></g>
+    <g><rect class="box" x="140" y="396" width="520" height="62" rx="12"/><rect class="glow g5" x="140" y="396" width="520" height="62" rx="12"/><text class="name" x="170" y="424">kubelet</text><text class="note" x="170" y="446">Does the node advertise nvidia.com/gpu?</text></g>
+    <g><rect class="box" x="140" y="476" width="520" height="62" rx="12"/><rect class="glow g6" x="140" y="476" width="520" height="62" rx="12"/><text class="name" x="170" y="504">Scheduler</text><text class="note" x="170" y="526">Is there a node with a free GPU?</text></g>
+    <g><rect class="box" x="140" y="556" width="520" height="62" rx="12"/><rect class="glow g7" x="140" y="556" width="520" height="62" rx="12"/><text class="name" x="170" y="584">Pod</text><text class="note" x="170" y="606">Did it start with the GPU attached?</text></g>
+    <g><rect class="box" x="140" y="636" width="520" height="62" rx="12"/><rect class="glow g8" x="140" y="636" width="520" height="62" rx="12"/><text class="name" x="170" y="664">CUDA / AI application</text><text class="note" x="170" y="686">Does the workload actually run fast?</text></g>
+  </g>
+  <circle class="pulse" cx="120" cy="107" r="9">
+    <animate attributeName="cy" values="107;667;667;107" keyTimes="0;0.875;1;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="470" viewBox="0 0 800 470" role="img" aria-labelledby="t d">
+  <title id="t">Good and bad NUMA paths between a GPU and a NIC</title>
+  <desc id="d">A two-socket server. A cyan dot travels a short local path from GPU 0 to NIC 0 on the same socket. An amber dot takes a long detour from GPU 0 across the inter-socket link to NIC 1.</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    .sock { fill: #0b1730; stroke: #334d77; stroke-width: 2; }
+    .dev { fill: #13264a; stroke: #38bdf8; stroke-width: 2; }
+    .gpu { fill: #173f59; stroke: #22d3ee; stroke-width: 2; }
+    .nic { fill: #281d48; stroke: #a78bfa; stroke-width: 2; }
+    .lbl { fill: #e6f6ff; font-size: 18px; font-weight: 650; }
+    .sub { fill: #9db4d6; font-size: 14px; }
+    .good { fill: none; stroke: #22d3ee; stroke-width: 3; stroke-dasharray: 8 8; }
+    .bad { fill: none; stroke: #fbbf24; stroke-width: 3; stroke-dasharray: 8 8; }
+    @media (prefers-reduced-motion: no-preference) {
+      .good, .bad { animation: dash 1.2s linear infinite; }
+      @keyframes dash { to { stroke-dashoffset: -32 } }
+    }
+    @media (prefers-reduced-motion: reduce) { circle { display: none; } }
+  </style>
+  <rect width="800" height="470" rx="20" fill="#081225"/>
+  <text x="400" y="44" text-anchor="middle" fill="#e6f6ff" font-size="26" font-weight="650">Same GPU, two different routes</text>
+  <rect class="sock" x="40" y="70" width="330" height="300" rx="14"/>
+  <rect class="sock" x="430" y="70" width="330" height="300" rx="14"/>
+  <text class="lbl" x="60" y="100">NUMA node 0</text><text class="sub" x="60" y="120">CPU socket 0 + local RAM</text>
+  <text class="lbl" x="450" y="100">NUMA node 1</text><text class="sub" x="450" y="120">CPU socket 1 + local RAM</text>
+  <rect class="gpu" x="70" y="160" width="110" height="60" rx="10"/><text class="lbl" x="125" y="196" text-anchor="middle">GPU 0</text>
+  <rect class="nic" x="230" y="160" width="110" height="60" rx="10"/><text class="lbl" x="285" y="196" text-anchor="middle">NIC 0</text>
+  <rect class="gpu" x="460" y="160" width="110" height="60" rx="10"/><text class="lbl" x="515" y="196" text-anchor="middle">GPU 2</text>
+  <rect class="nic" x="620" y="160" width="110" height="60" rx="10"/><text class="lbl" x="675" y="196" text-anchor="middle">NIC 1</text>
+  <path id="goodp" class="good" d="M180 190H230"/>
+  <path id="badp" class="bad" d="M125 220V300H400H675V220"/>
+  <text class="sub" x="205" y="150" text-anchor="middle" fill="#22d3ee">short</text>
+  <text class="sub" x="400" y="326" text-anchor="middle" fill="#fbbf24">inter-socket fabric: extra latency</text>
+  <circle r="8" fill="#22d3ee"><animateMotion dur="1.6s" repeatCount="indefinite"><mpath href="#goodp"/></animateMotion></circle>
+  <circle r="8" fill="#fbbf24"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#badp"/></animateMotion></circle>
+  <text class="sub" x="400" y="410" text-anchor="middle">Good: GPU0 → NIC0, same socket.   Bad: GPU0 → across sockets → NIC1.</text>
+  <text class="sub" x="400" y="436" text-anchor="middle">Kubernetes may only see "1 GPU, 1 NIC". The path is hidden from the scheduler.</text>
+</svg>
