@@ -1,5 +1,5 @@
 +++
-title = "Temporal Hands-On: Surviving a Worker Crash on Kubernetes"
+title = "Temporal Hands-On: Durable Execution on Kubernetes"
 date = '2026-10-05T02:30:00+08:00'
 draft = false
 description = "A hands-on Temporal demo in Python: build a small order workflow, deploy it on Kubernetes, then delete the worker pods mid-execution and watch durable execution resume it."
