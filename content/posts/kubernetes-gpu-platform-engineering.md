@@ -18,7 +18,15 @@ Your Pod says `Running`. Kubernetes says the GPU is allocated. Yet the training 
 
 Nothing in Kubernetes looks broken. So where is the problem?
 
-Usually it sits in a layer Kubernetes does not show you: the driver, the CPU socket a GPU hangs off, the network card, or the link between GPUs. This guide walks those layers in order, from a single GPU to a multi-node cluster. The route is GPU access → local topology → the network between nodes → GPU collectives. Each section explains **what that layer is, and what to check when it breaks.**
+Usually in a layer Kubernetes can't see: the driver, the CPU socket the GPU is wired to, the network card, or the link between GPUs.
+
+This guide climbs those layers in the order your data crosses them, from one GPU in one Pod to a job spread across nodes:
+
+```text
+GPU in a Pod → topology inside the node → network between nodes → GPU-to-GPU traffic
+```
+
+For each layer you get two things: **what it is, and what to check when it breaks.**
 
 ## GPU access first
 
