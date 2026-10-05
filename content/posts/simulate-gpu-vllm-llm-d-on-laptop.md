@@ -63,6 +63,21 @@ flowchart TD
 | Router | llm-d EPP + Envoy | **the real thing** | Every routing decision |
 | Cluster | GPU nodes | kind on Colima | Real Kubernetes v1.37 |
 
+The router has two parts, and you'll see both names a lot below:
+
+- **EPP (Endpoint Picker)** is the decision-maker. For each request it checks every model server pod (what's in its prefix cache, how much work it has queued) and picks one. It doesn't carry traffic itself.
+- **Envoy** is the proxy that carries the traffic. It asks the EPP "which pod?", then forwards the request there.
+
+The EPP is a [Gateway API Inference Extension](https://gateway-api-inference-extension.sigs.k8s.io/) component; llm-d ships its own build with extra routing plugins.
+
+A few more terms that come up often:
+
+- **TTFT (time to first token)**: how long a user waits before the first word of the answer appears. Mostly the time to read the prompt (prefill).
+- **Prefix cache**: vLLM keeps the processed start of recent prompts in GPU memory. A new request that starts the same way skips that work, so TTFT drops. It only helps on the pod that holds the cache.
+- **InferencePool**: a Kubernetes resource that groups the model server pods, like a Service that knows it's serving a model.
+- **DCGM**: NVIDIA's GPU monitoring tool. Its exporter publishes GPU metrics to Prometheus.
+- **p50 / p90**: the median request, and the request slower than 90% of the others. p90 shows what your unlucky users feel.
+
 ## The lab
 
 Three kind nodes. The two workers each pretend to have 8 H100s. Eight simulated vLLM pods take 2 GPUs each, the same shape as the llm-d reference guide.
@@ -408,6 +423,8 @@ Two headers make the rest of this post possible:
 - `usage.prompt_tokens_details.cached_tokens` tells you **whether it hit the cache**.
 
 ## How one request is routed
+
+Envoy talks to the EPP through **ext_proc** (external processing), an Envoy filter that pauses each request, sends its headers and body to an outside gRPC service, and waits for an answer. Here the answer is a pod address.
 
 {{< mermaid caption="Envoy calls the EPP over ext_proc. The EPP filters, scores, and picks a pod, and Envoy forwards the request to it." >}}
 sequenceDiagram
@@ -805,7 +822,9 @@ colima stop
 kind                  = Kubernetes nodes as Docker containers
 fake-gpu-operator     = nvidia.com/gpu, nvidia-smi, DCGM metrics, no GPU
 llm-d-inference-sim   = vLLM's API + metrics + prefix cache, no model
-llm-d router (EPP)    = the real thing, pointed at the sim
+EPP                   = Endpoint Picker: llm-d's router brain, picks the pod
+Envoy                 = the proxy that asks the EPP, then forwards
+ext_proc              = the Envoy hook Envoy uses to ask the EPP
 x-inference-pod       = which pod served the request
 cached_tokens         = did it hit the prefix cache
 calibrate.sh          = measures peakPrefillThroughput, works on the sim
