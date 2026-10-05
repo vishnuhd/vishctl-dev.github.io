@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-labelledby="t d">
+  <title id="t">p90 time to first token by router config, for two traffic patterns</title>
+  <desc id="d">16 tenants: plain Service 1,317 ms, llm-d defaults 54 ms, prefill profile 49 ms, decode profile 793 ms. One hot tenant: plain Service 555 ms, llm-d defaults 5,453 ms, prefill profile 5,477 ms, decode profile 47 ms. No config wins both.</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    .title { fill: #e6f6ff; font-size: 26px; font-weight: 650; }
+    .sub { fill: #9db4d6; font-size: 16px; }
+    .panel { fill: #0b1730; stroke: #334d77; stroke-width: 2; }
+    .head { fill: #e6f6ff; font-size: 19px; font-weight: 650; }
+    .hint { fill: #9db4d6; font-size: 15px; }
+    .label { fill: #c9dbe3; font-size: 16px; }
+    .val { fill: #c9dbe3; font-size: 16px; }
+    .best { fill: #ecfeff; font-size: 16px; font-weight: 700; }
+    .track { fill: #12233f; }
+    .c { fill: #22d3ee; }
+    .a { fill: #fbbf24; }
+    .dim { opacity: 0.45; }
+  </style>
+  <rect width="800" height="600" rx="20" fill="#081225"/>
+  <text x="400" y="46" text-anchor="middle" class="title">p90 time to first token</text>
+  <text x="400" y="72" text-anchor="middle" class="sub">Lower is better · same 8 pods, cold caches every run</text>
+
+  <!-- Panel 1: 16 tenants -->
+  <rect class="panel" x="30" y="96" width="740" height="236" rx="14"/>
+  <text x="54" y="128" class="head">16 tenants, long shared prompts</text>
+  <text x="746" y="128" text-anchor="end" class="hint">prefill-bound</text>
+  <!-- rows: track x=250..690 (440px), scale 440/1400 -->
+  <g>
+    <text x="236" y="168" text-anchor="end" class="label">Plain Service</text>
+    <rect class="track" x="250" y="150" width="440" height="26" rx="6"/>
+    <rect class="c dim" x="250" y="150" width="414" height="26" rx="6"/>
+    <text x="654" y="169" text-anchor="end" class="val" style="fill:#ecfeff">1,317 ms</text>
+
+    <text x="236" y="210" text-anchor="end" class="label">llm-d defaults</text>
+    <rect class="track" x="250" y="192" width="440" height="26" rx="6"/>
+    <rect class="c" x="250" y="192" width="17" height="26" rx="4"/>
+    <text x="278" y="211" class="val">54 ms</text>
+
+    <text x="236" y="252" text-anchor="end" class="label">Prefill profile</text>
+    <rect class="track" x="250" y="234" width="440" height="26" rx="6"/>
+    <rect class="c" x="250" y="234" width="16" height="26" rx="4"/>
+    <text x="277" y="253" class="best">49 ms ← best</text>
+
+    <text x="236" y="294" text-anchor="end" class="label">Decode profile</text>
+    <rect class="track" x="250" y="276" width="440" height="26" rx="6"/>
+    <rect class="c dim" x="250" y="276" width="249" height="26" rx="6"/>
+    <text x="510" y="295" class="val">793 ms</text>
+  </g>
+
+  <!-- Panel 2: one hot tenant -->
+  <rect class="panel" x="30" y="348" width="740" height="236" rx="14"/>
+  <text x="54" y="380" class="head">One hot tenant, 24 concurrent clients</text>
+  <text x="746" y="380" text-anchor="end" class="hint">decode-bound</text>
+  <!-- scale 440/5600 -->
+  <g>
+    <text x="236" y="420" text-anchor="end" class="label">Plain Service</text>
+    <rect class="track" x="250" y="402" width="440" height="26" rx="6"/>
+    <rect class="a dim" x="250" y="402" width="44" height="26" rx="5"/>
+    <text x="305" y="421" class="val">555 ms</text>
+
+    <text x="236" y="462" text-anchor="end" class="label">llm-d defaults</text>
+    <rect class="track" x="250" y="444" width="440" height="26" rx="6"/>
+    <rect class="a dim" x="250" y="444" width="428" height="26" rx="6"/>
+    <text x="666" y="463" text-anchor="end" class="val" style="fill:#fff3cf">5,453 ms</text>
+
+    <text x="236" y="504" text-anchor="end" class="label">Prefill profile</text>
+    <rect class="track" x="250" y="486" width="440" height="26" rx="6"/>
+    <rect class="a dim" x="250" y="486" width="430" height="26" rx="6"/>
+    <text x="668" y="505" text-anchor="end" class="val" style="fill:#fff3cf">5,477 ms</text>
+
+    <text x="236" y="546" text-anchor="end" class="label">Decode profile</text>
+    <rect class="track" x="250" y="528" width="440" height="26" rx="6"/>
+    <rect class="a" x="250" y="528" width="5" height="26" rx="2"/>
+    <text x="266" y="547" class="best">47 ms ← best</text>
+  </g>
+</svg>
