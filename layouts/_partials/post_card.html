@@ -1,0 +1,34 @@
+{{- /* Shared post card for the homepage, section, and tag listings. */ -}}
+{{- $featured := .featured | default false }}
+{{- with .page }}
+<article class="post-entry home-post-entry{{ if $featured }} is-featured{{ end }}">
+  <div class="lab-card-index" aria-hidden="true">
+    <span>{{ if $featured }}<b>latest</b> · {{ end }}{{ .Date.Format "2006-01-02" }}</span>
+    <span class="lab-card-arrow">↗</span>
+  </div>
+  {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
+  {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">
+      {{- .Title }}
+      {{- if .Draft }}<span class="entry-hint" title="Draft">draft</span>{{ end }}
+    </h2>
+  </header>
+  {{- if (ne (.Param "hideSummary") true) }}
+  <div class="entry-content">
+    <p>{{ with .Description }}{{ . | plainify | htmlUnescape }}{{ else }}{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}{{ end }}</p>
+  </div>
+  {{- end }}
+  <footer class="entry-footer">
+    {{- with .GetTerms "tags" }}
+    <ul class="home-post-tags" aria-label="Topics">
+      {{- range first 2 . }}
+      <li><a href="{{ .RelPermalink }}">#{{ .LinkTitle | lower }}</a></li>
+      {{- end }}
+    </ul>
+    {{- end }}
+    <span class="entry-reading-time"><time datetime="{{ .Date.Format "2006-01-02" }}" class="sr-only">{{ .Date | time.Format ":date_long" }}</time>{{ .ReadingTime }} min read</span>
+  </footer>
+  <a class="entry-link" aria-label="{{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+</article>
+{{- end }}

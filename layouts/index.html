@@ -1,96 +1,30 @@
 {{- define "main" }}
 
-{{- if (and site.Params.profileMode.enabled .IsHome) }}
-{{- partial "index_profile.html" . }}
-{{- else }} {{/* if not profileMode */}}
-
-{{- $pages := union .RegularPages .Sections }}
-
-{{- if .IsHome }}
-{{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
-{{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true"  }}
-{{- end }}
-
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true" }}
 {{- $paginator := .Paginate $pages }}
+{{- $firstPage := eq $paginator.PageNumber 1 }}
 
-{{- if and .IsHome site.Params.homeInfoParams (eq $paginator.PageNumber 1) }}
+{{- if and site.Params.homeInfoParams $firstPage }}
 {{- partial "home_info.html" . }}
 {{- end }}
 
-{{- if and .IsHome (gt (len $paginator.Pages) 0) (eq $paginator.PageNumber 1) }}
+{{- if gt (len $paginator.Pages) 0 }}
 <div class="posts-section-header" id="latest-notes">
-  <div><p class="lab-section-kicker">$ ls -t ./notes</p><h2 class="posts-section-title">Latest field notes<span class="lab-heading-dot">.</span></h2></div>
+  <div>
+    <p class="lab-section-kicker">$ ls -t ./notes</p>
+    <h2 class="posts-section-title">{{ if $firstPage }}Latest notes{{ else }}Older notes{{ end }}<span class="lab-heading-dot">.</span></h2>
+  </div>
   <a class="lab-all-notes" href="{{ "posts/" | relURL }}">All notes <span aria-hidden="true">↗</span></a>
 </div>
 {{- end }}
 
 <div class="home-notes-grid">
 {{- range $index, $page := $paginator.Pages }}
-
-{{- $class := "post-entry home-post-entry" }}
-
-<article class="{{ $class }}">
-  <div class="lab-card-index" aria-hidden="true"><span>FIELD NOTE / {{ .Date.Format "2006.01.02" }}</span><span>↗</span></div>
-  {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
-  {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">
-      {{- .Title }}
-      {{- if .Draft }}
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
-      {{- end }}
-    </h2>
-  </header>
-  {{- if (ne (.Param "hideSummary") true) }}
-  <div class="entry-content">
-    <p>{{ with .Description }}{{ . | plainify | htmlUnescape }}{{ else }}{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}{{ end }}</p>
-  </div>
-  {{- end }}
-  {{- with .GetTerms "tags" }}
-  <ul class="home-post-tags" aria-label="Topics">
-    {{- range first 2 . }}
-    <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
-    {{- end }}
-  </ul>
-  {{- end }}
-  {{- if not (.Param "hideMeta") }}
-  <footer class="entry-footer">
-    {{- partial "post_meta.html" . -}}
-  </footer>
-  {{- end }}
-  <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
-</article>
+{{- partial "post_card.html" (dict "page" $page "featured" (and $firstPage (eq $index 0))) }}
 {{- end }}
 </div>
 
-{{- if gt $paginator.TotalPages 1 }}
-<footer class="page-footer">
-  <nav class="pagination">
-    {{- if $paginator.HasPrev }}
-    <a class="prev" href="{{ $paginator.Prev.URL | absURL }}">
-      «&nbsp;{{ i18n "prev_page" }}&nbsp;
-      {{- if (.Param "ShowPageNums") }}
-      {{- sub $paginator.PageNumber 1 }}/{{ $paginator.TotalPages }}
-      {{- end }}
-    </a>
-    {{- end }}
-    {{- if $paginator.HasNext }}
-    <a class="next" href="{{ $paginator.Next.URL | absURL }}">
-      {{- i18n "next_page" }}&nbsp;
-      {{- if (.Param "ShowPageNums") }}
-      {{- add 1 $paginator.PageNumber }}/{{ $paginator.TotalPages }}
-      {{- end }}&nbsp;»
-    </a>
-    {{- end }}
-  </nav>
-</footer>
-{{- end }}
-
-{{- end }}{{/* end profileMode */}}
+{{- partial "pagination.html" $paginator }}
 
 {{- end }}{{- /* end main */ -}}

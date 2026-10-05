@@ -1,4 +1,3 @@
-<div class="lab-motion-control"><button type="button" data-motion-toggle aria-pressed="false" hidden>Motion: on</button></div>
 {{- $labScript := resources.Get "js/lab.js" | minify | fingerprint }}
 <script defer src="{{ $labScript.RelPermalink }}" integrity="{{ $labScript.Data.Integrity }}"></script>
 
@@ -17,7 +16,7 @@ if (diagrams.length) {
         startOnLoad: false,
         securityLevel: 'strict',
         theme: 'base',
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+        fontFamily: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
         flowchart: {
             curve: 'basis',
             htmlLabels: true,
@@ -26,24 +25,25 @@ if (diagrams.length) {
             useMaxWidth: true
         },
         themeVariables: {
-            background: '#081225',
-            primaryColor: '#13264a',
-            primaryTextColor: '#e6f6ff',
-            primaryBorderColor: '#38bdf8',
+            background: '#0d1820',
+            primaryColor: '#12292a',
+            primaryTextColor: '#e7f7f0',
+            primaryBorderColor: '#66e3b4',
             secondaryColor: '#261e52',
             secondaryTextColor: '#f1edff',
             secondaryBorderColor: '#a78bfa',
             tertiaryColor: '#302410',
             tertiaryTextColor: '#fff3cf',
             tertiaryBorderColor: '#fbbf24',
-            lineColor: '#7dd3fc',
-            clusterBkg: '#0b1730',
-            clusterBorder: '#334d77',
-            edgeLabelBackground: '#081225',
+            lineColor: '#7fc9e8',
+            clusterBkg: '#101e27',
+            clusterBorder: '#324950',
+            edgeLabelBackground: '#0d1820',
             fontSize: '15px'
         }
     });
 
+    await document.fonts?.ready;
     await mermaid.run({ nodes: diagrams });
     } catch {
         diagrams.forEach((diagram) => {

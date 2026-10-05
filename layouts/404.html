@@ -1,0 +1,23 @@
+{{- define "main" }}
+<section class="lab-404" aria-labelledby="not-found-title">
+  <div class="lab-terminal lab-404-terminal" data-visible="true">
+    <div class="lab-terminal-bar">
+      <span class="lab-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>vishnu@lab: ~</span>
+      <span class="lab-terminal-shell">zsh</span>
+    </div>
+    <div class="lab-terminal-body">
+      <p class="lab-command"><span aria-hidden="true">❯</span> vishctl get page <span class="lab-404-path" data-404-path>this-page</span></p>
+      <p class="lab-404-error">Error from server (NotFound): pages "<span data-404-path>this-page</span>" not found</p>
+      <p class="lab-command lab-command-next"><span aria-hidden="true">❯</span> <span class="lab-cursor" aria-hidden="true"></span></p>
+    </div>
+  </div>
+  <h1 id="not-found-title">404: nothing here.</h1>
+  <p>The link may be old or mistyped. Try one of these instead:</p>
+  <div class="lab-actions">
+    <a class="lab-button lab-button-primary" href="{{ "" | relLangURL }}">Home <span aria-hidden="true">↗</span></a>
+    <a class="lab-button lab-button-secondary" href="{{ "posts/" | relLangURL }}">All notes</a>
+    <a class="lab-button lab-button-secondary" href="{{ "search/" | relLangURL }}">Search <kbd>/</kbd></a>
+  </div>
+</section>
+{{- end }}{{/* end main */ -}}

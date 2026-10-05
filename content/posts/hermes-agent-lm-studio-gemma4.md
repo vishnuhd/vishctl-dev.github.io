@@ -118,7 +118,7 @@ Send a small prompt first, such as `Hi Hermes`. While it runs, inspect **Loaded 
 
 {{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/07-local-model-generating.png" link="/images/posts/hermes-agent-lm-studio-gemma4/07-local-model-generating.png" alt="Gemma 4 E4B loaded on this device in GGUF Q4_K_M format with one request generating and a token count of 226" caption="The local runtime is doing work: Gemma 4 E4B has an active generation request." class="post-screenshot" >}}
 
-This gives a more useful check than the model selector alone: Hermes points to the local provider, and the local server records generation for the same model.
+This is a better check than the model selector alone: Hermes points to the local provider, and the local server shows generation for the same model.
 
 The numbers on this screen need some care. **226** is a token count, not tokens per second. **6.33 GB** is the displayed model size, not a measurement of total runtime memory. **109,568 ctx** is the loaded context setting in this instance, not a long-context benchmark or a setting everyone should copy.
 
@@ -165,7 +165,7 @@ $response = Invoke-RestMethod `
 $response.choices[0].message.content
 ```
 
-These are diagnostic examples, not benchmark runs. A model-list response verifies reachability and discovery; a completion checks that the runtime can actually generate. LM Studio documents these separately as [List Models](https://lmstudio.ai/docs/developer/openai-compat/models) and [Chat Completions](https://lmstudio.ai/docs/developer/openai-compat/chat-completions).
+A model-list response proves the server is reachable and the model is discoverable; a completion proves the runtime can actually generate. LM Studio documents these separately as [List Models](https://lmstudio.ai/docs/developer/openai-compat/models) and [Chat Completions](https://lmstudio.ai/docs/developer/openai-compat/chat-completions).
 
 ## 5. Try a tool, then inspect what happened
 
@@ -173,7 +173,7 @@ After the greeting worked, I asked Hermes about the weather in Singapore. The co
 
 {{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/08-hermes-weather-tool.png" link="/images/posts/hermes-agent-lm-studio-gemma4/08-hermes-weather-tool.png" alt="Hermes conversation with a greeting and a Singapore weather question, showing a web search action and Gemma 4 E4B selected" caption="A chat reply followed by a tool-assisted weather answer. The model is local; the search needs the network." class="post-screenshot" >}}
 
-That is the interesting step beyond plain local chat: the agent can obtain information through a tool and use it in the conversation. This example shows the interaction working; it does not establish search accuracy or reliability across longer tasks. For current weather, follow the source rather than treating the generated summary as live ground truth.
+That is the interesting step beyond plain local chat: the agent fetched information through a tool and used it in the reply. It shows the plumbing works, not that the search result is accurate, so for something like live weather, trust the source over the summary.
 
 Hermes exposes its skills and tools through **Capabilities**. This allows connecting local CLI tools (such as developer utilities or sandboxes) alongside broader integrations. The Skills Hub is useful for discovering workflows, but an installed skill can still call external services or require separate credentials. Check which endpoints or external services a skill calls before assuming the whole workflow stays on the machine, as covered in the [Hermes web-tool documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search).
 
@@ -203,7 +203,7 @@ I also connected Telegram during the earlier setup. Hermes's messaging settings 
 
 This gives you a messaging interface to the agent while the model can continue running locally. The host machine, Hermes gateway, and local model server need to remain available. Messages still pass through Telegram, so this is a network-connected extension of the setup.
 
-{{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/10-telegram-hermes-bot.jpg" link="/images/posts/hermes-agent-lm-studio-gemma4/10-telegram-hermes-bot.jpg" alt="Telegram conversation with Hermes Bot showing a greeting, a web search for the Jev model, and a generated reply" caption="Hermes receives the Telegram message, runs a web search, and returns a reply through the bot. This demonstrates the message and tool route, not the factual accuracy of the generated answer." class="post-screenshot post-screenshot-portrait" >}}
+{{< figure src="/images/posts/hermes-agent-lm-studio-gemma4/10-telegram-hermes-bot.jpg" link="/images/posts/hermes-agent-lm-studio-gemma4/10-telegram-hermes-bot.jpg" alt="Telegram conversation with Hermes Bot showing a greeting, a web search for the Jev model, and a generated reply" caption="Hermes receives the Telegram message, runs a web search, and replies through the bot." class="post-screenshot post-screenshot-portrait" >}}
 
 ## If something does not work
 

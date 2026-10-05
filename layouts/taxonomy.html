@@ -1,0 +1,23 @@
+{{- define "main" }}
+
+{{- $terms := .Data.Terms.ByCount }}
+{{- $max := 1 }}
+{{- with index $terms 0 }}{{ $max = .Count }}{{ end }}
+
+{{- partial "page_header.html" (dict "page" . "command" "vishctl get topics --sort-by=count" "meta" (printf "%d topics across %d notes" (len $terms) (len site.RegularPages))) }}
+
+<ol class="topic-list">
+  {{- range $index, $term := $terms }}
+  {{- with $term.Page }}
+  <li style="--i: {{ $index }}">
+    <a href="{{ .RelPermalink }}">
+      <span class="topic-name">#{{ .Data.Term | lower }}</span>
+      <span class="topic-bar" aria-hidden="true"><span style="--w: {{ div (mul $term.Count 100) $max }}%"></span></span>
+      <span class="topic-count">{{ $term.Count }}</span>
+    </a>
+  </li>
+  {{- end }}
+  {{- end }}
+</ol>
+
+{{- end }}{{/* end main */ -}}

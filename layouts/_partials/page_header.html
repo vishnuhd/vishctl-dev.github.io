@@ -1,0 +1,27 @@
+{{- /* Listing header: a shell command, the page title, and an optional count line. */ -}}
+{{- $page := .page }}
+<header class="page-header lab-page-header">
+  {{- partial "breadcrumbs.html" $page }}
+  {{- with .command }}
+  <p class="lab-section-kicker lab-typed" style="--chars: {{ add (len .) 2 }}">$ {{ . }}</p>
+  {{- end }}
+  <h1>
+    {{- .title | default $page.Title -}}
+    {{- with .rss }}
+    <a class="lab-rss" href="{{ .RelPermalink }}" title="RSS feed" aria-label="RSS feed">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="20" aria-hidden="true">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+    {{- end }}
+  </h1>
+  {{- with .meta }}
+  <p class="lab-page-meta">{{ . }}</p>
+  {{- end }}
+  {{- with $page.Description }}
+  <div class="post-description">{{ . | markdownify }}</div>
+  {{- end }}
+</header>

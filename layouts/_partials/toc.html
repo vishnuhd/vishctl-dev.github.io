@@ -13,7 +13,9 @@
     </div>
     <div class="post-toc-actions">
         <a class="post-toc-top" href="#top">Back to top <span aria-hidden="true">↑</span></a>
-        <button type="button" data-motion-toggle aria-pressed="false" hidden>Motion: on</button>
+        {{- if .Param "comments" }}
+        <a class="post-toc-top" href="#comments">Comments <span aria-hidden="true">↓</span></a>
+        {{- end }}
     </div>
 </aside>
 

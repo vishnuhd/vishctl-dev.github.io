@@ -1,14 +1,15 @@
 {{- define "main" }}
+{{- $years := sub now.Year 2017 }}
 
 <article class="about-page">
   <section class="about-hero" aria-labelledby="about-title">
     <div class="about-hero-copy">
       <p class="about-eyebrow">DevOps · Platform Engineering · AI Infrastructure</p>
-      <h1 id="about-title">I build platforms that stay calm under pressure.</h1>
+      <h1 id="about-title">I build and run the platforms other teams ship on.</h1>
       <p class="about-lead">
-        I’m Vishnu, a DevOps and Platform Lead in Singapore. For more than nine years,
-        I’ve helped teams design, automate, and operate infrastructure across Kubernetes,
-        public cloud, private cloud, and GPU platforms.
+        I’m Vishnu, a DevOps and platform lead based in Singapore. Since 2017 I’ve designed,
+        automated, and operated infrastructure for telecom, government, and enterprise teams:
+        Kubernetes, public and private cloud, and more recently GPU clusters for AI inference.
       </p>
       <div class="about-actions">
         <a class="about-button about-button-primary" href="#selected-impact">View selected work</a>
@@ -23,19 +24,20 @@
       <div class="about-terminal-body">
         <p><span class="about-prompt">$</span> whoami</p>
         <strong>Vishnu Hari Dadhich</strong>
-        <p>DevOps &amp; Platform Lead</p>
-        <p>Singapore</p>
-        <p class="about-terminal-command"><span class="about-prompt">$</span> focus --current</p>
-        <p>Kubernetes · Cloud · AI/GPU</p>
+        <p>DevOps &amp; Platform Lead · Material+</p>
+        <p>Singapore (UTC+8)</p>
+        <p class="about-terminal-command"><span class="about-prompt">$</span> cat ~/.focus</p>
+        <p>kubernetes · cloud · gpus</p>
+        <p class="about-terminal-command"><span class="about-prompt">$</span> <span class="lab-cursor" aria-hidden="true"></span></p>
       </div>
     </aside>
   </section>
 
   <section class="about-stats" aria-label="Career highlights">
-    <div><strong>9+</strong><span>years in infrastructure</span></div>
-    <div><strong>760K+</strong><span>daily users on a 5G platform</span></div>
-    <div><strong>90%+</strong><span>automated AWS migration</span></div>
-    <div><strong>v1.26→1.33</strong><span>Kubernetes platform upgrade</span></div>
+    <div><strong data-count-to="{{ $years }}" data-count-suffix="+">{{ $years }}+</strong><span>years in infrastructure</span></div>
+    <div><strong data-count-to="760" data-count-suffix="K+">760K+</strong><span>daily users on a 5G platform</span></div>
+    <div><strong data-count-to="90" data-count-suffix="%+">90%+</strong><span>of an AWS migration automated</span></div>
+    <div><strong>v1.26→1.33</strong><span>Kubernetes upgrade, zero downtime</span></div>
   </section>
 
   <section class="about-section about-intro">
@@ -71,7 +73,7 @@
       <article class="about-work-card">
         <p class="about-work-index">02 · GOVERNMENT</p>
         <h3>Seven-version platform upgrade</h3>
-        <p>Led a multi-cycle Tanzu Kubernetes upgrade from v1.26 to v1.33 while maintaining stability for high-stakes workloads.</p>
+        <p>Led a multi-cycle Tanzu Kubernetes upgrade from v1.26 to v1.33 with zero downtime for production government workloads.</p>
         <ul><li>Tanzu</li><li>Zero downtime</li><li>Platform ops</li></ul>
       </article>
 
@@ -170,10 +172,24 @@
     </div>
   </section>
 
+  <section class="about-section about-writing">
+    <p class="about-section-label">Writing</p>
+    <div>
+      <h2>Recent notes</h2>
+      <p>I write up what I build and test, including the parts that did not work.</p>
+      <ul class="about-notes">
+        {{- range first 3 (where site.RegularPages "Type" "in" site.Params.mainSections) }}
+        <li><a href="{{ .RelPermalink }}"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time><span>{{ .Title }}</span><span aria-hidden="true">↗</span></a></li>
+        {{- end }}
+      </ul>
+      <a class="about-text-link" href="{{ "posts/" | relURL }}">All notes <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
   <section class="about-contact">
     <p class="about-section-label">Get in touch</p>
     <h2>Want to talk?</h2>
-    <p>You can reach me to discuss Kubernetes, platform engineering, cloud infrastructure, or AI systems.</p>
+    <p>Happy to talk Kubernetes, platform engineering, GPUs, or whatever you are building. Email is the fastest way to reach me.</p>
     <div class="about-actions">
       <a class="about-button about-button-primary" href="mailto:vishnuharidadhich@gmail.com">Send an email</a>
       <a class="about-button" href="https://www.linkedin.com/in/vishnuhd/" target="_blank" rel="noopener noreferrer">LinkedIn</a>

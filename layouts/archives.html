@@ -1,0 +1,33 @@
+{{- define "main" }}
+
+{{- /* Only dated notes belong in the log; About, Search, and Archive have no publish date. */ -}}
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}
+
+{{- partial "page_header.html" (dict "page" . "command" "git log --format='%ad %s' --date=short" "meta" (printf "%d notes, newest first" (len $pages))) }}
+
+{{- range $pages.GroupByPublishDate "2006" }}
+{{- if ne .Key "0001" }}
+<section class="archive-year" aria-labelledby="y{{ .Key }}">
+  <h2 class="archive-year-header" id="y{{ .Key }}">
+    <a class="archive-header-link" href="#y{{ .Key }}">{{ .Key }}</a>
+    <span class="archive-count">{{ len .Pages }} notes</span>
+  </h2>
+  {{- range .Pages.GroupByDate "January" }}
+  <div class="archive-month">
+    <h3 class="archive-month-header">{{ .Key }}</h3>
+    <ol class="archive-posts">
+      {{- range .Pages }}
+      <li class="archive-entry">
+        <time class="archive-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 02" }}</time>
+        <a class="archive-entry-title" href="{{ .Permalink }}">{{ .Title | markdownify }}{{ if .Draft }} <span class="entry-hint">draft</span>{{ end }}</a>
+        <span class="archive-meta">{{ .ReadingTime }} min</span>
+      </li>
+      {{- end }}
+    </ol>
+  </div>
+  {{- end }}
+</section>
+{{- end }}
+{{- end }}
+
+{{- end }}{{/* end main */}}

@@ -1,0 +1,15 @@
+{{- with . }}
+{{- if gt .TotalPages 1 }}
+<footer class="page-footer">
+  <nav class="pagination" aria-label="Pagination">
+    {{- if .HasPrev }}
+    <a class="prev" href="{{ .Prev.URL | absURL }}"><span aria-hidden="true">←</span> {{ i18n "prev_page" }}</a>
+    {{- end }}
+    <span class="pagination-status">page {{ .PageNumber }}/{{ .TotalPages }}</span>
+    {{- if .HasNext }}
+    <a class="next" href="{{ .Next.URL | absURL }}">{{ i18n "next_page" }} <span aria-hidden="true">→</span></a>
+    {{- end }}
+  </nav>
+</footer>
+{{- end }}
+{{- end }}

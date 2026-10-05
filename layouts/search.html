@@ -1,0 +1,15 @@
+{{- define "main" }}
+
+{{- partial "page_header.html" (dict "page" . "command" "vishctl search --all-notes" "meta" "Titles, summaries, and full text. Arrow keys move, Enter opens.") }}
+
+<div id="searchbox" class="searchbox">
+    <label class="search-prompt" for="searchInput">
+        <span aria-hidden="true">❯</span>
+        <input id="searchInput" disabled placeholder="{{ .Params.placeholder | default "Search" }}"
+            aria-label="Search notes" type="search" autocomplete="off" maxlength="64">
+        <kbd aria-hidden="true">esc</kbd>
+    </label>
+    <ul id="searchResults" class="searchResults" aria-label="Search results"></ul>
+</div>
+
+{{- end }}{{/* end main */}}
