@@ -162,17 +162,17 @@ And here is what happens across a multi-turn chat when both the prompt and the m
 {{< mermaid caption="In SGLang, Turn 1 stores both your prompt and the model's answer in the radix tree. Turn 2 only computes the new follow-up line." >}}
 sequenceDiagram
     participant A as Agent
-    participant S as SGLang (Radix Tree)
+    participant S as SGLang Radix Tree
     participant G as GPU
 
-    A->>S: Turn 1: Runbook + "Check pod status"
-    S->>G: Prefill Runbook + Q1, then decode Answer 1
-    G-->>S: Save [Runbook + Q1 + Answer 1] in tree
-    S-->>A: Answer 1 ("Pod was OOMKilled")
+    A->>S: 1. Runbook + Check pod status
+    S->>G: Prefill Runbook + Q1, decode Answer 1
+    G-->>S: Save Runbook + Q1 + Answer 1 in tree
+    S-->>A: Answer 1 (Pod was OOMKilled)
 
-    A->>S: Turn 2: [Runbook + Q1 + Answer 1] + "Write YAML fix"
-    Note over S: Full prefix hit on Turn 1 prompt + Answer 1!
-    S->>G: Prefill only "Write YAML fix"
+    A->>S: 2. Turn 1 history + Write YAML fix
+    Note over S: Full cache hit on Runbook + Q1 + Answer 1
+    S->>G: Prefill only Write YAML fix
     G-->>A: Answer 2 (YAML patch)
 {{< /mermaid >}}
 
@@ -216,25 +216,19 @@ SGLang turns your JSON schema into a **Compressed Finite-State Machine (FSM)**. 
 
 {{< mermaid caption="Top: token-by-token decoding runs a GPU step for every forced key and quote. Bottom: Jump-Forward pastes the fixed schema text at once and only samples the values." >}}
 flowchart LR
-    subgraph SLOW["Standard Token-by-Token Decode (9 GPU steps)"]
+    subgraph SLOW["Standard Token-by-Token Decode (many GPU steps)"]
         direction LR
-        T1["'{'"] a1@--> T2["'\"pod'"] a2@--> T3["'_name'"] a3@--> T4["'\": \"'"] a4@--> T5["'payment'"] a5@--> T6["'\", \"'"] a6@--> T7["'oom_'"] a7@--> T8["'killed\": '"] a8@--> T9["'true'"]
+        T1["open brace"] --> T2["key: pod"] --> T3["key: _name"] --> T4["colon + quote"] --> T5["value: payment-worker"] --> T6["key: oom_killed"] --> T7["value: true"]
     end
 
     subgraph FAST["SGLang Jump-Forward Decode (only samples values)"]
         direction LR
-        J1["Jump at once:<br/>'{\"pod_name\": \"'"] b1@--> J2["GPU Sample:<br/>'payment-worker'"] b2@--> J3["Jump at once:<br/>'\", \"oom_killed\": '"] b3@--> J4["GPU Sample:<br/>'true'"]
+        J1["Jump at once:<br/>pod_name key"] b1@--> J2["GPU Sample:<br/>payment-worker"]
+        J2 b2@--> J3["Jump at once:<br/>oom_killed key"]
+        J3 b3@--> J4["GPU Sample:<br/>true"]
     end
 
     SLOW ~~~ FAST
-    a1@{ animate: true }
-    a2@{ animate: true }
-    a3@{ animate: true }
-    a4@{ animate: true }
-    a5@{ animate: true }
-    a6@{ animate: true }
-    a7@{ animate: true }
-    a8@{ animate: true }
     b1@{ animate: true }
     b2@{ animate: true }
     b3@{ animate: true }
@@ -242,8 +236,8 @@ flowchart LR
     classDef waste fill:#302410,stroke:#fbbf24,color:#fff3cf,stroke-width:2px;
     classDef jump fill:#281d48,stroke:#a78bfa,color:#f1edff,stroke-width:2px;
     classDef sample fill:#173f59,stroke:#22d3ee,color:#ecfeff,stroke-width:2px;
-    class T1,T2,T3,T4,T6,T7,T8 waste;
-    class T5,T9 sample;
+    class T1,T2,T3,T4,T6 waste;
+    class T5,T7 sample;
     class J1,J3 jump;
     class J2,J4 sample;
 {{< /mermaid >}}
@@ -284,19 +278,18 @@ SGLang solved this with its **[Zero-Overhead Batch Scheduler](https://lmsys.org/
 flowchart LR
     subgraph SEQ["Without Overlap: GPU waits on CPU"]
         direction LR
-        C1["CPU: Prep Step 1<br/>(5 ms)"] a1@--> G1["GPU: Run Step 1<br/>(10 ms)"] a2@--> C2["CPU: Prep Step 2<br/>(GPU sits idle 5 ms)"] a3@--> G2["GPU: Run Step 2<br/>(10 ms)"]
+        C1["CPU: Prep Step 1<br/>(5 ms)"] --> G1["GPU: Run Step 1<br/>(10 ms)"] --> C2["CPU: Prep Step 2<br/>(GPU idle 5 ms)"] --> G2["GPU: Run Step 2<br/>(10 ms)"]
     end
 
-    subgraph OVL["With Overlap (SGLang & vLLM V1)"]
+    subgraph OVL["With Overlap (SGLang and vLLM V1)"]
         direction LR
-        OC1["CPU: Prep Step 1"] b1@--> OG1["GPU: Run Step 1 (10 ms)"] b2@--> OG2["GPU: Run Step 2 (10 ms)"]
-        OC1 b3@--> OC2["CPU: Prep Step 2 (runs in parallel)"] b4@--> OG2
+        OC1["CPU: Prep Step 1"] b1@--> OG1["GPU: Run Step 1 (10 ms)"]
+        OG1 b2@--> OG2["GPU: Run Step 2 (10 ms)"]
+        OC1 b3@--> OC2["CPU: Prep Step 2 (in parallel)"]
+        OC2 b4@--> OG2
     end
 
     SEQ ~~~ OVL
-    a1@{ animate: true }
-    a2@{ animate: true }
-    a3@{ animate: true }
     b1@{ animate: true }
     b2@{ animate: true }
     b3@{ animate: true }
@@ -434,7 +427,7 @@ Follow the arrows based on your hardware and traffic:
 {{< mermaid caption="Start at the top. Hardware and model breadth point to vLLM; branching agent trees, heavy JSON schemas, and large MoE throughput point to SGLang." >}}
 flowchart TD
     Q1{"Running on non-NVIDIA hardware<br/>(TPU, Gaudi, Neuron) or serving<br/>embeddings / audio / niche models?"}
-    Q1 e1@-->|"Yes"| V1["Pick vLLM<br/>Widest hardware & model support"]
+    Q1 e1@-->|"Yes"| V1["Pick vLLM<br/>Widest hardware and model support"]
     Q1 e2@-->|"No (NVIDIA / AMD + standard LLM)"| Q2{"What does your workload<br/>do most?"}
 
     Q2 e3@-->|"Agent loops, branching prompts,<br/>multi-turn forks, strict JSON outputs"| S1["Pick SGLang<br/>RadixAttention + Jump-Forward"]
