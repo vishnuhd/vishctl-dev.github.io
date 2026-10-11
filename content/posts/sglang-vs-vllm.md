@@ -25,20 +25,20 @@ vLLM    = built like OS virtual memory: pack many independent users onto any GPU
 SGLang  = built for agent programs: reuse branching prompts and force fast JSON outputs
 ```
 
-{{< mermaid caption="Left: vLLM started with many separate callers sharing one GPU. Right: SGLang started with one agent branching into sub-tasks and returning strict JSON." >}}
-flowchart LR
-    subgraph V["vLLM starting point: many independent chats"]
-        direction TB
-        U1["User 1: summarize email"] a1@--> G1["Shared GPU<br/>Paged KV pool"]
-        U2["User 2: write SQL"] a2@--> G1
-        U3["User 3: translate text"] a3@--> G1
+{{< mermaid caption="Top: vLLM started with many separate callers sharing one GPU. Bottom: SGLang started with one agent branching into sub-tasks and returning strict JSON." >}}
+flowchart TD
+    subgraph V["vLLM: many chats"]
+        direction LR
+        U1["User 1<br/>summarize email"] a1@--> G1["Shared GPU<br/>Paged KV pool"]
+        U2["User 2<br/>write SQL"] a2@--> G1
+        U3["User 3<br/>translate text"] a3@--> G1
     end
 
-    subgraph S["SGLang starting point: one agent, many branches"]
-        direction TB
-        A0["Agent: 6k-token runbook"] b1@--> B1["Check pod logs"]
-        A0 b2@--> B2["Check node events"]
-        A0 b3@--> B3["Return strict JSON"]
+    subgraph S["SGLang: one agent"]
+        direction LR
+        A0["Agent<br/>6k-token runbook"] b1@--> B1["Check<br/>pod logs"]
+        A0 b2@--> B2["Check<br/>node events"]
+        A0 b3@--> B3["Return<br/>strict JSON"]
     end
 
     V ~~~ S
@@ -90,21 +90,21 @@ If a new request starts with the exact same 16-token blocks, vLLM finds the hash
 
 Instead of a flat hash table, SGLang stores cached token sequences in a **radix tree** (a compressed tree where shared prefixes form a single trunk, and differences split into branches).
 
-{{< mermaid caption="Left: vLLM matches fixed 16-token blocks in a hash table. Right: SGLang keeps prompts and answers in a branching Radix tree." >}}
-flowchart LR
-    subgraph VLLM["vLLM: Block Hash Table"]
-        direction TB
-        H1["Block 0: 16 tokens<br/>hash: 9f2a"] a1@--> H2["Block 1: 16 tokens<br/>hash: 4c1b"]
-        H2 a2@--> H3["Block 2A: 16 tokens<br/>hash: 7e8d"]
-        H2 a3@--> H4["Block 2B: 16 tokens<br/>hash: 1a3f"]
+{{< mermaid caption="Top: vLLM matches fixed 16-token blocks in a hash table. Bottom: SGLang keeps prompts and answers in a branching Radix tree." >}}
+flowchart TD
+    subgraph VLLM["vLLM: hash table"]
+        direction LR
+        H1["Block 0<br/>16 tokens<br/>hash 9f2a"] a1@--> H2["Block 1<br/>16 tokens<br/>hash 4c1b"]
+        H2 a2@--> H3["Block 2A<br/>16 tokens<br/>hash 7e8d"]
+        H2 a3@--> H4["Block 2B<br/>16 tokens<br/>hash 1a3f"]
     end
 
-    subgraph SGL["SGLang: RadixAttention Tree"]
-        direction TB
-        R0["Trunk: System prompt<br/>+ 6k-token runbook"] b1@--> B1["Branch 1: Pod OOM check<br/>+ assistant answer"]
-        R0 b2@--> B2["Branch 2: Node disk check<br/>+ assistant answer"]
-        B1 b3@--> L1["Leaf 1A: Suggest memory limit"]
-        B1 b4@--> L2["Leaf 1B: Draft PR patch"]
+    subgraph SGL["SGLang: Radix tree"]
+        direction LR
+        R0["Trunk<br/>System prompt +<br/>6k-token runbook"] b1@--> B1["Branch 1<br/>Pod OOM check<br/>+ answer"]
+        R0 b2@--> B2["Branch 2<br/>Node disk check<br/>+ answer"]
+        B1 b3@--> L1["Leaf 1A<br/>Suggest memory limit"]
+        B1 b4@--> L2["Leaf 1B<br/>Draft PR patch"]
     end
 
     VLLM ~~~ SGL
@@ -215,17 +215,17 @@ In a standard token-by-token loop, the GPU still runs a separate decode forward 
 SGLang turns your JSON schema into a **Compressed Finite-State Machine (FSM)**. Whenever the schema leaves only one valid path, SGLang **jumps forward**: it inserts the entire fixed string (`{"pod_name": "`) at once without running step-by-step decode passes, and only asks the GPU to sample when there is a real decision to make.
 
 {{< mermaid caption="Top: token-by-token decoding runs a GPU step for every forced key and quote. Bottom: Jump-Forward pastes the fixed schema text at once and only samples the values." >}}
-flowchart LR
-    subgraph SLOW["Standard Token-by-Token Decode (many GPU steps)"]
+flowchart TD
+    subgraph SLOW["Token-by-token decode"]
         direction LR
-        T1["open brace"] --> T2["key: pod"] --> T3["key: _name"] --> T4["colon + quote"] --> T5["value: payment-worker"] --> T6["key: oom_killed"] --> T7["value: true"]
+        T1["open<br/>brace"] --> T2["pod"] --> T3["_name"] --> T4["colon +<br/>quote"] --> T5["payment-<br/>worker"] --> T6["...and<br/>so on"]
     end
 
-    subgraph FAST["SGLang Jump-Forward Decode (only samples values)"]
+    subgraph FAST["Jump-Forward decode"]
         direction LR
-        J1["Jump at once:<br/>pod_name key"] b1@--> J2["GPU Sample:<br/>payment-worker"]
-        J2 b2@--> J3["Jump at once:<br/>oom_killed key"]
-        J3 b3@--> J4["GPU Sample:<br/>true"]
+        J1["Jump at once<br/>pod_name key"] b1@--> J2["GPU sample<br/>payment-worker"]
+        J2 b2@--> J3["Jump at once<br/>oom_killed key"]
+        J3 b3@--> J4["GPU sample<br/>true"]
     end
 
     SLOW ~~~ FAST
@@ -237,7 +237,7 @@ flowchart LR
     classDef jump fill:#281d48,stroke:#a78bfa,color:#f1edff,stroke-width:2px;
     classDef sample fill:#173f59,stroke:#22d3ee,color:#ecfeff,stroke-width:2px;
     class T1,T2,T3,T4,T6 waste;
-    class T5,T7 sample;
+    class T5 sample;
     class J1,J3 jump;
     class J2,J4 sample;
 {{< /mermaid >}}
@@ -275,17 +275,17 @@ Result:      The GPU sits idle 33% of the time.
 SGLang solved this with its **[Zero-Overhead Batch Scheduler](https://lmsys.org/blog/2024-12-04-sglang-v0-4/)**: while the GPU is busy running Step 1, the CPU is *already* preparing the metadata for Step 2 in parallel. By the time the GPU finishes Step 1, Step 2 is waiting at the door.
 
 {{< mermaid caption="Top: without overlap, the GPU waits every time the CPU prepares the next batch. Bottom: SGLang and vLLM V1 prepare Step 2 on the CPU while Step 1 is still running on the GPU." >}}
-flowchart LR
-    subgraph SEQ["Without Overlap: GPU waits on CPU"]
+flowchart TD
+    subgraph SEQ["Without overlap"]
         direction LR
-        C1["CPU: Prep Step 1<br/>(5 ms)"] --> G1["GPU: Run Step 1<br/>(10 ms)"] --> C2["CPU: Prep Step 2<br/>(GPU idle 5 ms)"] --> G2["GPU: Run Step 2<br/>(10 ms)"]
+        C1["CPU prep 1<br/>5 ms"] --> G1["GPU run 1<br/>10 ms"] --> C2["CPU prep 2<br/>GPU idle 5 ms"] --> G2["GPU run 2<br/>10 ms"]
     end
 
-    subgraph OVL["With Overlap (SGLang and vLLM V1)"]
+    subgraph OVL["With overlap"]
         direction LR
-        OC1["CPU: Prep Step 1"] b1@--> OG1["GPU: Run Step 1 (10 ms)"]
-        OG1 b2@--> OG2["GPU: Run Step 2 (10 ms)"]
-        OC1 b3@--> OC2["CPU: Prep Step 2 (in parallel)"]
+        OC1["CPU prep 1"] b1@--> OG1["GPU run 1<br/>10 ms"]
+        OG1 b2@--> OG2["GPU run 2<br/>10 ms"]
+        OC1 b3@--> OC2["CPU prep 2<br/>in parallel"]
         OC2 b4@--> OG2
     end
 
@@ -310,7 +310,7 @@ vLLM saw the exact same bottleneck and rewrote its core loop in **[vLLM V1](http
 If you read my earlier posts on [llm-d](/posts/llm-d-kubernetes-inference-routing/) and [LMCache](/posts/why-lmcache-is-needed/), it helps to see how all of these tools fit together. They do not replace each other; they sit at different layers:
 
 {{< mermaid caption="llm-d routes requests to the right pod. Inside that pod, you run either vLLM or SGLang. LMCache or Mooncake can sit underneath to share KV cache across pods." >}}
-flowchart LR
+flowchart TD
     C["Client / Agent<br/>OpenAI API request"] e1@--> R["llm-d Router<br/>Picks cache-warm pod"]
     R e2@--> P1["Pod A: vLLM or SGLang<br/>Local GPU KV cache"]
     R -.-> P2["Pod B: vLLM or SGLang<br/>Local GPU KV cache"]
