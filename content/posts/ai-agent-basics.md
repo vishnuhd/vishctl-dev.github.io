@@ -98,6 +98,23 @@ Frameworks like [CrewAI](https://www.crewai.com/) and [LangGraph](https://www.la
 
 Coding is where agents and harnesses are most mature right now, since code execution gives the loop a fast, checkable signal of whether the last action actually worked. That's not a coincidence, it's the same reason the log-file-size example earlier in this post works cleanly: shell commands succeed or fail in an unambiguous way, which is exactly the kind of feedback a harness's loop needs to decide what to do next.
 
+## Cheat sheet
+
+```text
+Chatbot            = answers one turn: input in, output out, done
+Agent              = runs a loop: observe, decide, act, observe again
+Agent harness      = the code around the model that runs the loop and executes tools
+Model              = the stateless, single-shot decision-maker the harness calls on each turn
+Tool call          = model output asking the harness to run something (a command, an API, a file read)
+Loop control       = the harness rule for when to call the model again and when to stop
+Context growth     = every tool call and result is appended, so each step re-reads a longer sequence
+Why it costs more  = not harder thinking: the model re-processes a longer sequence every iteration
+Context management = summarize old steps, drop stale tool output, truncate (a harness job)
+Framework          = a toolkit for building your own harness (CrewAI, LangGraph)
+```
+
 ## Up next
 
 Next post in the local tools series is the practical version of this: standing up a Hermes-style agent, harness, tool calling, loop, the works, on the local setup already covered in this series. This post is the vocabulary you need before that one makes sense.
+
+**Update:** that follow-up is live: [Hermes Agent + LM Studio: running Gemma 4 locally](/posts/hermes-agent-lm-studio-gemma4/). For the vocabulary underneath agents (tokens, context, KV cache), see [What Happens When You Ask an LLM a Question](/posts/llm-basics-visual-guide/) and the [AI and LLM glossary](/posts/ai-llm-glossary/).

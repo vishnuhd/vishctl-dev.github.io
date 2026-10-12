@@ -623,3 +623,5 @@ When a GPU workload misbehaves, walk up the layers and stop at the first one tha
 | NCCL | Do the GPUs talk fast? | NCCL logs and tests, single node then multi-node |
 
 The GPU is only one part of the platform. Most of the hard problems live in the paths between the parts.
+
+**Related posts:** to practice GPU scheduling without any hardware, try the [laptop GPU simulation lab](/posts/simulate-gpu-vllm-llm-d-on-laptop/).

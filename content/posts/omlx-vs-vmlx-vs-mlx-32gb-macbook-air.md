@@ -160,3 +160,20 @@ Ollama MLX may work better for some people, especially when their apps already i
 vMLX comes third when I want more serving controls. Official MLX-LM comes fourth for my everyday setup, while remaining useful for direct experiments and learning.
 
 On a 32 GB Air, I would start with one loaded model and a modest context limit. Then increase context and concurrency while watching memory pressure and response time.
+
+## Cheat sheet
+
+```text
+MLX                  = Apple's machine learning framework, built around unified memory
+MLX-LM               = the official LLM tools on MLX: load, chat, generate, fine-tune
+vMLX                 = MLX plus serving controls: continuous batching, paged KV cache, SSD persistence
+oMLX                 = MLX plus model management, an admin dashboard, and a RAM-and-SSD cache
+Ollama MLX           = Ollama's own MLX-based engine behind the familiar Ollama commands
+Prompt caching       = reuse work for a repeated prompt instead of starting from scratch
+SSD cache            = restore cached context after a restart or eviction
+Continuous batching  = let several requests share GPU work; raises total throughput
+Three things to tune = how soon the answer starts, how fast it continues, how much memory it needs
+My order             = oMLX, then Ollama, then vMLX, then MLX-LM
+```
+
+**Related posts:** the same 32 GB Air with the other two popular runtimes: [Running Ollama](/posts/running-ollama-on-32gb-macbook-air/) and [Running llama.cpp](/posts/running-llama-cpp-on-32gb-macbook-air/).

@@ -152,3 +152,19 @@ FreeToken is a relatively young product, but its approach solves a real constrai
 If you have a laptop with 32 GB of system RAM and a modest 8 GB NVIDIA GPU, FreeToken is worth checking out. It makes 35B-class MoE models runnable on consumer hardware that would otherwise choke on them, keeping your data completely local.
 
 You can download the desktop app directly from [FlashML](https://www.flashml.ai/), check out the project on [GitHub](https://github.com/FlashML-org/FreeToken), and read their research paper on [arXiv:2608.16157](https://arxiv.org/abs/2608.16157).
+
+### Cheat sheet
+
+```text
+VRAM limit         = the usual wall: a model that does not fit in GPU memory slows to a crawl
+MoE                = mixture of experts: a large model where only some experts run per token
+FreeToken          = an edge runtime that keeps active weights in VRAM and the rest in host RAM
+Hierarchical cache = the two-tier store (GPU VRAM plus host RAM) that FreeToken manages
+FTW format         = FreeToken's repacked, memory-mapped weight format for fast streaming
+NVFP4              = NVIDIA's 4-bit floating point format, used by the tested model
+Test rig           = RTX 4070 Laptop GPU with 8 GB VRAM and 32 GB of system RAM
+Result             = a 35B MoE model at roughly 4.3 tokens per second
+Good fit           = asynchronous work, coding agents, and long reasoning; not instant chat
+```
+
+**Related posts:** more local LLM notes in [Running llama.cpp on a 32 GB MacBook Air](/posts/running-llama-cpp-on-32gb-macbook-air/) and [oMLX vs Ollama vs vMLX vs MLX-LM](/posts/omlx-vs-vmlx-vs-mlx-32gb-macbook-air/).

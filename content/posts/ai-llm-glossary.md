@@ -417,6 +417,10 @@ A GPU is a processor that can perform many mathematical operations in parallel. 
 
 VRAM is memory available on a graphics card for data such as model weights and temporary computations. **Example:** a model can run out of VRAM even when the computer still has free system RAM.
 
+### GPU sharing (time-slicing, MPS, MIG)
+
+GPU sharing lets several workloads use one physical GPU. **Example:** time-slicing makes them take turns, MPS runs them side by side with memory caps, and MIG splits the card into isolated smaller GPUs.
+
 ### Quantization
 
 Quantization represents model numbers using fewer bits, reducing storage and often memory use. **Example:** storing weights at roughly 4-bit precision can make a model easier to fit, with possible quality tradeoffs.
@@ -457,6 +461,10 @@ Latency is the time you wait for a response or a particular stage of it. **Examp
 
 TTFT measures the time from sending a request to receiving its first generated token. **Example:** a chatbot can start responding quickly even if finishing its answer takes much longer.
 
+### Time per output token (TPOT)
+
+TPOT is the average gap between generated tokens after the first one. **Example:** a TPOT of 25 ms means one user sees about 40 tokens per second.
+
 ### Throughput
 
 Throughput measures how much work a system completes per unit of time. **Example:** a model server might handle thousands of output tokens per second across many users.
@@ -464,6 +472,14 @@ Throughput measures how much work a system completes per unit of time. **Example
 ### Tokens per second (tokens/s)
 
 Tokens per second measures token-processing or generation speed, so the measured stage and scope matter. **Example:** 30 output tokens/s for one chat is different from 3,000 output tokens/s across an entire server.
+
+### Goodput
+
+Goodput counts only the requests that met a latency target, instead of every request that finished. **Example:** a server completing 10 requests per second has a goodput of 6 if only 6 of them started answering within 500 ms.
+
+### Autoscaling
+
+Autoscaling adds or removes model server replicas as demand changes. **Example:** adding a second replica when requests start waiting in a queue, instead of watching CPU usage.
 
 ### Streaming
 

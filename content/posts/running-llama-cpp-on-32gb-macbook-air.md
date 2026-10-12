@@ -288,3 +288,19 @@ curl http://localhost:8080/v1/chat/completions \
 4. **Why run llama.cpp directly?**: Ollama provides exceptional developer ergonomics for local apps and testing. But direct llama.cpp gives you full control over context allocation, slot limits, KV cache quantization (`-ctk`, `-ctv`), and immediate access to upstream features and bugfixes.
 
 In the next post, we will explore KV cache quantization and memory profiling to see how far we can stretch long-context windows on a 32 GB machine.
+
+### Cheat sheet
+
+```text
+llama.cpp         = the lower-level inference engine that Ollama builds on
+llama-server      = its OpenAI-compatible HTTP server
+GGUF              = the model file format llama.cpp loads
+-hf <repo>        = download a GGUF model straight from Hugging Face
+-ngl 99           = offload all model layers to the GPU (Metal on Apple silicon)
+Q4_K_M            = the 4-bit quantization used here; compare engines on the same quant
+-fa on            = enable FlashAttention, which speeds up prompt evaluation
+-b / -ub          = logical batch size / physical micro-batch size for prompt evaluation
+Prompt eval speed = how fast the prompt is read (prefill)
+Generation speed  = how fast new tokens are produced (decode)
+Result            = with -fa and batch tuning, llama.cpp matches or slightly beats Ollama
+```

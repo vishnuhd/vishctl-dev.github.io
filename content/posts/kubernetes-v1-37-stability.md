@@ -244,3 +244,20 @@ Do not rush to upgrade production this weekend. If you use a managed provider (E
 The real reason to track v1.37 today is preventing fresh technical debt. If your team was about to build custom controllers to sync CA certs or write scripts to hunt dead storage, tell them to hold off. Upstream is solving it natively.
 
 Let the early patches bake, keep your clusters healthy, and start planning which legacy workarounds you get to delete.
+
+### Cheat sheet
+
+```text
+Garhwal                 = the release theme of Kubernetes v1.37
+HPA scale to zero       = minReplicas: 0, now Beta and on by default; object or external metrics only
+ScaledToZero            = the HPA condition that marks an automated scale-down to zero
+PVC last-used tracking  = Beta; an Unused condition shows when a PVC stopped being used
+ClusterTrustBundle      = GA; a cluster-scoped set of trusted CA certificates any Pod can mount
+etcd RangeStream        = Beta; etcd streams large list responses in chunks instead of buffering
+Concurrent watch decode = Beta; the API server decodes watch events on a pool of workers
+KYAML                   = Stable; a safer, unambiguous YAML subset via kubectl get -o kyaml
+SELinuxMount            = GA; volumes mount with one SELinux context instead of recursive relabeling
+Upgrade advice          = wait for patch releases, test in lower environments, stay on n-1 or n-2
+```
+
+**Related posts:** [why KYAML makes sense](/posts/kubernetes-kyaml/) covers another feature that went stable in v1.37, and [What Is Karmada?](/posts/karmada-kubernetes-multi-cluster/) looks at running Kubernetes across clusters.

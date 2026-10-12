@@ -135,4 +135,17 @@ My plan if I touch this on a real repo: one directory first, verify round-trip p
 
 Not required. Cheap upgrade. Worth exploring.
 
+## Cheat sheet
+
+```text
+KYAML          = a stricter way of writing YAML; every KYAML file is still valid YAML
+Flow style     = YAML's existing brace-and-bracket syntax, which KYAML enforces
+Type coercion  = YAML guessing a type, such as reading NO as false
+{ } and [ ]    = objects use braces and arrays use brackets, so structure is explicit
+Quoted strings = every string is quoted; numbers and booleans stay bare
+Whitespace     = no longer carries meaning, so a bad indent cannot change the result
+Helm benefit   = templated values cannot break a file by landing at the wrong indent
+Adoption       = optional and gradual; plain YAML and mixed repos keep working
+```
+
 For a broader breakdown of what else landed in this release, check out my notes on [Kubernetes v1.37: An Operator's Look at Garhwal](/posts/kubernetes-v1-37-stability/).

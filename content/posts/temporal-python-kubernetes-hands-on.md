@@ -226,3 +226,21 @@ Skip it for simple request/response calls or a one-shot background task that is 
 pkill -f "kubectl.*port-forward"
 minikube delete && colima stop
 ```
+
+## Cheat sheet
+
+```text
+Durable execution = the workflow runs to completion even if its process is killed
+Workflow          = the orchestration code; must be deterministic
+Activity          = a side-effecting step (charge, email, pack); retried by policy
+Worker            = a stateless process that long-polls a task queue and runs your code
+Event history     = the server-side record of every step; this is where state lives
+Heartbeat         = progress an activity reports, so a retry resumes instead of restarting
+Heartbeat timeout = how long the server waits before rescheduling a silent activity
+Signal            = an outside message a workflow can wait on, such as an approval
+Determinism rule  = no random numbers, clock reads, or I/O in workflow code
+Good fit          = multi-step processes, human approvals, long jobs, cron-and-queue glue
+Poor fit          = simple request/response calls or cheap one-shot tasks
+```
+
+**Related posts:** more hands-on Kubernetes labs in [What Is Karmada?](/posts/karmada-kubernetes-multi-cluster/) and the [laptop GPU simulation lab](/posts/simulate-gpu-vllm-llm-d-on-laptop/).

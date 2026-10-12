@@ -87,7 +87,7 @@ flowchart LR
 
 A short request consumes only the blocks its actual tokens require. When it finishes, those blocks return to the common pool and can immediately serve another sequence. The last block can still contain a little unused space, but external fragmentation disappears and over-reservation drops sharply.
 
-This was not a small tuning trick. The original [PagedAttention paper](https://arxiv.org/abs/2309.06180) reported near-zero KV-cache waste and **2–4× higher throughput at comparable latency** than the serving systems it evaluated, including FasterTransformer and Orca.
+This was not a small tuning trick. The original [PagedAttention paper](https://arxiv.org/abs/2309.06180) reported near-zero KV-cache waste and **2 to 4× higher throughput at comparable latency** than the serving systems it evaluated, including FasterTransformer and Orca.
 
 PagedAttention also makes block sharing practical. Parallel samples and shared prompt prefixes can point at the same physical blocks instead of duplicating them. That matters for chat histories, agent prompts, and any workload where many requests begin with the same long context.
 
@@ -182,6 +182,24 @@ That nuance is the larger story of vLLM. It did not win attention with a flashy 
 
 The market is not standardizing on vLLM because it wins every microbenchmark. It is standardizing on vLLM because it is becoming the place where the whole inference ecosystem connects.
 
+## Cheat sheet
+
+```text
+KV cache              = stored attention keys and values for every token already processed
+Contiguous reserve    = the old way: one max-length memory slot per request, mostly empty
+Fragmentation         = enough free memory in total, but no single region big enough
+PagedAttention        = split the KV cache into fixed-size blocks, allocated only when needed
+Block sharing         = shared prefixes and parallel samples point at the same physical blocks
+Static batching       = wait for a group, run it together, hold it until the slowest finishes
+Continuous batching   = swap finished sequences for waiting ones at every generation step
+OpenAI-compatible     = same client API, so switching the backend needs no application rewrite
+Hardware portability  = one serving layer across NVIDIA, AMD, Intel, CPUs, and plugin accelerators
+Disaggregated serving = run prefill and decode on separate pools and pass the KV cache between them
+vLLM's moat           = the ecosystem that targets it by default, not one benchmark win
+```
+
 ## Run vLLM yourself
 
 Want to move from architecture to implementation? Read my hands-on guide to [running vLLM on Kubernetes with Minikube, WSL2, and an NVIDIA GPU](/posts/vllm-on-wsl2-minikube/).
+
+For the closest competitor, see [SGLang vs. vLLM](/posts/sglang-vs-vllm/). For what sits in front of vLLM on Kubernetes, see [llm-d](/posts/llm-d-kubernetes-inference-routing/) and [LMCache](/posts/why-lmcache-is-needed/).

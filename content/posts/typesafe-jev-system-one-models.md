@@ -217,3 +217,20 @@ I would compare Jev, existing rules, and a constrained-output LLM on the same he
 Explanations, remediation code, and deeper investigation remain separate tasks. The decision layer can choose when to invoke them.
 
 **I would adopt it if it cut latency and cost without increasing missed urgent incidents or manual review. If those errors rose, the speedup would not be worth it.**
+
+## Cheat sheet
+
+```text
+System One model   = a model built for fast decisions, not conversation
+Jev                = TypeSafe's first System One model, in early access
+State              = the information to inspect, such as a ticket and an account record
+Typed question     = one judgment to make about the state; each is evaluated independently
+Choice             = pick one of the predefined options; returns probabilities and confidence
+Score              = rate on an ordered scale; returns a distribution over the levels
+Noul               = a yes/no question answered as a probability from 0 to 1
+Application policy = your code combines the answers and decides what happens next
+Question design    = wording and option descriptions change results, so version and test them
+What to verify     = routing accuracy, missed urgent cases, latency, and cost on held-out cases
+```
+
+**Related posts:** [What the heck is an AI Agent?](/posts/ai-agent-basics/) explains the tool loop a decision layer like this would sit inside, and [SGLang vs. vLLM](/posts/sglang-vs-vllm/) covers constrained JSON output, the LLM-side way to get structured answers.

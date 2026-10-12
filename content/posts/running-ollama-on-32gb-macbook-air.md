@@ -155,3 +155,20 @@ An 8B to 9B class model is a good fit for private note summarisation, explaining
 There are many ways to run models locally, but Ollama is an excellent Apple-silicon starting point. It gets the plumbing out of the way so I can spend time evaluating the models themselves.
 
 Next, I will run llama.cpp directly on the same machine, then see whether a vLLM setup is worth comparing. Stay tuned.
+
+### Cheat sheet
+
+```text
+Ollama            = a model manager, CLI, and local HTTP API in one install
+ollama pull       = download a model and its layers, like pulling a container image
+ollama run        = start an interactive chat with a model
+ollama list / ps  = models downloaded / models currently loaded in memory
+--verbose         = print timings and tokens per second after each response
+Unified memory    = Apple silicon shares one memory pool between CPU and GPU
+Local API         = http://localhost:11434/api, for scripts and applications
+E in Gemma 4 E4B  = effective parameters: 4.5B effective, 8B including embeddings
+Fair comparison   = same prompt, context length, settings, and output length
+Good fit on 32 GB = 8B to 9B class models, with memory to spare
+```
+
+**Update:** the llama.cpp follow-up is here: [Running llama.cpp on a 32 GB MacBook Air](/posts/running-llama-cpp-on-32gb-macbook-air/). The MLX runtimes are compared in [oMLX vs Ollama vs vMLX vs MLX-LM](/posts/omlx-vs-vmlx-vs-mlx-32gb-macbook-air/).

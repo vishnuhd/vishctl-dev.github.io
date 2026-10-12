@@ -223,3 +223,18 @@ The part I wanted to prove here was straightforward: **Hermes can use my locally
 From here, I would evaluate it task by task: local file summaries, log analysis, and small coding changes, checking both the answers and the tool actions. Getting the agent connected is the starting point; learning which work this model handles well is the next experiment.
 
 If you are building up the same stack, my [AI agent basics](/posts/ai-agent-basics/) guide explains the model/tool loop, and [running llama.cpp locally](/posts/running-llama-cpp-on-32gb-macbook-air/) looks at the runtime side more directly.
+
+## Cheat sheet
+
+```text
+Hermes Agent         = the agent app: manages sessions, tools, and the conversation
+LM Studio Bionic     = the app hosting the model behind a local API
+Gemma 4 E4B          = the model: about 4.5B effective parameters, 8B with embeddings
+Local Model API      = Bionic's OpenAI-compatible server at http://localhost:1234/v1
+OpenAI-compatible    = the familiar request format, sent to localhost instead of a hosted model
+Model identifier     = the name the local server reports (google/gemma-4-e4b here); use that one
+Just-in-time loading = an API request can load a matching model on demand
+Who runs tools       = the agent, not the model; results go back to the model for another reply
+All local            = inference stays on the machine; web search and Telegram still use the network
+localhost caveat     = from WSL, a container, or another machine, localhost points somewhere else
+```

@@ -456,3 +456,20 @@ m member2 get deployment,service -n default
 ```
 
 Confirm `fleet-web` disappears from both members before tearing down the lab control plane.
+
+## Cheat sheet
+
+```text
+Karmada              = a control plane that places Kubernetes workloads across clusters
+Member cluster       = an ordinary, independent cluster that Karmada sends workloads to
+Resource template    = the normal Deployment or Service you submit: what should exist
+PropagationPolicy    = which clusters receive it and how replicas are divided
+OverridePolicy       = what should differ in one particular cluster
+ResourceBinding      = the record of chosen clusters and replica counts for one resource
+Work                 = the per-cluster copy of the manifest, with overrides applied
+Two-level scheduling = Karmada picks clusters; each cluster's own scheduler picks nodes
+Push mode            = the control plane connects to member API servers and applies resources
+Pull mode            = a karmada-agent in the member fetches its work and applies it locally
+Karmada API endpoint = where you apply resources; not the host cluster's own API
+Graduation           = a project maturity milestone; features keep their own stability levels
+```

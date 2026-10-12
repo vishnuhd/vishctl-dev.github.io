@@ -219,4 +219,21 @@ For implementation, use the current [quickstart](https://docs.lmcache.ai/getting
 
 The motivating question is practical: **how much GPU work are we repeating because useful context state was discarded or is sitting on another machine?** If the answer is “a lot,” LMCache gives that work a longer useful life.
 
-For the serving-engine side of the story, see [why vLLM matters for AI inference](/posts/why-vllm-is-dominating-ai-inference-market/).
+## Cheat sheet
+
+```text
+Prefill           = process the input tokens and build the attention state before answering
+Decode            = generate output tokens one step at a time
+KV cache          = saved attention keys and values, so earlier tokens are not recomputed
+TTFT              = time to first token: queueing, cache loading, and prefill all add to it
+Prefix caching    = reuse KV for an input that starts with exactly the same tokens
+vLLM native cache = prefix reuse inside one engine's GPU memory; gone once it is evicted
+LMCache           = a KV cache management layer: offload, store, and share KV beyond the GPU
+Multiprocess mode = LMCache runs as a separate service that several vLLM instances share
+P2P sharing       = node-local cache services fetch KV from peers on other nodes
+CacheBlend        = reuse repeated chunks outside the prefix by selectively recomputing state
+Break-even rule   = a hit helps only if loading the KV costs less than recomputing it
+Prompt layout     = put stable content first; a changing timestamp up front breaks the prefix
+```
+
+For the serving-engine side of the story, see [why vLLM matters for AI inference](/posts/why-vllm-is-dominating-ai-inference-market/). For routing requests to the replica that already holds the cache, see [llm-d](/posts/llm-d-kubernetes-inference-routing/).
