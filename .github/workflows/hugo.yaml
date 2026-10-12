@@ -24,6 +24,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Lint posts
+        run: python3 scripts/lint-posts.py
+
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:

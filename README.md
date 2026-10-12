@@ -28,4 +28,16 @@ Site available at `http://localhost:1313`.
 hugo new posts/my-new-post.md
 ```
 
+This uses `archetypes/posts.md`, which pre-fills the standard front matter and the post skeleton (opening `text` block, a Mermaid diagram, a cheat sheet). Writing and diagram conventions live in [AGENTS.md](AGENTS.md).
+
+## Checking a post before publishing
+
+```bash
+python3 scripts/lint-posts.py
+```
+
+The linter needs only `python3`. It fails on em-dashes and en-dashes, Mermaid v11 pitfalls (chained edge IDs, special characters in labels, wide side-by-side subgraphs), missing front matter, missing images, and internal links that point to a post that does not exist. Missing cheat sheets and off-size covers are reported as warnings. Pass a slug to check one post, or `--strict` to fail on warnings too.
+
+It does not replace the render check: one broken Mermaid diagram blanks every diagram on the page, so still open the post on `hugo server` before pushing.
+
 Images go in `static/images/` and are referenced with absolute paths (e.g., `/images/foo.png`) so they work in both the site and RSS feed.
