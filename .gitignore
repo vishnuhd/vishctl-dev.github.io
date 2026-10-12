@@ -48,6 +48,7 @@ ehthumbs.db
 # IDE & Editor configurations
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
