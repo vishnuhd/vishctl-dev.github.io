@@ -1,1 +1,25 @@
 <script defer src="https://cloud.umami.is/script.js" data-website-id="6cf79b76-27db-46d7-988e-7683609323ab"></script>
+
+{{- if eq .Layout "about" }}
+{{- /* The about page hides its terminal output until about.js prints it. Arm that before first paint,
+       and only when motion is allowed, so the page never flashes or stays blank without the script. */ -}}
+{{- $aboutStyle := resources.Get "css/about.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $aboutStyle.RelPermalink }}" integrity="{{ $aboutStyle.Data.Integrity }}">
+<script>
+(function () {
+    var root = document.documentElement;
+    var paused = false;
+    var booted = false;
+    try {
+        paused = localStorage.getItem('vishctl-motion') === 'paused';
+        booted = sessionStorage.getItem('vishctl-about-boot') === '1';
+    } catch (_) {}
+    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    root.dataset.about = 'armed';
+    root.dataset.aboutBoot = booted ? 'skip' : 'play';
+    window.setTimeout(function () {
+        if (!window.__ttyReady) delete root.dataset.about;
+    }, 4000);
+})();
+</script>
+{{- end }}

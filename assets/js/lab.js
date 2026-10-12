@@ -2,7 +2,7 @@
     const root = document.documentElement;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionButtons = document.querySelectorAll('[data-motion-toggle]');
-    const revealTargets = document.querySelectorAll('.home-post-entry, .about-work-card, .about-skill-grid article, .about-timeline article, .about-notes li, .post-single > .post-header, .post-single > .entry-cover, .post-content > figure');
+    const revealTargets = document.querySelectorAll('.home-post-entry, .post-single > .post-header, .post-single > .entry-cover, .post-content > figure');
     const revealed = new WeakSet();
     const animations = new Set();
     let preference = 'running';
@@ -15,21 +15,6 @@
 
     const motionRunning = () => root.dataset.motion === 'running' && !document.hidden;
 
-    const countUp = (element) => {
-        const target = Number(element.dataset.countTo);
-        const suffix = element.dataset.countSuffix || '';
-        const final = element.textContent;
-        const started = performance.now();
-        const step = (now) => {
-            const progress = Math.min(1, (now - started) / 900);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            element.textContent = progress < 1 ? `${Math.round(target * eased)}${suffix}` : final;
-            if (progress < 1 && motionRunning()) window.requestAnimationFrame(step);
-            else element.textContent = final;
-        };
-        window.requestAnimationFrame(step);
-    };
-
     const revealObserver = 'IntersectionObserver' in window && 'animate' in Element.prototype
         ? new IntersectionObserver((entries) => {
             if (!motionRunning()) return;
@@ -37,10 +22,6 @@
                 if (!isIntersecting || revealed.has(target)) return;
                 revealed.add(target);
                 revealObserver.unobserve(target);
-                if (target.dataset.countTo) {
-                    countUp(target);
-                    return;
-                }
                 const isArticle = Boolean(target.closest('.post-single'));
                 const animation = target.animate([
                     { opacity: isArticle ? 0.65 : 0.2, transform: isArticle ? 'translateY(6px)' : 'translateY(16px)' },
@@ -56,8 +37,6 @@
             });
         }, { threshold: 0.08 })
         : null;
-
-    const counters = document.querySelectorAll('[data-count-to]');
 
     const updateMotion = () => {
         const paused = reducedMotion.matches || preference === 'paused';
@@ -77,7 +56,7 @@
             animations.forEach((animation) => animation.cancel());
             animations.clear();
         } else {
-            [...revealTargets, ...counters].forEach((target) => {
+            revealTargets.forEach((target) => {
                 if (!revealed.has(target)) revealObserver?.observe(target);
             });
         }
@@ -101,13 +80,64 @@
     document.addEventListener('visibilitychange', updateVisibility);
     updateVisibility();
 
+    // Pointer glow on cards and terminals, and a grid spotlight behind the page, for mouse users with motion on.
+    // The styles are under "Pointer glow" and "Background spotlight" in lab.css.
+    const glowTargets = '.post-entry, .lab-terminal, .searchResults li, .paginav, .tty-pane, .tty-work';
+    const gridSize = 56;
+    const spotlight = document.querySelector('.post-single') ? null : document.createElement('div');
+    if (spotlight) {
+        spotlight.className = 'lab-spotlight';
+        spotlight.setAttribute('aria-hidden', 'true');
+        document.body.append(spotlight);
+    }
+    let pointer = null;
+    let pointerQueued = false;
+    const gridOffset = (edge) => `${(((-1 - edge) % gridSize) + gridSize) % gridSize}px`;
+    const paintPointer = () => {
+        pointerQueued = false;
+        if (!pointer) return;
+        const { x, y } = pointer;
+        let target = pointer.target;
+        pointer.target = null;
+        while (target) {
+            const rect = target.getBoundingClientRect();
+            target.classList.add('lab-glow');
+            target.style.setProperty('--mx', `${x - rect.left}px`);
+            target.style.setProperty('--my', `${y - rect.top}px`);
+            target = target.parentElement?.closest(glowTargets);
+        }
+        if (!spotlight) return;
+        // The box is centred on the cursor; shift its grid so the lines stay on the page grid.
+        spotlight.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        spotlight.style.setProperty('--gx', gridOffset(x - 260));
+        spotlight.style.setProperty('--gy', gridOffset(y - 260 + window.scrollY));
+        spotlight.classList.add('is-on');
+    };
+    const queuePointer = () => {
+        if (pointerQueued) return;
+        pointerQueued = true;
+        window.requestAnimationFrame(paintPointer);
+    };
+    document.addEventListener('pointermove', (event) => {
+        if (event.pointerType !== 'mouse' || !motionRunning()) return;
+        pointer = { x: event.clientX, y: event.clientY, target: event.target.closest?.(glowTargets) };
+        queuePointer();
+    }, { passive: true });
+    window.addEventListener('scroll', () => {
+        if (pointer && spotlight) queuePointer();
+    }, { passive: true });
+    root.addEventListener('pointerleave', () => {
+        pointer = null;
+        spotlight?.classList.remove('is-on');
+    });
+
     // Looping terminal animations only run while the terminal is on screen.
     const terminalObserver = 'IntersectionObserver' in window
         ? new IntersectionObserver((entries) => entries.forEach(({ target, isIntersecting }) => {
             target.dataset.visible = String(isIntersecting);
         }), { threshold: 0.05 })
         : null;
-    document.querySelectorAll('.lab-terminal, .about-terminal').forEach((terminal) => {
+    document.querySelectorAll('.lab-terminal').forEach((terminal) => {
         terminal.dataset.visible = String(!terminalObserver);
         terminalObserver?.observe(terminal);
     });

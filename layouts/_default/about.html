@@ -1,200 +1,339 @@
 {{- define "main" }}
+{{- /* The whole page is one terminal session. Everything is readable as static HTML; assets/js/about.js only animates it. */ -}}
 {{- $years := sub now.Year 2017 }}
+{{- $notes := where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{- $windows := slice "whoami" "impact" "work" "man" "log" "toolkit" "certs" "notes" "shell" }}
+{{- $toolkit := slice
+  (dict "dir" "platforms" "tools" (slice "AWS" "Azure" "OCI" "Singapore GCC 2.0" "VMware" "SUSE Harvester" "On-prem"))
+  (dict "dir" "kubernetes" "tools" (slice "EKS" "AKS" "RKE2" "Tanzu" "Rancher" "Helm" "Istio" "Cilium" "KEDA" "Traefik"))
+  (dict "dir" "ai-infra" "tools" (slice "vLLM" "LiteLLM" "KubeRay" "Kubeflow" "NVIDIA GPUs" "AMD GPUs" "Ollama" "Bedrock"))
+  (dict "dir" "automation" "tools" (slice "Terraform" "CloudFormation" "Packer" "Ansible" "Bash" "PowerShell" "Python"))
+  (dict "dir" "delivery" "tools" (slice "Jenkins" "Spinnaker" "Argo CD" "GitLab CI" "GitHub Actions" "SonarQube"))
+  (dict "dir" "observability" "tools" (slice "Prometheus" "Grafana" "ELK" "Fluent Bit" "New Relic"))
+}}
+{{- $toolCount := 0 }}
+{{- range $toolkit }}{{ $toolCount = add $toolCount (len .tools) }}{{ end }}
+{{- $certs := slice
+  (dict "issuer" "vmware" "name" "VMware Certified Advanced Professional - VMware Cloud Foundation VKS")
+  (dict "issuer" "vmware" "name" "VMware Certified Professional - VMware Cloud Foundation Architect")
+  (dict "issuer" "vmware" "name" "VMware Certified VCF Administrator")
+  (dict "issuer" "suse" "name" "SUSE Certified Administrator")
+  (dict "issuer" "suse" "name" "Rancher Manager 2.7 & 2.8 for Rancher Prime")
+  (dict "issuer" "hashicorp" "name" "HashiCorp Certified: Terraform Associate")
+  (dict "issuer" "hashicorp" "name" "HashiCorp Ambassador, 2025")
+  (dict "issuer" "cncf" "name" "Certified Kubernetes Administrator, 2023")
+}}
 
-<article class="about-page">
-  <section class="about-hero" aria-labelledby="about-title">
-    <div class="about-hero-copy">
-      <p class="about-eyebrow">DevOps · Platform Engineering · AI Infrastructure</p>
-      <h1 id="about-title">I build and run the platforms other teams ship on.</h1>
-      <p class="about-lead">
+<article class="tty-page">
+
+  <section class="tty-pane tty-hero" id="whoami" data-tty-section data-tty-hero aria-labelledby="about-title">
+    {{- partial "tty_bar.html" (dict "title" "vishnu@lab: ~/about" "note" "zsh" "skip" true) }}
+    <canvas class="tty-rain" aria-hidden="true"></canvas>
+    <div class="tty-scan" aria-hidden="true"></div>
+    <div class="tty-hero-body">
+      <div class="tty-boot" aria-hidden="true">
+        <p>vishctl-os {{ $years }}.0 (singapore-1) tty1</p>
+        <p><b>[  OK  ]</b> Mounted /career (rw, since 2017)</p>
+        <p><b>[  OK  ]</b> Started kubelet.service</p>
+        <p><b>[  OK  ]</b> Started containerd.service</p>
+        <p><b>[  OK  ]</b> Reached target gpu-operator.target</p>
+        <p><b>[  OK  ]</b> Started terraform.timer</p>
+        <p><b>[  OK  ]</b> Started coffee.service (hard dependency)</p>
+        <p><b>[  OK  ]</b> Reached target multi-user.target</p>
+        <p>lab login: vishnu (automatic login)</p>
+      </div>
+
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>vishctl whoami --verbose</span></p>
+      <pre class="tty-banner" aria-hidden="true" data-tty-line data-tty-fx="decode" data-tty-delay="420">██╗   ██╗██╗███████╗██╗  ██╗███╗   ██╗██╗   ██╗
+██║   ██║██║██╔════╝██║  ██║████╗  ██║██║   ██║
+██║   ██║██║███████╗███████║██╔██╗ ██║██║   ██║
+╚██╗ ██╔╝██║╚════██║██╔══██║██║╚██╗██║██║   ██║
+ ╚████╔╝ ██║███████║██║  ██║██║ ╚████║╚██████╔╝
+  ╚═══╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ </pre>
+      <p class="tty-eyebrow" data-tty-line>DevOps · Platform Engineering · AI Infrastructure</p>
+      <h1 class="tty-h1" id="about-title" data-tty-type data-tty-speed="17">I build and run the <em>platforms</em> other teams ship on.</h1>
+
+      <div class="tty-fetch">
+        <pre class="tty-logo" aria-hidden="true" data-tty-line>██╗
+╚██╗
+ ╚██╗
+ ██╔╝
+██╔╝ <span class="tty-logo-cursor">███████╗</span>
+╚═╝  <span class="tty-logo-cursor">╚══════╝</span></pre>
+        <div>
+          <p class="tty-fetch-title" data-tty-line><b>vishnu</b>@<b>lab</b></p>
+          <dl class="tty-kv">
+            <div data-tty-line><dt>user</dt><dd>Vishnu Hari Dadhich</dd></div>
+            <div data-tty-line><dt>role</dt><dd>Lead, DevOps &amp; Platform @ Material+</dd></div>
+            <div data-tty-line><dt>host</dt><dd>Singapore (UTC+8)<span class="tty-clock-wrap" hidden> · <span data-tty-clock></span> SGT</span></dd></div>
+            <div data-tty-line><dt>uptime</dt><dd><span data-tty-uptime>{{ $years }}+ years</span> in infrastructure</dd></div>
+            <div data-tty-line><dt>focus</dt><dd>kubernetes · cloud · gpus</dd></div>
+            <div data-tty-line><dt>sectors</dt><dd>telecom · government · enterprise</dd></div>
+          </dl>
+          <p class="tty-swatches" aria-hidden="true" data-tty-line><i></i><i></i><i></i><i></i><i></i><i></i></p>
+        </div>
+      </div>
+
+      <p class="tty-cmd tty-cmd-next"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>cat README.md</span></p>
+      <p class="tty-lead" data-tty-line>
         I’m Vishnu, a DevOps and platform lead based in Singapore. Since 2017 I’ve designed,
         automated, and operated infrastructure for telecom, government, and enterprise teams:
         Kubernetes, public and private cloud, and more recently GPU clusters for AI inference.
       </p>
-      <div class="about-actions">
-        <a class="about-button about-button-primary" href="#selected-impact">View selected work</a>
-        <a class="about-button" href="mailto:vishnuharidadhich@gmail.com">Let’s talk</a>
+      <div class="tty-actions" data-tty-line>
+        <a class="tty-button tty-button-primary" href="#work">./selected-work</a>
+        <a class="tty-button" href="mailto:vishnuharidadhich@gmail.com">mail vishnu</a>
+        <a class="tty-button" href="#shell">open shell <span class="tty-cursor" aria-hidden="true"></span></a>
       </div>
     </div>
-
-    <aside class="about-terminal" aria-label="Professional profile">
-      <div class="about-terminal-bar" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </div>
-      <div class="about-terminal-body">
-        <p><span class="about-prompt">$</span> whoami</p>
-        <strong>Vishnu Hari Dadhich</strong>
-        <p>DevOps &amp; Platform Lead · Material+</p>
-        <p>Singapore (UTC+8)</p>
-        <p class="about-terminal-command"><span class="about-prompt">$</span> cat ~/.focus</p>
-        <p>kubernetes · cloud · gpus</p>
-        <p class="about-terminal-command"><span class="about-prompt">$</span> <span class="lab-cursor" aria-hidden="true"></span></p>
-      </div>
-    </aside>
   </section>
 
-  <section class="about-stats" aria-label="Career highlights">
-    <div><strong data-count-to="{{ $years }}" data-count-suffix="+">{{ $years }}+</strong><span>years in infrastructure</span></div>
-    <div><strong data-count-to="760" data-count-suffix="K+">760K+</strong><span>daily users on a 5G platform</span></div>
-    <div><strong data-count-to="90" data-count-suffix="%+">90%+</strong><span>of an AWS migration automated</span></div>
-    <div><strong>v1.26→1.33</strong><span>Kubernetes upgrade, zero downtime</span></div>
-  </section>
-
-  <section class="about-section about-intro">
-    <p class="about-section-label">About</p>
-    <div>
-      <h2>I work on systems that teams depend on.</h2>
-      <p>
-        Most of my work is for telecom, government, media, and enterprise teams in APAC.
-        I have built and upgraded Kubernetes platforms, moved workloads to the cloud,
-        worked in air-gapped environments, and set up infrastructure for AI inference.
-      </p>
-      <p>
-        I prefer practical engineering: make the design clear, automate repeatable work,
-        document what matters, and leave the system easier to operate than I found it.
-      </p>
-    </div>
-  </section>
-
-  <section class="about-section" id="selected-impact">
-    <div class="about-section-heading">
-      <p class="about-section-label">Selected impact</p>
-      <h2>Some of the systems I have worked on</h2>
-    </div>
-
-    <div class="about-work-grid">
-      <article class="about-work-card">
-        <p class="about-work-index">01 · TELCO</p>
-        <h3>Kubernetes for a 5G core</h3>
-        <p>Provisioned high-throughput, low-latency Kubernetes clusters on VMware for cloud-native network functions serving more than 760,000 daily users.</p>
-        <ul><li>Kubernetes</li><li>VMware</li><li>5G CNF</li></ul>
-      </article>
-
-      <article class="about-work-card">
-        <p class="about-work-index">02 · GOVERNMENT</p>
-        <h3>Seven-version platform upgrade</h3>
-        <p>Led a multi-cycle Tanzu Kubernetes upgrade from v1.26 to v1.33 with zero downtime for production government workloads.</p>
-        <ul><li>Tanzu</li><li>Zero downtime</li><li>Platform ops</li></ul>
-      </article>
-
-      <article class="about-work-card">
-        <p class="about-work-index">03 · HYBRID CLOUD</p>
-        <h3>Private and public cloud platforms</h3>
-        <p>Delivered production Kubernetes on SUSE Harvester with RKE2 and Rancher Prime, and automated more than 90% of an AWS migration.</p>
-        <ul><li>Private cloud</li><li>Public cloud</li><li>Kubernetes</li></ul>
-      </article>
-
-      <article class="about-work-card">
-        <p class="about-work-index">04 · AI INFRASTRUCTURE</p>
-        <h3>GPU workloads across clouds</h3>
-        <p>Led infrastructure for vLLM workloads spanning data centres, AWS, OCI, and government cloud, alongside MLOps pipelines on SageMaker.</p>
-        <ul><li>vLLM</li><li>GPU</li><li>MLOps</li></ul>
-      </article>
-    </div>
-  </section>
-
-  <section class="about-section about-experience">
-    <div class="about-section-heading">
-      <p class="about-section-label">Experience</p>
-      <h2>Where I have worked</h2>
-    </div>
-
-    <div class="about-timeline">
-      <article>
-        <div class="about-timeline-marker" aria-hidden="true"></div>
-        <div class="about-timeline-meta">
-          <span>May 2019 - Present</span>
-          <span>Singapore</span>
+  <section class="tty-pane" id="impact" data-tty-section aria-labelledby="impact-title">
+    {{- partial "tty_bar.html" (dict "title" "1:impact" "note" "top") }}
+    <div class="tty-body">
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>vishctl top --career</span></p>
+      <h2 class="tty-h2" id="impact-title" data-tty-line><span data-tty-fx="decode">Career highlights</span></h2>
+      <div class="tty-stats">
+        <div class="tty-stat" data-tty-line>
+          <p class="tty-stat-key">uptime</p>
+          <strong data-tty-fx="count" data-to="{{ $years }}" data-suffix="+">{{ $years }}+</strong>
+          <span class="tty-stat-viz" aria-hidden="true">2017 <span data-tty-fx="blocks" data-n="{{ $years }}">{{ strings.Repeat $years "■" }}</span> now</span>
+          <span class="tty-stat-desc">years in infrastructure</span>
         </div>
-        <h3>Lead - DevOps &amp; Platform</h3>
-        <p class="about-company">Material+</p>
-        <ul class="about-experience-list">
-          <li>Advised enterprise teams on platform architecture, turning workload, security, and infrastructure needs into deployment plans.</li>
-          <li>Delivered an air-gapped Kubernetes platform using SUSE Harvester, Rancher, and RKE2, with networking, security, and enterprise storage integrations.</li>
-          <li>Built Kubernetes infrastructure for 5G workloads serving more than 760,000 daily users.</li>
-          <li>Led Tanzu Kubernetes upgrades from v1.26 to v1.33 with zero downtime, including validation and rollback planning.</li>
-          <li>Led GPU infrastructure work for vLLM inference across data centres and cloud environments.</li>
-          <li>Automated platform operations and delivery with Terraform, Ansible, scripting, and GitOps practices.</li>
-        </ul>
-      </article>
-
-      <article>
-        <div class="about-timeline-marker" aria-hidden="true"></div>
-        <div class="about-timeline-meta">
-          <span>July 2017 - May 2019</span>
-          <span>India</span>
+        <div class="tty-stat" data-tty-line>
+          <p class="tty-stat-key">traffic</p>
+          <strong data-tty-fx="count" data-to="760" data-suffix="K+">760K+</strong>
+          <span class="tty-stat-viz tty-cyan" aria-hidden="true" data-tty-viz="spark" data-width="22"></span>
+          <span class="tty-stat-desc">daily users on a 5G platform</span>
         </div>
-        <h3>DevOps Engineer</h3>
-        <p class="about-company">Infogain India</p>
-        <ul class="about-experience-list">
-          <li>Built and operated Jenkins pipelines for more than 100 applications.</li>
-          <li>Developed service monitoring tools that improved incident visibility and response.</li>
-        </ul>
-      </article>
+        <div class="tty-stat" data-tty-line>
+          <p class="tty-stat-key">automation</p>
+          <strong data-tty-fx="count" data-to="90" data-suffix="%+">90%+</strong>
+          <span class="tty-stat-viz tty-violet" aria-hidden="true" data-tty-fx="bar" data-pct="90">██████████████████░░</span>
+          <span class="tty-stat-desc">of an AWS migration automated</span>
+        </div>
+        <div class="tty-stat" data-tty-line>
+          <p class="tty-stat-key">rollout</p>
+          <strong>v1.26→1.33</strong>
+          <span class="tty-stat-viz tty-steps tty-amber" aria-hidden="true" data-tty-fx="steps"><i>26</i><i>27</i><i>28</i><i>29</i><i>30</i><i>31</i><i>32</i><i>33</i></span>
+          <span class="tty-stat-desc">Kubernetes upgrade, zero downtime</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="about-section">
-    <div class="about-section-heading">
-      <p class="about-section-label">Toolkit</p>
-      <h2>Tools I use</h2>
-    </div>
+  <section class="tty-pane" id="work" data-tty-section aria-labelledby="work-title">
+    {{- partial "tty_bar.html" (dict "title" "2:work" "note" "kubectl") }}
+    <div class="tty-body">
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>kubectl get projects -n career -o wide</span></p>
+      <h2 class="tty-h2" id="work-title" data-tty-line><span data-tty-fx="decode">Some of the systems I have worked on</span></h2>
+      <div class="tty-work-grid">
+        <article class="tty-work" data-tty-line>
+          <p class="tty-work-index"><b>01</b> telco</p>
+          <h3>Kubernetes for a 5G core</h3>
+          <p>Provisioned high-throughput, low-latency Kubernetes clusters on VMware for cloud-native network functions serving more than 760,000 daily users.</p>
+          <div class="tty-viz" aria-hidden="true" data-tty-viz="traffic"></div>
+          <ul class="tty-tags"><li>Kubernetes</li><li>VMware</li><li>5G CNF</li></ul>
+        </article>
 
-    <div class="about-skill-grid">
-      <article><h3>Platforms</h3><p>AWS, Azure, OCI, Singapore GCC 2.0, VMware, SUSE Harvester, on-prem</p></article>
-      <article><h3>Kubernetes</h3><p>EKS, AKS, RKE2, Tanzu, Rancher, Helm, Istio, Cilium, KEDA, Traefik</p></article>
-      <article><h3>AI infrastructure</h3><p>vLLM, LiteLLM, KubeRay, Kubeflow, NVIDIA and AMD GPUs, Ollama, Bedrock</p></article>
-      <article><h3>Automation</h3><p>Terraform, CloudFormation, Packer, Ansible, Bash, PowerShell, Python</p></article>
-      <article><h3>Delivery</h3><p>Jenkins, Spinnaker, Argo CD, GitLab CI, GitHub Actions, SonarQube</p></article>
-      <article><h3>Observability</h3><p>Prometheus, Grafana, ELK, Fluent Bit, New Relic</p></article>
+        <article class="tty-work" data-tty-line>
+          <p class="tty-work-index"><b>02</b> government</p>
+          <h3>Seven-version platform upgrade</h3>
+          <p>Led a multi-cycle Tanzu Kubernetes upgrade from v1.26 to v1.33 with zero downtime for production government workloads.</p>
+          <div class="tty-viz" aria-hidden="true" data-tty-viz="upgrade"></div>
+          <ul class="tty-tags"><li>Tanzu</li><li>Zero downtime</li><li>Platform ops</li></ul>
+        </article>
+
+        <article class="tty-work" data-tty-line>
+          <p class="tty-work-index"><b>03</b> hybrid-cloud</p>
+          <h3>Private and public cloud platforms</h3>
+          <p>Delivered production Kubernetes on SUSE Harvester with RKE2 and Rancher Prime, and automated more than 90% of an AWS migration.</p>
+          <div class="tty-viz" aria-hidden="true" data-tty-viz="apply"></div>
+          <ul class="tty-tags"><li>Private cloud</li><li>Public cloud</li><li>Kubernetes</li></ul>
+        </article>
+
+        <article class="tty-work" data-tty-line>
+          <p class="tty-work-index"><b>04</b> ai-infra</p>
+          <h3>GPU workloads across clouds</h3>
+          <p>Led infrastructure for vLLM workloads spanning data centres, AWS, OCI, and government cloud, alongside MLOps pipelines on SageMaker.</p>
+          <div class="tty-viz" aria-hidden="true" data-tty-viz="gpu"></div>
+          <ul class="tty-tags"><li>vLLM</li><li>GPU</li><li>MLOps</li></ul>
+        </article>
+      </div>
     </div>
   </section>
 
-  <section class="about-section about-credentials">
-    <div>
-      <p class="about-section-label">Credentials</p>
-      <h2>Certifications</h2>
-      <ul class="about-check-list">
-        <li>VMware Certified Advanced Professional - VMware Cloud Foundation VKS</li>
-        <li>VMware Certified Professional - VMware Cloud Foundation Architect</li>
-        <li>VMware Certified VCF Administrator</li>
-        <li>SUSE Certified Administrator</li>
-        <li>Rancher Manager 2.7 &amp; 2.8 for Rancher Prime</li>
-        <li>HashiCorp Certified: Terraform Associate</li>
-        <li>HashiCorp Ambassador, 2025</li>
-        <li>Certified Kubernetes Administrator, 2023</li>
-      </ul>
-    </div>
-    <div>
-      <p class="about-section-label">Foundation</p>
-      <h2>Education</h2>
-      <p><strong>B.Tech, Computer Science</strong><br>Uttar Pradesh Technical University<br><span class="about-muted">2013 - 2017 · India</span></p>
+  <section class="tty-pane" id="man" data-tty-section aria-labelledby="man-title">
+    {{- partial "tty_bar.html" (dict "title" "3:man" "note" "less") }}
+    <div class="tty-body">
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>man vishnu</span></p>
+      <h2 class="sr-only" id="man-title">About</h2>
+      <div class="tty-man">
+        <p class="tty-man-head" aria-hidden="true" data-tty-line><span>VISHNU(1)</span><span>Platform Engineering Manual</span><span>VISHNU(1)</span></p>
+        <div data-tty-line>
+          <h3>NAME</h3>
+          <p>vishnu - builds and runs the platforms other teams ship on</p>
+        </div>
+        <div data-tty-line>
+          <h3>SYNOPSIS</h3>
+          <p><b>vishnu</b> [<i>--kubernetes</i>] [<i>--cloud</i>] [<i>--gpus</i>] [<i>--air-gapped</i>] <u>team</u>...</p>
+        </div>
+        <div data-tty-line>
+          <h3>DESCRIPTION</h3>
+          <p>
+            Most of my work is for telecom, government, media, and enterprise teams in APAC.
+            I have built and upgraded Kubernetes platforms, moved workloads to the cloud,
+            worked in air-gapped environments, and set up infrastructure for AI inference.
+          </p>
+        </div>
+        <div data-tty-line>
+          <h3>PHILOSOPHY</h3>
+          <p>
+            I prefer practical engineering: make the design clear, automate repeatable work,
+            document what matters, and leave the system easier to operate than I found it.
+          </p>
+        </div>
+        <div data-tty-line>
+          <h3>SEE ALSO</h3>
+          <p><a href="#work">work(2)</a>, <a href="#log">log(4)</a>, <a href="#toolkit">toolkit(5)</a>, <a href="{{ "posts/" | relURL }}">notes(7)</a></p>
+        </div>
+        <p class="tty-man-foot" aria-hidden="true" data-tty-line><span>vishctl</span><span>{{ now.Format "2006-01-02" }}</span><span>VISHNU(1)</span></p>
+      </div>
     </div>
   </section>
 
-  <section class="about-section about-writing">
-    <p class="about-section-label">Writing</p>
-    <div>
-      <h2>Recent notes</h2>
-      <p>I write up what I build and test, including the parts that did not work.</p>
-      <ul class="about-notes">
-        {{- range first 3 (where site.RegularPages "Type" "in" site.Params.mainSections) }}
-        <li><a href="{{ .RelPermalink }}"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time><span>{{ .Title }}</span><span aria-hidden="true">↗</span></a></li>
+  <section class="tty-pane" id="log" data-tty-section aria-labelledby="log-title">
+    {{- partial "tty_bar.html" (dict "title" "4:log" "note" "git") }}
+    <div class="tty-body">
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>git log --graph career</span></p>
+      <h2 class="tty-h2" id="log-title" data-tty-line><span data-tty-fx="decode">Where I have worked</span></h2>
+      <ol class="tty-git">
+        <li class="tty-commit is-head" data-tty-line data-tty-delay="160">
+          <p class="tty-commit-ref"><span class="tty-hash">commit a3f9c1e</span> <span class="tty-ref">(<b>HEAD -&gt; main</b>, <i>material-plus</i>)</span></p>
+          <p class="tty-commit-date">Date:   May 2019 - Present · Singapore</p>
+          <h3>Lead - DevOps &amp; Platform <span>@ Material+</span></h3>
+          <ul class="tty-diff">
+            <li data-tty-line>Advised enterprise teams on platform architecture, turning workload, security, and infrastructure needs into deployment plans.</li>
+            <li data-tty-line>Delivered an air-gapped Kubernetes platform using SUSE Harvester, Rancher, and RKE2, with networking, security, and enterprise storage integrations.</li>
+            <li data-tty-line>Built Kubernetes infrastructure for 5G workloads serving more than 760,000 daily users.</li>
+            <li data-tty-line>Led Tanzu Kubernetes upgrades from v1.26 to v1.33 with zero downtime, including validation and rollback planning.</li>
+            <li data-tty-line>Led GPU infrastructure work for vLLM inference across data centres and cloud environments.</li>
+            <li data-tty-line>Automated platform operations and delivery with Terraform, Ansible, scripting, and GitOps practices.</li>
+          </ul>
+        </li>
+        <li class="tty-commit" data-tty-line data-tty-delay="160">
+          <p class="tty-commit-ref"><span class="tty-hash">commit 7d2e0b4</span> <span class="tty-ref">(<u>tag: infogain</u>)</span></p>
+          <p class="tty-commit-date">Date:   July 2017 - May 2019 · India</p>
+          <h3>DevOps Engineer <span>@ Infogain India</span></h3>
+          <ul class="tty-diff">
+            <li data-tty-line>Built and operated Jenkins pipelines for more than 100 applications.</li>
+            <li data-tty-line>Developed service monitoring tools that improved incident visibility and response.</li>
+          </ul>
+        </li>
+        <li class="tty-commit" data-tty-line data-tty-delay="160">
+          <p class="tty-commit-ref"><span class="tty-hash">commit 1b0c7aa</span> <span class="tty-ref">(<u>tag: initial-commit</u>)</span></p>
+          <p class="tty-commit-date">Date:   2013 - 2017 · India</p>
+          <h3>B.Tech, Computer Science <span>@ Uttar Pradesh Technical University</span></h3>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="tty-pane" id="toolkit" data-tty-section aria-labelledby="toolkit-title">
+    {{- partial "tty_bar.html" (dict "title" "5:toolkit" "note" "tree") }}
+    <div class="tty-body">
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>tree -L 2 ~/toolkit</span></p>
+      <h2 class="tty-h2" id="toolkit-title" data-tty-line><span data-tty-fx="decode">Tools I use</span></h2>
+      <p class="tty-tree-root" aria-hidden="true" data-tty-line>~/toolkit</p>
+      <ul class="tty-tree">
+        {{- range $i, $group := $toolkit }}
+        <li data-tty-line data-tty-delay="110">
+          <span class="tty-branch" aria-hidden="true">{{ if eq (add $i 1) (len $toolkit) }}└──{{ else }}├──{{ end }}</span>
+          <h3>{{ $group.dir }}/</h3>
+          <ul class="tty-chips">
+            {{- range $j, $tool := $group.tools }}
+            <li style="--i: {{ $j }}">{{ $tool }}</li>
+            {{- end }}
+          </ul>
+        </li>
         {{- end }}
       </ul>
-      <a class="about-text-link" href="{{ "posts/" | relURL }}">All notes <span aria-hidden="true">→</span></a>
+      <p class="tty-tree-count" data-tty-line>{{ len $toolkit }} directories, {{ $toolCount }} tools</p>
     </div>
   </section>
 
-  <section class="about-contact">
-    <p class="about-section-label">Get in touch</p>
-    <h2>Want to talk?</h2>
-    <p>Happy to talk Kubernetes, platform engineering, GPUs, or whatever you are building. Email is the fastest way to reach me.</p>
-    <div class="about-actions">
-      <a class="about-button about-button-primary" href="mailto:vishnuharidadhich@gmail.com">Send an email</a>
-      <a class="about-button" href="https://www.linkedin.com/in/vishnuhd/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  <section class="tty-pane" id="certs" data-tty-section aria-labelledby="certs-title">
+    {{- partial "tty_bar.html" (dict "title" "6:certs" "note" "kubectl") }}
+    <div class="tty-body">
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>kubectl get certificates -A</span></p>
+      <h2 class="tty-h2" id="certs-title" data-tty-line><span data-tty-fx="decode">Certifications</span></h2>
+      <table class="tty-certs">
+        <thead>
+          <tr data-tty-line><th scope="col">NAMESPACE</th><th scope="col">NAME</th><th scope="col">READY</th></tr>
+        </thead>
+        <tbody>
+          {{- range $certs }}
+          <tr data-tty-line data-tty-delay="90">
+            <td>{{ .issuer }}</td>
+            <td>{{ .name }}</td>
+            <td><span data-tty-fx="check">✓ True</span></td>
+          </tr>
+          {{- end }}
+        </tbody>
+      </table>
     </div>
   </section>
+
+  <section class="tty-pane" id="notes" data-tty-section aria-labelledby="notes-title">
+    {{- partial "tty_bar.html" (dict "title" "7:notes" "note" "vishctl") }}
+    <div class="tty-body">
+      <p class="tty-cmd"><span class="tty-ps1" aria-hidden="true">❯</span><span data-tty-type>vishctl get notes --sort-by=-date | head -5</span></p>
+      <h2 class="tty-h2" id="notes-title" data-tty-line><span data-tty-fx="decode">Recent notes</span></h2>
+      <p class="tty-prose" data-tty-line>I write up what I build and test, including the parts that did not work.</p>
+      <ul class="tty-notes">
+        {{- range first 5 $notes }}
+        <li data-tty-line><a href="{{ .RelPermalink }}"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time><span>{{ .Title }}</span><span aria-hidden="true">↗</span></a></li>
+        {{- end }}
+      </ul>
+      <p data-tty-line><a class="tty-more" href="{{ "posts/" | relURL }}">ls -la ~/notes <span aria-hidden="true">→</span> all {{ len $notes }} notes</a></p>
+    </div>
+  </section>
+
+  <section class="tty-pane tty-shell" id="shell" data-tty-section data-tty-shell aria-labelledby="shell-title">
+    {{- partial "tty_bar.html" (dict "title" "8:shell" "note" "interactive") }}
+    <div class="tty-body">
+      <h2 class="tty-h2" id="shell-title" data-tty-line><span data-tty-fx="decode">Want to talk?</span></h2>
+      <p class="tty-prose" data-tty-line>Happy to talk Kubernetes, platform engineering, GPUs, or whatever you are building. Email is the fastest way to reach me.</p>
+      <div class="tty-shell-window" data-tty-line hidden>
+        <div class="tty-shell-log" role="log" aria-live="polite" aria-label="Shell output" tabindex="0" data-tty-shell-log></div>
+        <form class="tty-shell-form" autocomplete="off">
+          <label for="tty-shell-input">visitor@vishctl:~$</label>
+          <input id="tty-shell-input" type="text" name="command" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="120" aria-describedby="tty-shell-hint">
+        </form>
+        <p class="tty-shell-suggest" id="tty-shell-hint">
+          <span>try:</span>
+          {{- range slice "help" "about" "skills" "certs" "contact" "kubectl get pods" "clear" }}
+          <button type="button" data-tty-run="{{ . }}">{{ . }}</button>
+          {{- end }}
+        </p>
+      </div>
+      <div class="tty-actions" data-tty-line>
+        <a class="tty-button tty-button-primary" href="mailto:vishnuharidadhich@gmail.com" data-tty-contact="email">Send an email</a>
+        <a class="tty-button" href="https://www.linkedin.com/in/vishnuhd/" target="_blank" rel="noopener noreferrer" data-tty-contact="linkedin">LinkedIn</a>
+        <a class="tty-button" href="https://github.com/vishnuhd" target="_blank" rel="noopener noreferrer" data-tty-contact="github">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <nav class="tty-tmux" aria-label="Sections of this page">
+    <span class="tty-tmux-session" aria-hidden="true">[about]</span>
+    <ol>
+      {{- range $i, $name := $windows }}
+      <li><a href="#{{ $name }}"{{ if eq $i 0 }} aria-current="true"{{ end }}><b>{{ $i }}</b>:{{ $name }}</a></li>
+      {{- end }}
+    </ol>
+    <span class="tty-tmux-right" aria-hidden="true"><span data-tty-progress>0%</span><span class="tty-tmux-clock" hidden> <span data-tty-clock-short></span> SGT</span></span>
+  </nav>
 </article>
 
 {{- end }}

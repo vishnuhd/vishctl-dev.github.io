@@ -249,17 +249,7 @@ kbd {
     :is(.home-notes-grid .is-featured, .home-notes-grid:not(:has(.is-featured)) > .home-post-entry:last-child:nth-child(odd), .home-notes-grid:has(.is-featured) > .home-post-entry:last-child:nth-child(even)) .entry-content { font-size: 16px; }
 }
 
-/* Match the existing portfolio and reading views to the notebook palette. */
-.about-page { --about-accent: var(--accent); --about-accent-strong: var(--accent-bright); }
-.about-button-primary:hover { background: color-mix(in srgb, var(--accent-bright) 90%, white); }
-.about-terminal .about-prompt { color: #66e3b4; }
-.about-terminal { --accent: #66e3b4; transform: none; border-color: #324950; background: #0d1820; }
-.about-terminal-bar span { width: 9px; height: 9px; }
-.about-terminal-bar span:first-child { background: #ee817e; }
-.about-terminal-bar span:nth-child(2) { background: #edc16b; }
-.about-terminal-bar span:nth-child(3) { background: #66d6a9; }
-.about-work-card, .about-skill-grid article { background: var(--card-surface); }
-.about-work-card:hover { border-color: var(--accent); }
+/* Match the reading views to the notebook palette. */
 .post-content a, .post-content code:not(pre code), .breadcrumbs, .post-toc-percent, .post-toc-list a.is-active { color: var(--accent); }
 .post-content blockquote { border-left-color: var(--accent); }
 .post-toc-progress span, .post-toc-list a.is-active::before { background: var(--accent); }
@@ -269,6 +259,54 @@ kbd {
 [data-motion-toggle]:hover { color: var(--accent); border-color: var(--accent); }
 [data-motion-toggle]:disabled { cursor: default; }
 
+/* Pointer glow: cards and terminals light up under the cursor, with a brighter edge nearest to it.
+   lab.js picks the targets, adds .lab-glow on first hover, and keeps --mx / --my up to date. */
+::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); }
+:where(.lab-glow) { position: relative; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    :root[data-motion="running"] .lab-glow::before,
+    :root[data-motion="running"] .lab-glow::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 320ms ease; }
+    :root[data-motion="running"] .lab-glow::before { z-index: 0; background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--glow, var(--accent)) 8%, transparent), transparent 70%); }
+    :root[data-motion="running"] .lab-glow::after {
+        z-index: 3;
+        padding: 1px;
+        background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--glow, var(--accent)) 80%, transparent), transparent 70%);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    }
+    :root[data-motion="running"] .lab-glow:hover::before,
+    :root[data-motion="running"] .lab-glow:hover::after { opacity: 1; }
+    @starting-style {
+        :root[data-motion="running"] .lab-glow:hover::before,
+        :root[data-motion="running"] .lab-glow:hover::after { opacity: 0; }
+    }
+}
+
+/* Background spotlight: the page grid brightens around the cursor. A small fixed box that lab.js moves
+   and keeps aligned with the grid in body::before. Reading pages do not get one. */
+.lab-spotlight {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 520px;
+    height: 520px;
+    margin: -260px 0 0 -260px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 500ms ease;
+    background-image:
+        radial-gradient(circle, color-mix(in srgb, var(--accent) 6%, transparent), transparent 60%),
+        linear-gradient(color-mix(in srgb, var(--accent) 15%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--accent) 15%, transparent) 1px, transparent 1px);
+    background-size: auto, 56px 56px, 56px 56px;
+    background-position: center, 0 var(--gy, 0), var(--gx, 0) 0;
+    -webkit-mask-image: radial-gradient(circle, #000, transparent 66%);
+    mask-image: radial-gradient(circle, #000, transparent 66%);
+}
+:root[data-motion="running"] .lab-spotlight.is-on { opacity: 1; }
+
 /* Loops only run after enhancement and while the terminal is on screen. */
 @keyframes lab-cursor { 0%, 45% { opacity: 0.85; } 50%, 95% { opacity: 0; } }
 @keyframes lab-type { from { width: 0; } to { width: calc(var(--chars) * 1ch); } }
@@ -277,7 +315,7 @@ kbd {
 @keyframes lab-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } 70%, 100% { box-shadow: 0 0 0 7px transparent; } }
 
 @media (prefers-reduced-motion: no-preference) {
-    :root[data-motion="running"]:not([data-page-hidden="true"]) :is(.lab-terminal, .about-terminal)[data-visible="true"] .lab-cursor { animation: lab-cursor 1.1s steps(1) infinite; }
+    :root[data-motion="running"]:not([data-page-hidden="true"]) .lab-terminal[data-visible="true"] .lab-cursor { animation: lab-cursor 1.1s steps(1) infinite; }
     :root[data-motion="running"]:not([data-page-hidden="true"]) .lab-status-dot { animation: lab-pulse 2.4s ease-out infinite; }
 
     /* One-time entrance: the command types itself, then rows print. */

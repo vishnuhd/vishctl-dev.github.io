@@ -1,0 +1,11 @@
+{{- /* Title bar for an about-page pane: window dots, a tmux-style "index:name" title, and an optional note. */ -}}
+<header class="tty-bar">
+  <span class="tty-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span class="tty-bar-title">{{ .title }}</span>
+  {{- with .note }}
+  <span class="tty-bar-note">{{ . }}</span>
+  {{- end }}
+  {{- if .skip }}
+  <button type="button" class="tty-bar-skip" data-tty-skip hidden>esc to skip</button>
+  {{- end }}
+</header>
