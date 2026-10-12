@@ -82,14 +82,12 @@
 
     // Pointer glow on cards and terminals, and a grid spotlight behind the page, for mouse users with motion on.
     // The styles are under "Pointer glow" and "Background spotlight" in lab.css.
-    const glowTargets = '.post-entry, .lab-terminal, .searchResults li, .paginav, .tty-pane, .tty-work';
+    const glowTargets = '.post-entry, .lab-terminal, .searchResults li, .paginav, .tty-pane, .tty-work, .post-toc, .post-content div.highlight, .post-content .mermaid, .post-content .table-scroll';
     const gridSize = 56;
-    const spotlight = document.querySelector('.post-single') ? null : document.createElement('div');
-    if (spotlight) {
-        spotlight.className = 'lab-spotlight';
-        spotlight.setAttribute('aria-hidden', 'true');
-        document.body.append(spotlight);
-    }
+    const spotlight = document.createElement('div');
+    spotlight.className = 'lab-spotlight';
+    spotlight.setAttribute('aria-hidden', 'true');
+    document.body.append(spotlight);
     let pointer = null;
     let pointerQueued = false;
     const gridOffset = (edge) => `${(((-1 - edge) % gridSize) + gridSize) % gridSize}px`;
@@ -104,9 +102,10 @@
             target.classList.add('lab-glow');
             target.style.setProperty('--mx', `${x - rect.left}px`);
             target.style.setProperty('--my', `${y - rect.top}px`);
+            // Wide tables and diagrams scroll sideways; keep the glow over the visible part.
+            if (target.scrollWidth > target.clientWidth) target.style.setProperty('--sx', `${target.scrollLeft}px`);
             target = target.parentElement?.closest(glowTargets);
         }
-        if (!spotlight) return;
         // The box is centred on the cursor; shift its grid so the lines stay on the page grid.
         spotlight.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         spotlight.style.setProperty('--gx', gridOffset(x - 260));
@@ -124,11 +123,11 @@
         queuePointer();
     }, { passive: true });
     window.addEventListener('scroll', () => {
-        if (pointer && spotlight) queuePointer();
+        if (pointer) queuePointer();
     }, { passive: true });
     root.addEventListener('pointerleave', () => {
         pointer = null;
-        spotlight?.classList.remove('is-on');
+        spotlight.classList.remove('is-on');
     });
 
     // Looping terminal animations only run while the terminal is on screen.

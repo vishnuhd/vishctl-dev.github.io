@@ -263,9 +263,11 @@ kbd {
    lab.js picks the targets, adds .lab-glow on first hover, and keeps --mx / --my up to date. */
 ::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); }
 :where(.lab-glow) { position: relative; }
+/* Code blocks and diagrams stay dark in both themes, so they keep the bright accent. */
+.post-content :is(.highlight, .mermaid) { --glow: #66e3b4; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     :root[data-motion="running"] .lab-glow::before,
-    :root[data-motion="running"] .lab-glow::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 320ms ease; }
+    :root[data-motion="running"] .lab-glow::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; translate: var(--sx, 0); transition: opacity 320ms ease; }
     :root[data-motion="running"] .lab-glow::before { z-index: 0; background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--glow, var(--accent)) 8%, transparent), transparent 70%); }
     :root[data-motion="running"] .lab-glow::after {
         z-index: 3;
@@ -284,8 +286,9 @@ kbd {
 }
 
 /* Background spotlight: the page grid brightens around the cursor. A small fixed box that lab.js moves
-   and keeps aligned with the grid in body::before. Reading pages do not get one. */
+   and keeps aligned with the grid in body::before. It is fainter behind article text. */
 .lab-spotlight {
+    --spot-line: color-mix(in srgb, var(--accent) 15%, transparent);
     position: fixed;
     top: 0;
     left: 0;
@@ -298,13 +301,14 @@ kbd {
     transition: opacity 500ms ease;
     background-image:
         radial-gradient(circle, color-mix(in srgb, var(--accent) 6%, transparent), transparent 60%),
-        linear-gradient(color-mix(in srgb, var(--accent) 15%, transparent) 1px, transparent 1px),
-        linear-gradient(90deg, color-mix(in srgb, var(--accent) 15%, transparent) 1px, transparent 1px);
+        linear-gradient(var(--spot-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--spot-line) 1px, transparent 1px);
     background-size: auto, 56px 56px, 56px 56px;
     background-position: center, 0 var(--gy, 0), var(--gx, 0) 0;
     -webkit-mask-image: radial-gradient(circle, #000, transparent 66%);
     mask-image: radial-gradient(circle, #000, transparent 66%);
 }
+body:has(.post-single .post-content) .lab-spotlight { --spot-line: color-mix(in srgb, var(--accent) 9%, transparent); }
 :root[data-motion="running"] .lab-spotlight.is-on { opacity: 1; }
 
 /* Loops only run after enhancement and while the terminal is on screen. */
