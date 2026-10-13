@@ -1,0 +1,134 @@
+/* Tok: the pixel robot from tok.js. It walks along the bottom edge of the window.
+   The sprite is an inline SVG; tok.js swaps eyes and legs through data attributes on .tok. */
+.tok {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 90;
+    pointer-events: none;
+    will-change: transform;
+}
+/* Sit above the tmux status bar on the About page. */
+body:has(.tty-tmux) .tok { bottom: 52px; }
+
+.tok-bot {
+    position: relative;
+    display: block;
+    padding: 0 0 4px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+}
+.tok-bot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tok-sprite { position: relative; display: block; }
+.tok-sprite svg {
+    display: block;
+    width: 48px;
+    height: 54px;
+    filter: drop-shadow(0 0 1px color-mix(in srgb, #66e3b4 45%, transparent));
+}
+.tok[data-face="left"] .tok-sprite svg { transform: scaleX(-1); }
+.tok-shadow {
+    position: absolute;
+    left: 50%;
+    bottom: 1px;
+    width: 30px;
+    height: 4px;
+    margin-left: -15px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+/* Eyes and legs: one group of each is visible at a time. */
+.tok-eyes[data-eyes="closed"], .tok-legs { display: none; }
+.tok[data-eyes="closed"] .tok-eyes[data-eyes="open"] { display: none; }
+.tok[data-eyes="closed"] .tok-eyes[data-eyes="closed"],
+.tok[data-legs="stand"] .tok-legs[data-legs="stand"],
+.tok[data-legs="left"] .tok-legs[data-legs="left"],
+.tok[data-legs="right"] .tok-legs[data-legs="right"] { display: inline; }
+.tok[data-state="sleep"] .tok-a { opacity: 0.3; }
+
+/* Speech bubble, drawn with square pixel edges. */
+.tok-bubble {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    width: max-content;
+    max-width: min(240px, calc(100vw - 24px));
+    margin: 0;
+    padding: 6px 9px;
+    border: 2px solid #66e3b4;
+    background: #0d1820;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+    color: #d2dee6;
+    font: 500 11.5px/1.45 var(--font-family-code);
+    pointer-events: none;
+}
+.tok-bubble::before { content: "> "; color: #66e3b4; }
+.tok-bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 18px;
+    width: 6px;
+    height: 4px;
+    background: #66e3b4;
+    box-shadow: -2px 4px 0 -1px #66e3b4;
+}
+.tok[data-side="right"] .tok-bubble { left: auto; right: 0; }
+.tok[data-side="right"] .tok-bubble::after { left: auto; right: 18px; box-shadow: 2px 4px 0 -1px #66e3b4; }
+
+.tok-close {
+    position: absolute;
+    top: -6px;
+    right: -12px;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 1px solid #324950;
+    border-radius: 3px;
+    background: #0d1820;
+    color: #97aab9;
+    font: 13px/1 var(--font-family-code);
+    cursor: pointer;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+.tok-close:hover { color: #66e3b4; border-color: #66e3b4; }
+.tok:hover .tok-close, .tok:focus-within .tok-close, .tok[data-ui="on"] .tok-close { opacity: 1; }
+
+@keyframes tok-led { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.35; } }
+@keyframes tok-chest { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.55; } }
+@keyframes tok-hop { 0%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-9px); } 50% { transform: translateY(-14px); } }
+@keyframes tok-pop { from { opacity: 0; transform: translateY(4px) scale(0.85); } to { opacity: 1; transform: none; } }
+@keyframes tok-z { from { opacity: 1; transform: translate(0, 0); } to { opacity: 0; transform: translate(8px, -16px); } }
+
+.tok[data-state="sleep"] .tok-sprite::after {
+    content: "z";
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    color: var(--accent);
+    font: 700 12px/1 var(--font-family-code);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    :root[data-motion="running"]:not([data-page-hidden="true"]) .tok:not([data-state="sleep"]) .tok-a { animation: tok-led 1.8s steps(1) infinite; }
+    :root[data-motion="running"]:not([data-page-hidden="true"]) .tok:not([data-state="sleep"]) .tok-v { animation: tok-chest 2.6s steps(1) infinite; }
+    :root[data-motion="running"] .tok-sprite.is-hop { animation: tok-hop 420ms steps(1, jump-none) both; }
+    :root[data-motion="running"] .tok-bubble:not([hidden]) { animation: tok-pop 180ms steps(3) both; transform-origin: bottom left; }
+    :root[data-motion="running"] .tok[data-side="right"] .tok-bubble:not([hidden]) { transform-origin: bottom right; }
+    :root[data-motion="running"]:not([data-page-hidden="true"]) .tok[data-state="sleep"] .tok-sprite::after { animation: tok-z 2.4s steps(4) infinite; }
+}
+
+@media (max-width: 600px) {
+    .tok-sprite svg { width: 32px; height: 36px; }
+    .tok-shadow { width: 20px; margin-left: -10px; }
+    .tok-close { right: -14px; }
+}
+@media print {
+    .tok { display: none; }
+}

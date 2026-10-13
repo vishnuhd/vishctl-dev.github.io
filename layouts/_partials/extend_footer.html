@@ -4,6 +4,10 @@
 {{- $readerScript := resources.Get "js/reader.js" | minify | fingerprint }}
 <script defer src="{{ $readerScript.RelPermalink }}" integrity="{{ $readerScript.Data.Integrity }}"></script>
 
+{{- /* Tok, the pixel robot. Loaded after lab.js, which owns the data-motion switch it follows. */ -}}
+{{- $tokScript := resources.Get "js/tok.js" | minify | fingerprint }}
+<script defer src="{{ $tokScript.RelPermalink }}" integrity="{{ $tokScript.Data.Integrity }}"></script>
+
 {{- if eq .Layout "about" }}
 {{- /* Loaded after lab.js, which owns the data-motion switch this script follows. */ -}}
 {{- $aboutScript := resources.Get "js/about.js" | minify | fingerprint }}
