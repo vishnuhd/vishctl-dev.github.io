@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["kubernetes", "autoscaling", "keda", "vllm", "inference", "ai-infra"]
 cover:
   image: "/images/posts/llm-autoscaling/00-pixel-art-cover.png"
-  alt: "Pixel art of a queue of request blocks feeding a gauge, with one solid GPU server and three more fading in beside it"
+  alt: "Pixel art of a queued stream branching into four GPU server racks under a Kubernetes control unit"
   relative: false
 ShowToc: true
 TocOpen: false

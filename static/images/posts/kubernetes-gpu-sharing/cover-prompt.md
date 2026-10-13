@@ -1,0 +1,5 @@
+# Cover generation prompt
+
+Generated and refined using the built-in imagegen tool. Final asset: `00-pixel-art-cover.png`, 1672 x 941 PNG.
+
+Use case: precise-object-edit. Revise this pixel-art blog cover. Preserve the GPU card, three colored workload cubes, arrangement, scale, crisp pixel-art detail and dark navy/cyan/violet/amber palette. Change the plain empty background to a carefully composed, low-contrast nerdy pixel-art technical backdrop: dark navy circuit-board traces, a few large pixelated chip outlines, cyan solder-pad dots, subtle square grid, and restrained violet wiring. These technical patterns should visibly occupy the negative space but remain much dimmer than the central GPU. All background marks must be blocky and deliberately pixelated, not thin smooth vector lines. No landscape, room, city, stars, moon, floating islands, or other scenery. No text, letters, numbers, watermark, logos, or signature. No dense clutter, bright competing glow or random particles. Overall feel: a thoughtful retro hardware magazine illustration. Keep 1672 x 941 PNG.

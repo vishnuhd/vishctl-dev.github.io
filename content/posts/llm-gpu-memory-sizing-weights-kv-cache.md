@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["gpu", "inference", "kv-cache", "vllm", "capacity-planning", "ai-infra"]
 cover:
   image: "/images/posts/llm-gpu-memory-sizing/00-pixel-art-cover.png"
-  alt: "Pixel art of a tall memory bar inside a GPU, with a fixed violet block of weights at the bottom and cyan cache blocks stacking up toward an amber limit line"
+  alt: "Pixel art of a GPU, a memory bank with fixed weights and growing cache, and a laptop displaying capacity headroom"
   relative: false
 ShowToc: true
 TocOpen: false

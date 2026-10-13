@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["kubernetes", "vllm", "cold-start", "storage", "inference", "ai-infra"]
 cover:
   image: "/images/posts/vllm-cold-start/00-pixel-art-cover.png"
-  alt: "Pixel art comparing two startup timelines: long amber progress bars on the left and short cyan bars on the right, with a disk feeding a GPU chip"
+  alt: "Pixel art of a local SSD transferring model tiles through a short connection into a GPU server inside a rack"
   relative: false
 ShowToc: true
 TocOpen: false

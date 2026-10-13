@@ -1,0 +1,5 @@
+# Cover generation prompt
+
+Generated and refined using the built-in imagegen tool. Final asset: `00-pixel-art-cover.png`, 1672 x 941 PNG.
+
+Use case: precise-object-edit. Revise this pixel-art blog cover. Preserve all six connected foreground technical stations, their shapes, sequence, spacing, depth and dark navy/cyan/violet/amber palette. Replace the overly plain background with a subdued but visible nerdy pixel-art technical collage: a faint square grid, large stepped circuit traces, a few chunky chip-pin patterns, and two ghosted oscilloscope-like waveform panels in the upper negative space. Panels show graphical stepped waves only, no writing or glyphs. Everything should be deliberately pixelated, clean and coherent, in dark blue with dim cyan and selective violet. Keep the equipment much brighter than the backdrop. No scenery, landscape, room, buildings, sky, stars, moon, or islands. No readable text, letters, numbers, watermark, logos or signatures. Avoid dense noise and decorative cyberpunk clutter. Sophisticated retro computing illustration. Keep 1672 x 941 PNG.

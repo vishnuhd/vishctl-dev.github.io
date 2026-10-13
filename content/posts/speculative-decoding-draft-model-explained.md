@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["speculative-decoding", "inference", "vllm", "latency", "ai-infra"]
 cover:
   image: "/images/posts/speculative-decoding/00-pixel-art-cover.png"
-  alt: "Pixel art of a small violet chip sending a line of token blocks to a large cyan chip, with the first three ticked and the last two crossed out"
+  alt: "Pixel art of a small violet drafting robot sending token tiles through a larger cyan processor that accepts or rejects them"
   relative: false
 ShowToc: true
 TocOpen: false

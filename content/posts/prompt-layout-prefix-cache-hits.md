@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["prompt-caching", "kv-cache", "inference", "vllm", "rag", "ai-infra"]
 cover:
   image: "/images/posts/prompt-layout-cache/00-pixel-art-cover.png"
-  alt: "Pixel art of two prompt strips: the top one starts with an amber block and the rest is faded with a cross, the bottom one is solid cyan with padlocks and ends with a small amber block and a tick"
+  alt: "Pixel art of two prompt strips beside documents and a locked cache drawer, contrasting an early change with a reusable stable prefix"
   relative: false
 ShowToc: true
 TocOpen: false

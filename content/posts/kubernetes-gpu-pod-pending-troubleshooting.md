@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["kubernetes", "gpu", "scheduling", "troubleshooting", "nvidia", "ai-infra"]
 cover:
   image: "/images/posts/gpu-pod-pending/00-pixel-art-cover.png"
-  alt: "Pixel art of an amber workload cube hovering above four server racks, with dotted lines to each rack ending in small crosses and one ending in a tick"
+  alt: "Pixel art of a terminal, Kubernetes emblem, and diagnostic lens checking four server sockets for an amber workload"
   relative: false
 ShowToc: true
 TocOpen: false

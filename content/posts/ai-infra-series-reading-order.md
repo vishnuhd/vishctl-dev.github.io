@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["ai-infra", "inference", "kubernetes", "vllm", "guide"]
 cover:
   image: "/images/posts/ai-infra-reading-order/00-pixel-art-cover.png"
-  alt: "Pixel art of six glowing waypoints joined by a dotted path that climbs across a night sky, ending at a small amber flag"
+  alt: "Pixel art of six connected technical learning stations over dark circuit traces and waveform panels"
   relative: false
 ShowToc: true
 TocOpen: false

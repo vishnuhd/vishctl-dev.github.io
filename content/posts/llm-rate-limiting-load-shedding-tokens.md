@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["rate-limiting", "multi-tenancy", "inference", "api-gateway", "reliability", "ai-infra"]
 cover:
   image: "/images/posts/llm-rate-limiting/00-pixel-art-cover.png"
-  alt: "Pixel art of a gate holding back one oversized amber request while small cyan requests pass in an even line toward a GPU, with a bucket of tokens dripping above"
+  alt: "Pixel art of a token bucket metering small requests through a shield-shaped gateway while blocking an oversized request"
   relative: false
 ShowToc: true
 TocOpen: false

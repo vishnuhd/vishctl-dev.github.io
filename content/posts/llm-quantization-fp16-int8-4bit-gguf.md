@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["quantization", "gguf", "local-llm", "inference", "vllm", "ai-infra"]
 cover:
   image: "/images/posts/llm-quantization/00-pixel-art-cover.png"
-  alt: "Pixel art of a smooth cyan curve on one screen and the same curve rebuilt from a few chunky amber and violet blocks on a second screen"
+  alt: "Pixel art of three llama portraits rendered at progressively coarser precision beside a compact GPU"
   relative: false
 ShowToc: true
 TocOpen: false

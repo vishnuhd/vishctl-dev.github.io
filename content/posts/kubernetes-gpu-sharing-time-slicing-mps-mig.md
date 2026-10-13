@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["kubernetes", "gpu", "nvidia", "gpu-sharing", "mig", "ai-infra"]
 cover:
   image: "/images/posts/kubernetes-gpu-sharing/00-pixel-art-cover.png"
-  alt: "Pixel art of one GPU card whose chip is split into cyan, violet, and amber slices, each wired to a small workload cube floating above it"
+  alt: "Pixel art of a GPU with three colored chip compartments and workload cubes over a dark circuit-pattern background"
   relative: false
 ShowToc: true
 TocOpen: false

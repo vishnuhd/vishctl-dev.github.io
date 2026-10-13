@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["inference", "benchmarking", "latency", "vllm", "observability", "ai-infra"]
 cover:
   image: "/images/posts/llm-inference-metrics/00-pixel-art-cover.png"
-  alt: "Pixel art monitor showing a stopwatch, three streams of token blocks, and latency bars that climb past a dotted target line"
+  alt: "Pixel art of a benchmarking workstation with a stopwatch, token-stream graphs, a GPU board, and chat icons"
   relative: false
 ShowToc: true
 TocOpen: false

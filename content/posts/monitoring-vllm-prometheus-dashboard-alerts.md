@@ -8,7 +8,7 @@ series: ["AI Infra"]
 tags: ["observability", "prometheus", "vllm", "inference", "kubernetes", "ai-infra"]
 cover:
   image: "/images/posts/vllm-monitoring/00-pixel-art-cover.png"
-  alt: "Pixel art monitor showing six small dashboard panels with lines, bars, and a gauge, one of them highlighted in amber with a warning triangle"
+  alt: "Pixel art of a six-panel monitoring console beside a small GPU server, a sleeping cat, and a mug"
   relative: false
 ShowToc: true
 TocOpen: false
