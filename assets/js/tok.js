@@ -1,4 +1,4 @@
-// Tok: a small pixel robot that wanders along the bottom edge of the window.
+// Tok: a small pixel robot that wanders at the height where you place it.
 // It follows the motion switch from lab.js: with motion off (or reduced motion) it stands still.
 // The styles live in css/extended/tok.css.
 (() => {
@@ -80,8 +80,8 @@
     Object.assign(tok.dataset, { eyes: 'open', legs: 'stand', face: 'right', side: 'left', state: 'walk' });
     tok.innerHTML = `
         <p class="tok-bubble" aria-hidden="true" hidden></p>
-        <button class="tok-bot" type="button" aria-label="Tok, the site robot. Press to say hi.">
-            <span class="tok-sprite">${sprite}</span>
+        <button class="tok-bot" type="button" aria-label="Tok, the site robot. Press to say hi, or drag to move me.">
+            <span class="tok-sprite" draggable="false">${sprite}</span>
             <span class="tok-shadow" aria-hidden="true"></span>
         </button>
         <button class="tok-close" type="button" aria-label="Hide Tok for this visit" title="Hide Tok for this visit">&times;</button>`;
@@ -148,6 +148,10 @@
         dir = 1;
     }
 
+    let elevation = Math.max(0, Number(session('vishctl-tok-elevation')) || 0);
+    let drag = null;
+    let suppressClickUntil = 0;
+
     let state = 'walk';
     let until = performance.now() + rand(3000, 7000);
     let raf = 0;
@@ -171,8 +175,17 @@
     const width = () => bot.offsetWidth || 48;
     const maxX = () => Math.max(EDGE, window.innerWidth - width() - EDGE);
 
+    const maxElevation = () => Math.max(0, window.innerHeight - bot.offsetHeight
+        - (parseFloat(getComputedStyle(tok).bottom) || 0) - EDGE);
+    const clampPosition = () => {
+        x = Math.max(EDGE, Math.min(x, maxX()));
+        elevation = Math.max(0, Math.min(elevation, maxElevation()));
+    };
+
     const render = () => {
-        tok.style.transform = `translate3d(${Math.round(x)}px, 0, 0)`;
+        elevation = Math.min(elevation, maxElevation());
+        tok.style.transform = `translate3d(${Math.round(x)}px, ${-Math.round(elevation)}px, 0)`;
+        tok.dataset.bubble = bot.getBoundingClientRect().top < 100 ? 'below' : 'above';
         tok.dataset.face = dir < 0 ? 'left' : 'right';
         tok.dataset.side = x + width() / 2 > window.innerWidth / 2 ? 'right' : 'left';
     };
@@ -224,6 +237,11 @@
     const tick = (now) => {
         raf = 0;
         if (gone || !running()) return;
+        if (drag) {
+            last = 0;
+            raf = window.requestAnimationFrame(tick);
+            return;
+        }
         const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
         last = now;
 
@@ -249,7 +267,7 @@
             // Stop and look when the cursor comes close.
             const near = pointer && now - pointer.t < 1500
                 && Math.abs(pointer.x - (x + width() / 2)) < 110
-                && pointer.y > window.innerHeight - 160;
+                && Math.abs(pointer.y - (bot.getBoundingClientRect().top + bot.offsetHeight / 2)) < 110;
             if (!entering && near && now > curiousAt) {
                 curiousAt = now + 8000;
                 setState('idle', now);
@@ -312,7 +330,49 @@
         if (event.animationName === 'tok-hop') body.classList.remove('is-hop');
     });
 
-    bot.addEventListener('click', () => {
+    // Capture the pointer so a pickup keeps working outside the tiny sprite.
+    bot.addEventListener('pointerdown', (event) => {
+        if (!event.isPrimary || event.button !== 0 || drag) return;
+        const now = performance.now();
+        wake(now, true);
+        drag = { id: event.pointerId, startX: event.clientX, startY: event.clientY,
+            x, elevation, at: now, moved: false };
+        bot.setPointerCapture(event.pointerId);
+    });
+    bot.addEventListener('pointermove', (event) => {
+        if (!drag || event.pointerId !== drag.id) return;
+        const dx = event.clientX - drag.startX;
+        const dy = event.clientY - drag.startY;
+        if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+        drag.moved = true;
+        entering = false;
+        tok.dataset.dragging = 'true';
+        body.classList.remove('is-hop');
+        hideBubble();
+        x = drag.x + dx;
+        elevation = drag.elevation - dy;
+        clampPosition();
+        render();
+    });
+    const drop = (event) => {
+        if (!drag || event.pointerId !== drag.id) return;
+        const now = performance.now();
+        if (drag.moved) suppressClickUntil = now + 500;
+        until += now - drag.at;
+        lastInput = now;
+        last = 0;
+        pointer = null;
+        drag = null;
+        delete tok.dataset.dragging;
+        if (bot.hasPointerCapture(event.pointerId)) bot.releasePointerCapture(event.pointerId);
+        render();
+    };
+    bot.addEventListener('pointerup', drop);
+    bot.addEventListener('pointercancel', drop);
+    bot.addEventListener('lostpointercapture', drop);
+
+    bot.addEventListener('click', (event) => {
+        if (event.detail && performance.now() < suppressClickUntil) return;
         const now = performance.now();
         wake(now, true);
         tok.dataset.ui = 'on';
@@ -362,13 +422,14 @@
     }, { passive: true });
     document.addEventListener('keydown', () => wake(performance.now()));
     window.addEventListener('resize', () => {
-        x = Math.min(x, maxX());
+        clampPosition();
         render();
     });
     window.addEventListener('pagehide', () => {
         if (gone) return;
         session('vishctl-tok-x', String(Math.round(Math.max(EDGE, Math.min(x, maxX())))));
         session('vishctl-tok-dir', String(dir));
+        session('vishctl-tok-elevation', String(Math.round(elevation)));
     });
 
     new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-motion', 'data-page-hidden'] });

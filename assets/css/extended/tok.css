@@ -1,4 +1,4 @@
-/* Tok: the pixel robot from tok.js. It walks along the bottom edge of the window.
+/* Tok: the pixel robot from tok.js. Drag it to choose the height where it walks.
    The sprite is an inline SVG; tok.js swaps eyes and legs through data attributes on .tok. */
 .tok {
     position: fixed;
@@ -17,10 +17,14 @@ body:has(.tty-tmux) .tok { bottom: 52px; }
     padding: 0 0 4px;
     border: 0;
     background: none;
-    cursor: pointer;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
     pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
 }
+.tok[data-dragging="true"] .tok-bot { cursor: grabbing; }
 .tok-bot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .tok-sprite { position: relative; display: block; }
 .tok-sprite svg {
@@ -79,6 +83,9 @@ body:has(.tty-tmux) .tok { bottom: 52px; }
 }
 .tok[data-side="right"] .tok-bubble { left: auto; right: 0; }
 .tok[data-side="right"] .tok-bubble::after { left: auto; right: 18px; box-shadow: 2px 4px 0 -1px #66e3b4; }
+
+.tok[data-bubble="below"] .tok-bubble { bottom: auto; top: calc(100% + 6px); }
+.tok[data-bubble="below"] .tok-bubble::after { top: auto; bottom: 100%; box-shadow: none; }
 
 .tok-close {
     position: absolute;
