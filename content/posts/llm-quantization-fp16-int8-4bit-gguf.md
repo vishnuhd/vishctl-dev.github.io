@@ -1,7 +1,7 @@
 ---
 title: "LLM Quantization, Simply: FP16, 8-bit, 4-bit, and What Q4_K_M Means"
 date: 2026-10-13T02:30:00+08:00
-draft: true
+draft: false
 author: "Vishnu"
 description: "A simple, diagram-first guide to LLM quantization: what rounding a weight actually does, how much memory each bit width saves, how to read names like Q4_K_M, AWQ, and FP8, and a toy script that shows where quality falls off."
 series: ["AI Infra"]
