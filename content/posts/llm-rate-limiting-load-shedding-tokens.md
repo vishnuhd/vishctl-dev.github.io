@@ -1,9 +1,9 @@
 ---
 title: "Rate Limiting LLM APIs: Count Tokens, Not Requests"
 date: 2026-10-13T02:42:00+08:00
-draft: true
+draft: false
 author: "Vishnu"
-description: "A simple, diagram-first guide to protecting a shared LLM endpoint: why requests-per-minute limits fail, how a token bucket works, when to reject instead of queue, and a small simulation that shows one heavy tenant taking 91% of a GPU."
+description: "A diagram-first guide to token budgets, fair admission, and load shedding for shared LLM APIs, with a runnable Python simulation."
 series: ["AI Infra"]
 tags: ["rate-limiting", "multi-tenancy", "inference", "api-gateway", "reliability", "ai-infra"]
 cover:
@@ -14,18 +14,18 @@ ShowToc: true
 TocOpen: false
 ---
 
-Every API gateway can limit requests per minute. For a normal web API, that is enough, because every request costs about the same.
-
-An LLM request does not. One call asks for a 20-token answer to a one-line question. The next sends a 100,000-token document and asks for a 4,000-token report.
-
-A request counter sees "one request" both times.
-
 ```text
-Web API limit = requests per minute, because requests cost about the same
-LLM API limit = tokens per minute, because one request can cost 1,000 times another
+Request limits count calls: a short chat and a long report each count as one
+Token budgets count volume: large prompts and long answers spend more budget
 ```
 
-{{< mermaid caption="Top: both requests count as one, so the heavy one slips through. Bottom: counted in tokens, the heavy request is 1,500 times larger." >}}
+Most API gateways can limit requests per minute. That is a useful first guardrail when requests have similar costs.
+
+LLM requests can vary widely. One call asks for a 20-token answer to a 50-token question. The next sends a 100,000-token document and asks for a 4,000-token report.
+
+A request counter sees "one request" both times. Token volume gives you a better starting point for a budget, although input and output tokens do not cost the same amount of GPU work.
+
+{{< mermaid caption="Top: both requests count as one, so the heavy one slips through. Bottom: counted in tokens, the heavy request is roughly 1,486 times larger." >}}
 flowchart TD
     subgraph REQ["Counting requests"]
         direction LR
@@ -63,7 +63,7 @@ flowchart TD
 
 This post covers the two protections every shared model endpoint needs: a **token budget** per tenant, and **load shedding** for the moments when the whole server is full.
 
-It picks up where my [autoscaling guide](/posts/autoscaling-llm-inference-kubernetes-keda/) stopped: what to do once you have hit the maximum number of replicas and traffic keeps coming.
+It covers what to do once you have hit the maximum number of replicas and traffic keeps coming.
 
 ## Why request limits fail
 
@@ -75,9 +75,9 @@ Put three teams on one model server. Each gets the same limit: 2 requests per se
 | Light 1 (chat) | 2 | 400 | 800 |
 | Light 2 (chat) | 2 | 400 | 800 |
 
-Everyone is inside the limit. Nobody did anything wrong. Yet one team is using **91% of the GPU**, and the two chat teams feel it as slow first tokens.
+Everyone is inside the limit. Nobody did anything wrong. Yet one team submits **90.9% of the tokens**. That can crowd out the chat teams, even though the exact latency impact depends on batching, prompt caching, and the mix of input and output tokens.
 
-A limit that everyone obeys while one tenant starves the rest is not a limit. The unit is wrong.
+Request counts alone miss that difference in workload. Keep a request limit for bursts, and add a token budget for volume.
 
 ## The token bucket
 
@@ -115,17 +115,23 @@ You must decide the cost **before** running the request, and half of it is unkno
 Cost = input tokens (known) + output tokens (not known yet)
 ```
 
-The usual answer is to reserve the worst case and refund the rest:
+For a gateway you control, one approach is to reserve the worst case and refund the rest:
 
 1. **Reserve** `input tokens + max_tokens` when the request arrives.
 2. **Run** the request.
 3. **Refund** the unused output tokens when it finishes.
 
+Treat `max_tokens` here as your output cap; the API field name varies. Hosted providers can use different accounting rules.
+
 This is also a good reason to make clients set a sensible `max_tokens`. A client that always asks for the maximum reserves budget it never uses.
+
+The budget is an approximation of compute cost. Prefill handles input tokens in parallel, while decode generates output tokens step by step. For tighter control, use separate input and output budgets or measured weights, plus an in-flight request limit.
+
+A reservation larger than the bucket capacity will never fit, even after waiting. Reject it with a clear size or budget error so the client can shorten the request. In production, make reservations atomic across gateway replicas and reconcile them when requests finish or are cancelled.
 
 ## Try it: one heavy tenant, two limits
 
-This script runs the three-team example through both kinds of limit. It uses only the Python standard library.
+This script runs the three-team example through both kinds of limit. Save it as `token_limit.py`. It uses only the Python standard library and models admission decisions, not a GPU or a queue.
 
 ```python
 #!/usr/bin/env python3
@@ -172,7 +178,7 @@ for title, result in (("Limit: 2 requests per second each", by_request),
     total = sum(result.values())
     print(title)
     for name, tokens in result.items():
-        print(f"  {name:8} {tokens / SECONDS:8,.0f} tokens/s   {100 * tokens / total:5.1f}% of the GPU")
+        print(f"  {name:8} {tokens / SECONDS:8,.0f} tokens/s   {100 * tokens / total:5.1f}% of admitted tokens")
     print(f"  {'total':8} {total / SECONDS:8,.0f} tokens/s\n")
 ```
 
@@ -184,21 +190,23 @@ The output:
 
 ```text
 Limit: 2 requests per second each
-  heavy      16,000 tokens/s    90.9% of the GPU
-  light-1       800 tokens/s     4.5% of the GPU
-  light-2       800 tokens/s     4.5% of the GPU
+  heavy      16,000 tokens/s    90.9% of admitted tokens
+  light-1       800 tokens/s     4.5% of admitted tokens
+  light-2       800 tokens/s     4.5% of admitted tokens
   total      17,600 tokens/s
 
 Limit: 1,000 tokens per second each
-  heavy       1,067 tokens/s    40.0% of the GPU
-  light-1       800 tokens/s    30.0% of the GPU
-  light-2       800 tokens/s    30.0% of the GPU
+  heavy       1,067 tokens/s    40.0% of admitted tokens
+  light-1       800 tokens/s    30.0% of admitted tokens
+  light-2       800 tokens/s    30.0% of admitted tokens
   total       2,667 tokens/s
 ```
 
 Same class, same three tenants. The only change is the unit being counted.
 
-With the token limit, the two chat teams are **not slowed down at all**: they still get their full 800 tokens per second. Only the heavy tenant is held to its budget. That is what a fair limit looks like.
+With the token limit, all chat requests are still admitted: each light tenant keeps its full 800 tokens per second. The heavy tenant is held near its sustained budget. The initial 8,000-token burst explains why its 60-second average is slightly above 1,000 tokens per second.
+
+This demonstrates admission fairness by token volume. It does not predict response latency or GPU utilization.
 
 Notice the same `TokenBucket` class did both jobs. A request limit is just a token bucket where every request costs 1.
 
@@ -207,7 +215,7 @@ Notice the same `TokenBucket` class did both jobs. A request limit is just a tok
 Rate limiting belongs at the front door, before a request can take a slot on the GPU.
 
 {{< mermaid caption="The budget check happens at the gateway. A request that is over budget is refused in milliseconds and never reaches the model server's queue." >}}
-flowchart LR
+flowchart TD
     C["Client<br/>with API key"] g1@--> G["Gateway<br/>token budget<br/>per tenant"]
     G g2@--> R["Router<br/>picks a replica"]
     R g3@--> V["vLLM<br/>queue and GPU"]
@@ -231,14 +239,14 @@ flowchart LR
 Three practical points:
 
 - **Key the budget on the tenant**, not the IP address. Use the API key, team, or application.
-- **Share the count across gateway replicas.** If each replica keeps its own bucket in memory, three replicas means three times the budget. A shared store such as Redis fixes that.
+- **Share the count across gateway replicas.** If each replica keeps its own bucket in memory, three replicas means three times the budget. Use a shared store such as Redis with an atomic refill-and-reserve operation.
 - **Tell clients where they stand.** Hosted APIs return headers such as `x-ratelimit-remaining-tokens` for this. Doing the same lets well-behaved clients slow down before they hit the wall.
 
 ## Load shedding: when the whole server is full
 
 A token budget protects tenants from each other. It does not protect the server from everyone at once.
 
-Suppose your replicas can finish 10 requests per second, you are already at the maximum replica count, and 15 requests per second arrive. Each tenant is inside its own budget.
+For a simplified example with equally costly requests, suppose your replicas can finish 10 requests per second, you are already at the maximum replica count, and 15 requests per second arrive. Each tenant is inside its own budget.
 
 Without a plan, the extra requests wait in the queue. The queue never drains, because arrivals keep beating departures:
 
@@ -249,16 +257,16 @@ Without a plan, the extra requests wait in the queue. The queue never drains, be
 | 40 s | 600 | 400 | 200 | 20 s |
 | 60 s | 900 | 600 | 300 | 30 s |
 
-After one minute, every new request waits 30 seconds before it even starts. Most clients time out at about that point, so the GPU is now working on answers that nobody is waiting for.
+After one minute, every new request waits 30 seconds before it even starts. If clients have a 30-second total timeout, queued requests can expire before they receive an answer. Unless cancellation reaches the backend, the GPU may keep working on answers nobody is waiting for.
 
-That is the worst outcome: the server is at full throttle and **goodput is close to zero**.
+Throughput can stay high while **goodput collapses**: fewer answers reach clients within their deadline.
 
 {{< mermaid caption="Top: with no shedding, every request slows down and many time out. Bottom: rejecting the excess immediately keeps the admitted requests fast." >}}
 flowchart TD
     subgraph NOSHED["Queue everything"]
         direction LR
         N1["15 arrive<br/>per second"] n1@--> N2["Queue grows<br/>5 per second"]
-        N2 n2@--> N3["All 15 wait<br/>30 seconds"]
+        N2 n2@--> N3["New arrivals wait<br/>30 s at t = 60 s"]
         N3 n3@--> N4["Clients time out<br/>work is wasted"]
     end
 
@@ -293,12 +301,14 @@ flowchart TD
 
 | Rule | What it does | Why it helps |
 |---|---|---|
-| Bounded queue | Reject new requests once N are waiting | Caps the worst-case wait |
-| Deadline check | Drop a queued request that has waited past its timeout | Stops work on answers nobody will read |
+| Bounded queue | Reject new requests once N are waiting | Limits backlog; use deadlines to cap waiting time |
+| Deadline check | Reject work unlikely to finish before its deadline | Stops work on answers nobody will read |
 | Priority classes | Shed batch traffic before interactive traffic | Protects the users who are watching |
 | Output cap | Enforce a maximum `max_tokens` per tier | Stops one request from holding a slot for minutes |
 
-A good bound for the queue is "how many requests can I finish within my TTFT target?". If the target is 2 seconds and the server starts 10 requests per second, a queue longer than about 20 is already a broken promise.
+A rough starting point is queue capacity = measured start rate × allowed queue wait. At 10 starts per second and a 2-second queue-wait budget, that gives about 20 waiting requests.
+
+TTFT also includes prefill and other overhead, so leave room for those inside the TTFT target. Variable prompt lengths and batching make this a planning estimate; validate it under load.
 
 ### Say no clearly
 
@@ -309,7 +319,9 @@ The response matters as much as the decision.
 | This tenant is over its budget | `429 Too Many Requests` | You are sending too much. Slow down |
 | The whole server is overloaded | `503 Service Unavailable` | Not your fault. Try again shortly |
 
-In both cases, add a `Retry-After` header with a number of seconds. It turns a guess into an instruction.
+For temporary limits, send a `Retry-After` header with a realistic wait in seconds. Clients must also support its HTTP-date form. Do not suggest retrying an unchanged request that can never fit the bucket.
+
+The HTTP standards define [429 for rate limiting](https://www.rfc-editor.org/rfc/rfc6585.html#section-4) and [503 for temporary overload](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.6.4). Both can carry `Retry-After`; it is a retry hint, not a guarantee of capacity.
 
 On the client side, the matching behavior is short:
 
@@ -324,7 +336,7 @@ Step 3 is not a detail. Without it, a thousand clients rejected at the same mome
 
 ## What to watch
 
-Limits you cannot see are limits you cannot tune. Add three counters to the dashboard from my [vLLM monitoring guide](/posts/monitoring-vllm-prometheus-dashboard-alerts/):
+Limits you cannot see are limits you cannot tune. Track these three signals on your dashboard:
 
 | Metric to add | What it tells you |
 |---|---|
@@ -332,7 +344,7 @@ Limits you cannot see are limits you cannot tune. Add three counters to the dash
 | Server-wide rejections (503) | How often you are out of capacity |
 | Tokens used versus budget, per tenant | Who needs a bigger budget, and who has room to spare |
 
-A steady trickle of 429s for one tenant is the system working. A burst of 503s for everyone is a capacity problem, and the fix is in the [autoscaling guide](/posts/autoscaling-llm-inference-kubernetes-keda/), not in the limiter.
+A steady trickle of 429s for one tenant is the system working. A burst of 503s for everyone signals a service-wide problem. Investigate serving health, capacity, and traffic demand before changing the limits.
 
 ## Common mistakes
 
@@ -341,7 +353,7 @@ A steady trickle of 429s for one tenant is the system working. A burst of 503s f
 | Limiting requests only | One heavy tenant takes the GPU | Limit tokens, optionally with a request limit on top |
 | Counting input tokens only | Long generations escape the budget | Reserve `max_tokens`, then refund |
 | An unbounded queue | Latency grows until everything times out | Bound the queue and reject beyond it |
-| Rejecting without `Retry-After` | Clients retry instantly and make it worse | Always send a wait time |
+| Rejecting without `Retry-After` | Clients retry instantly and make it worse | Send a realistic wait for temporary limits |
 | One global limit | Small tenants are punished for a large one | Budget per tenant |
 | Per-replica counters | The real limit is multiplied by the replica count | Keep counts in a shared store |
 
@@ -349,8 +361,8 @@ A steady trickle of 429s for one tenant is the system working. A burst of 503s f
 
 ```text
 Rate limiting     = capping how much one tenant may use over time
-Request limit     = counts calls; wrong unit for LLMs because calls differ in cost
-Token limit       = counts input plus output tokens; tracks real GPU cost
+Request limit     = counts calls; useful for bursts but misses differences in cost
+Token limit       = budgets token volume; a proxy for compute, not a GPU measurement
 Token bucket      = a budget that refills at a steady rate and allows bounded bursts
 Refill rate       = the sustained budget, such as 1,000 tokens per second
 Capacity          = the largest burst the bucket can absorb
@@ -364,4 +376,4 @@ Backoff with jitter = wait longer after each failure, plus randomness to avoid r
 Rule of thumb     = budget tenants in tokens, bound the queue, and say no quickly
 ```
 
-Limits decide who gets capacity. To add capacity, read [autoscaling LLM inference on Kubernetes](/posts/autoscaling-llm-inference-kubernetes-keda/). To see why a full queue destroys goodput, read the [inference metrics guide](/posts/llm-inference-metrics-ttft-tpot-throughput-goodput/#7-goodput-throughput-that-actually-counts).
+Limits decide who gets capacity. For the serving engine behind the gateway, read [why vLLM is used for inference](/posts/why-vllm-is-dominating-ai-inference-market/). For distributing traffic across replicas, read [LLM inference routing on Kubernetes](/posts/llm-d-kubernetes-inference-routing/).
