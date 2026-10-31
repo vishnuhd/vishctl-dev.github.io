@@ -1,7 +1,7 @@
 ---
 title: "Faster vLLM Cold Starts on Kubernetes: Cache the Model, Not the Download"
-date: 2026-10-13T02:47:00+08:00
-draft: true
+date: 2026-11-01T01:29:00+08:00
+draft: false
 author: "Vishnu"
 description: "A simple, diagram-first guide to making a new vLLM Pod ready in seconds instead of minutes: where cold-start time goes, how to cache weights on a volume, how to pre-pull the image, and which storage to pick."
 series: ["AI Infra"]
