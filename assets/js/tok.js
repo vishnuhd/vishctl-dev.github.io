@@ -79,8 +79,8 @@
     tok.className = 'tok';
     Object.assign(tok.dataset, { eyes: 'open', legs: 'stand', face: 'right', side: 'left', state: 'walk' });
     tok.innerHTML = `
-        <p class="tok-bubble" aria-hidden="true" hidden></p>
-        <button class="tok-bot" type="button" aria-label="Tok, the site robot. Press to say hi, or drag to move me.">
+        <p class="tok-bubble" role="status" aria-live="off" aria-atomic="true" hidden></p>
+        <button class="tok-bot" type="button" aria-label="Tok, the site robot. Press for a thought about this page, or drag to move me.">
             <span class="tok-sprite" draggable="false">${sprite}</span>
             <span class="tok-shadow" aria-hidden="true"></span>
         </button>
@@ -90,12 +90,13 @@
     const bot = tok.querySelector('.tok-bot');
     const body = tok.querySelector('.tok-sprite');
 
-    // What Tok says depends a little on where it is.
+    // Tap responses use the current page and reading section. Idle chatter stays playful.
     const page = document.querySelector('[data-404-path]') ? 'missing'
         : document.querySelector('.tty-tmux, .tty-pane') ? 'about'
         : document.querySelector('.post-single .post-content') ? 'post'
         : document.getElementById('searchInput') ? 'search'
         : document.querySelector('.home-info') ? 'home'
+        : document.querySelector('.archive-year') ? 'archive'
         : 'list';
     const QUIPS = [
         'kubectl get tokens',
@@ -117,13 +118,97 @@
         about: ['that is my human', 'my human wrote all of this'],
         search: ['type something, I will grep it', 'search is O(fast)'],
         missing: ['404: I looked everywhere', 'this page got evicted'],
-        list: ['so many notes', 'kubectl get posts']
+        list: ['so many notes', 'kubectl get posts'],
+        archive: ['git log, but for engineering notes', 'the notebook, one month at a time']
+    };
+    const article = document.querySelector('.post-single .post-content');
+    const title = document.querySelector('main h1')?.textContent.trim() || '';
+    const headings = article ? [...article.querySelectorAll('h2, h3')] : [];
+    const compact = (text, limit = 68) => {
+        const clean = text.replace(/\s+/g, ' ').trim();
+        return clean.length > limit ? clean.slice(0, limit - 3).trimEnd() + '...' : clean;
+    };
+    // Match the section first, then the post title. Do not scan the whole article:
+    // a passing mention of a tool should not decide the topic of every response.
+    const TOPICS = [
+        [/quantiz|q4_k|gguf|fp16|bf16|fp8|bits? per weight|rounding|4-bit|8-bit/i,
+            ['fewer bits, lighter backpack for the model', 'small weights, big memory savings. beep.', 'Q4_K_M: a little extra precision in the mix']],
+        [/speculative|draft model/i,
+            ['the small model guesses. the big one checks.', 'draft tokens still need the big model to approve']],
+        [/prefix|kv cache|lmcache|radix|cache hit/i,
+            ['same prefix? keep the work you already did.', 'cache hits are my favourite kind of shortcut']],
+        [/cold start|model cache|download/i,
+            ['download once. let the next startup reuse it.', 'waiting for weights is not inference']],
+        [/ttft|tpot|goodput|inference metrics|throughput|latency/i,
+            ['first token and next token tell different stories', 'fast answers count. useful fast answers count more.']],
+        [/rate limit|load shed|tokens.*requests/i,
+            ['one request can carry a lot of tokens', 'a token budget keeps the queue from eating the GPU']],
+        [/autoscal|queue depth|keda/i,
+            ['watch the queue. the CPU can look very relaxed.', 'more waiting requests? time to check capacity.']],
+        [/pending|troubleshoot/i,
+            ['Pending? check the scheduler events first.', 'a GPU request still needs a matching node']],
+        [/oom|memory.*siz|gpu memory|headroom/i,
+            ['weights need room. the KV cache needs room too.', 'leave some headroom for the runtime, human']],
+        [/time.slic|gpu sharing|mig|mps/i,
+            ['one GPU, several neighbours. choose the boundaries.', 'sharing a GPU still needs a memory budget']],
+        [/prometheus|monitor|dashboard|alert/i,
+            ['a dashboard is cheaper than guessing', 'watch the queue before the users notice']],
+        [/llm-d|routing|router/i,
+            ['send the request where the useful cache lives', 'the shortest queue is only part of the story']],
+        [/sglang|vllm/i,
+            ['batch the work. keep that GPU busy.', 'serving tokens is a scheduling problem too']],
+        [/ollama|llama.cpp|mlx|macbook|local.llm|freetoken/i,
+            ['local tokens. local hardware. very real memory limits.', 'your laptop is a tiny inference lab']],
+        [/karmada|multi.cluster/i,
+            ['more clusters, more places to schedule the work', 'one cluster is a start. several need coordination.']],
+        [/kubernetes|pods?|nvidia|nccl|rdma/i,
+            ['kubectl get pods. my version of checking on friends.', 'the GPU is only one piece of the platform']],
+        [/agent|harness/i,
+            ['the model decides. the tools do the work.', 'a good agent needs a useful feedback loop']],
+        [/cheat sheet/i,
+            ['the pocket-sized version. my kind of section.', 'save this bit for your next terminal session']]
+    ];
+    const sectionAtReadingPosition = () => {
+        let current = null;
+        for (const heading of headings) {
+            if (heading.getBoundingClientRect().top > window.innerHeight * 0.35) break;
+            current = heading;
+        }
+        // Heading anchors add a decorative #. Read the heading without it.
+        return current ? [...current.childNodes]
+            .filter((node) => !node.classList?.contains('anchor'))
+            .map((node) => node.textContent).join('').trim() : '';
+    };
+    const contextualLines = () => {
+        if (page === 'post') {
+            const section = sectionAtReadingPosition();
+            const topic = TOPICS.find(([pattern]) => pattern.test(section))
+                || TOPICS.find(([pattern]) => pattern.test(title));
+            return topic ? topic[1] : [
+                section ? `now reading: ${compact(section)}` : `on my reading list: ${compact(title)}`,
+                `beep. reading along: ${compact(section || title)}`
+            ];
+        }
+        if (page === 'search') {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return PAGE_QUIPS.search;
+            const count = document.querySelectorAll('#searchResults li').length;
+            return [
+                `looking for: ${compact(query, 48)}`,
+                count ? `${count} search results. Enter opens your pick.` : 'no matches yet. try a shorter search?'
+            ];
+        }
+        if (page === 'list' && title) return [
+            `browsing: ${compact(title)}`,
+            document.querySelector('.topic-list') ? 'pick a topic. I will tag along.' : `more ${compact(title, 45)} notes to explore`
+        ];
+        return PAGE_QUIPS[page];
     };
     let lastLine = '';
-    const pick = () => {
-        const pool = Math.random() < 0.4 ? PAGE_QUIPS[page] : QUIPS;
-        let line = pool[Math.floor(Math.random() * pool.length)];
-        if (line === lastLine) line = QUIPS[(QUIPS.indexOf(line) + 1) % QUIPS.length];
+    const pick = (contextual = false) => {
+        const pool = contextual || Math.random() < 0.4 ? contextualLines() : QUIPS;
+        const choices = pool.filter((line) => line !== lastLine);
+        const line = choices[Math.floor(Math.random() * choices.length)] || pool[0];
         lastLine = line;
         return line;
     };
@@ -168,7 +253,6 @@
     let uiTimer = 0;
     let pokes = [];
     let muteUntil = 0;
-    let introduced = false;
     let saidEOF = false;
     let gone = false;
 
@@ -193,7 +277,8 @@
     const hideBubble = () => {
         bubble.hidden = true;
     };
-    const say = (text, ms = 3600) => {
+    const say = (text, ms = 3600, announce = false) => {
+        bubble.setAttribute('aria-live', announce ? 'polite' : 'off');
         bubble.textContent = text;
         bubble.hidden = false;
         render();
@@ -390,8 +475,7 @@
         }
         hop();
         lastQuip = now;
-        say(introduced ? pick() : 'hi, I am Tok! beep.');
-        introduced = true;
+        say(pick(true), 5000, true);
         if (running()) setState('idle', now);
     });
 
