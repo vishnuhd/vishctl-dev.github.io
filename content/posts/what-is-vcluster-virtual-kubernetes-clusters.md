@@ -14,12 +14,12 @@ ShowToc: true
 TocOpen: false
 ---
 
-Every platform team hits the same question sooner or later: when a new team or customer arrives, do they get a namespace or a whole cluster?
-
 ```text
 Namespace per tenant = cheap, but one shared API, one set of CRDs
 vCluster per tenant  = its own Kubernetes API, running as a pod
 ```
+
+Every platform team hits the same question sooner or later: when a new team or customer arrives, do they get a namespace or a whole cluster?
 
 **vCluster** sits between those two options. This post explains what it is and how the pieces work. A [second post](/posts/vcluster-private-nodes-auto-nodes-bare-metal/) covers private nodes and bare-metal servers, and a [third one](/posts/vcluster-bare-metal-gpu-tenant-metal3/) walks through a lab I built where a tenant gets real (simulated) servers by itself.
 

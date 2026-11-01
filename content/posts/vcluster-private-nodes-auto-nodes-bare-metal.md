@@ -14,14 +14,14 @@ ShowToc: true
 TocOpen: false
 ---
 
-The [first post](/posts/what-is-vcluster-virtual-kubernetes-clusters/) ended on private nodes: machines that join a tenant's own control plane, with nothing shared at the node level.
-
-That raises the practical question. Who finds the machine, installs it, and joins it?
-
 ```text
 Private nodes = the tenant owns real machines, joined straight to its own API
 Auto Nodes    = the Platform orders, installs and joins those machines for you
 ```
+
+The [first post](/posts/what-is-vcluster-virtual-kubernetes-clusters/) ended on private nodes: machines that join a tenant's own control plane, with nothing shared at the node level.
+
+That raises the practical question. Who finds the machine, installs it, and joins it?
 
 This post follows one request from "tenant wants a GPU server" to "node is Ready". The [lab post](/posts/vcluster-bare-metal-gpu-tenant-metal3/) shows the same flow running, with real output.
 
