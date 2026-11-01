@@ -1,5 +1,5 @@
 ---
-title: "What Is vCluster? A Kubernetes Cluster That Runs as a Pod"
+title: "vCluster: Virtualise Clusters, Not Machines"
 date: 2026-11-01T09:00:00+08:00
 draft: false
 author: "Vishnu"

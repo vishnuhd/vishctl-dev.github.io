@@ -691,7 +691,7 @@ fake-gpu-operator     = advertises nvidia.com/gpu on labelled nodes, no hardware
 
 Related posts:
 
-- [What is vCluster? A Kubernetes cluster that runs as a pod](/posts/what-is-vcluster-virtual-kubernetes-clusters/)
+- [vCluster: virtualise clusters, not machines](/posts/what-is-vcluster-virtual-kubernetes-clusters/)
 - [vCluster private nodes and Auto Nodes, explained](/posts/vcluster-private-nodes-auto-nodes-bare-metal/)
 - [Simulate GPUs, vLLM and llm-d on a laptop](/posts/simulate-gpu-vllm-llm-d-on-laptop/)
 - [Kubernetes GPU platform engineering](/posts/kubernetes-gpu-platform-engineering/)
