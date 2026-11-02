@@ -2,6 +2,7 @@ baseURL = "https://vishctl.dev/"
 locale = "en-us"
 title = "vishctl"
 theme = "PaperMod"
+enableRobotsTXT = true
 
 [params]
   env = "production"
