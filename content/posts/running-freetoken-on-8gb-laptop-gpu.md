@@ -21,7 +21,7 @@ Enter [FreeToken](https://github.com/FlashML-org/FreeToken) by FlashML, backed b
 
 I recently downloaded FreeToken to put their claims to the test on my modest laptop GPU. Here is what the setup looked like, how FreeToken handles memory under the hood, and the real-world generation numbers I observed.
 
-### The Test Rig
+## The Test Rig
 
 My test machine is a portable laptop, not a high-end multi-GPU workstation:
 
@@ -35,7 +35,7 @@ My test machine is a portable laptop, not a high-end multi-GPU workstation:
 
 On paper, an 8 GB VRAM budget makes running a 35-billion parameter model look impossible. In traditional setups, 8 GB VRAM limits you to 7B or 8B parameter models in 4-bit quantizations (such as Q4_K_M). Attempting to load a 35B model typically triggers out-of-memory errors or slows inference to a crawl.
 
-### Installing FreeToken and Exploring the Library
+## Installing FreeToken and Exploring the Library
 
 The FreeToken desktop app is available to download directly from the [FlashML website](https://www.flashml.ai/). It provides a self-contained installer that is quick to set up on Windows. When you launch it, the interface automatically detects your hardware specs, available VRAM, and system RAM, and presents a curated library of models optimized for edge offloading.
 
@@ -51,7 +51,7 @@ Before loading the model, the console dashboard showed clean baseline resource u
 
 {{< figure src="/images/posts/freetoken-8gb-laptop-gpu/03-system-resources-idle.png" alt="System resources at idle before model loading" caption="Idle console telemetry: 0.4 GiB VRAM used, ready for model weights." class="post-screenshot" >}}
 
-### Weight Conversion: The FTW Format
+## Weight Conversion: The FTW Format
 
 Once the 21.9 GiB download finished, FreeToken flagged the model as needing conversion before it could be launched.
 
@@ -65,7 +65,7 @@ The conversion took just over a minute on the i9-13900H and NVMe storage, produc
 
 {{< figure src="/images/posts/freetoken-8gb-laptop-gpu/07-conversion-complete-ftw.png" alt="Conversion complete showing 19.5 GiB repacked size" caption="Conversion complete: 19.5 GiB ready for execution." class="post-screenshot" >}}
 
-### Loading the Model and Memory Allocation
+## Loading the Model and Memory Allocation
 
 Starting the model triggers the weight allocation phase. Instead of attempting to cram the entire 19.5 GiB into the 8 GB VRAM, FreeToken partitions the workload across both memory tiers.
 
@@ -79,7 +79,7 @@ Once loaded, the memory profile was eye-opening:
 
 {{< figure src="/images/posts/freetoken-8gb-laptop-gpu/09-model-running-vram-ram-usage.png" alt="Model running with VRAM and RAM utilization" caption="Model running: 6.8 GiB in VRAM and 30.2 GiB in system RAM." class="post-screenshot" >}}
 
-### The Cache Architecture Under the Hood
+## The Cache Architecture Under the Hood
 
 The console view provides detailed insight into how FreeToken manages this memory footprint:
 
@@ -91,7 +91,7 @@ The console view provides detailed insight into how FreeToken manages this memor
 
 This hierarchical design is the core reason the model can run without crashing. Inactive experts reside in system RAM (filling ~30 GB of system memory), while the active attention layers, KV cache, and currently triggered experts reside in the 8 GB VRAM.
 
-### Real-World Performance & Generation Speed
+## Real-World Performance & Generation Speed
 
 To evaluate real-world performance, I tested a conversational prompt with reasoning enabled:
 
@@ -111,7 +111,7 @@ The model detail sheet confirms the architecture and licensing details:
 
 {{< figure src="/images/posts/freetoken-8gb-laptop-gpu/12-model-details-huggingface.png" alt="Model detail card on FreeToken" caption="Model details: 262K context window, NVFP4 quantization, and Apache 2.0 license." class="post-screenshot" >}}
 
-### Built-in Agentic Tooling & Local Endpoints
+## Built-in Agentic Tooling & Local Endpoints
 
 FreeToken also includes built-in support for developer tools and coding agents.
 
@@ -130,30 +130,30 @@ FreeToken provides quick configuration presets for popular coding assistants:
 
 Having drop-in compatibility with both OpenAI and Anthropic API schemas means you can point tools like Claude Code directly to your localhost port without running a reverse proxy.
 
-### Where FreeToken Fits
+## Where FreeToken Fits
 
 FreeToken is a relatively young product, but its approach solves a real constraint for local inference.
 
-#### Strengths
+### Strengths
 
 - **Bypasses the VRAM limit:** Running a 35B MoE model on an 8 GB laptop GPU without manual layer-by-layer offload tuning works out of the box.
 - **Hierarchical caching:** The dynamic MoE expert cache keeps VRAM usage around 6.8 GiB, preventing driver resets and CUDA out-of-memory crashes.
 - **Local developer endpoints:** Dual support for OpenAI and Anthropic endpoints makes integration with modern coding agents straightforward.
 - **Simple setup on Windows:** No manual compilation, no CUDA toolkit troubleshooting, and a clean desktop GUI.
 
-#### Limitations
+### Limitations
 
 - **System RAM is the real requirement:** While VRAM requirements drop significantly, your host RAM must be large enough to hold the repacked weights. On my machine, the model took 30.2 GB of system RAM. If your laptop only has 16 GB of RAM, you will not be able to run 35B models this way.
 - **Initial conversion step:** Each new model requires a one-time repacking step into the FTW format before the first run.
 - **Generation throughput:** At roughly 4.3 tokens per second, it is well suited for asynchronous workloads, coding agents, and complex reasoning queries, but not for instant conversational back-and-forth.
 
-### Wrap-up
+## Wrap-up
 
 If you have a laptop with 32 GB of system RAM and a modest 8 GB NVIDIA GPU, FreeToken is worth checking out. It makes 35B-class MoE models runnable on consumer hardware that would otherwise choke on them, keeping your data completely local.
 
 You can download the desktop app directly from [FlashML](https://www.flashml.ai/), check out the project on [GitHub](https://github.com/FlashML-org/FreeToken), and read their research paper on [arXiv:2608.16157](https://arxiv.org/abs/2608.16157).
 
-### Cheat sheet
+## Cheat sheet
 
 ```text
 VRAM limit         = the usual wall: a model that does not fit in GPU memory slows to a crawl

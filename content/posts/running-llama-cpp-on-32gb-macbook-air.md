@@ -17,7 +17,7 @@ In the [previous post](/posts/running-ollama-on-32gb-macbook-air/), I ran Ornith
 
 In this post, we go one level down: building and running llama.cpp directly, offloading inference to Apple Silicon's Metal GPU, and comparing performance numbers side by side with Ollama on the exact same model and quantization level.
 
-### Step 1: Build llama.cpp from Source
+## Step 1: Build llama.cpp from Source
 
 Building llama.cpp from source on macOS is fast and straightforward. On Apple Silicon, CMake automatically enables Metal support (`GGML_METAL=ON`) and compiles GPU compute kernels tailored for Apple's unified memory architecture.
 
@@ -49,7 +49,7 @@ Confirm that the build succeeded:
 llama-server --version
 ```
 
-### Step 2: Serve the Model (Out-of-the-Box Baseline)
+## Step 2: Serve the Model (Out-of-the-Box Baseline)
 
 llama.cpp can download GGUF models directly from Hugging Face Hub using the `-hf` flag, caching weights under `~/.cache/huggingface/hub`:
 
@@ -96,7 +96,7 @@ Generation speed is practically neck-and-neck (~17 tokens/s). However, prompt ev
 
 Ollama enables FlashAttention and sensible batch sizes by default, while raw llama.cpp keeps conservative baseline settings unless configured explicitly.
 
-### Step 3: Verifying the Quants
+## Step 3: Verifying the Quants
 
 Before comparing benchmark numbers, it is critical to confirm that both engines are executing the exact same quantization format. Comparing different quants (e.g. Q4_K_M vs Q8_0) would invalidate any performance conclusions.
 
@@ -122,7 +122,7 @@ curl -s http://localhost:11434/api/show -d '{"model": "ornith-1.5:9b"}' | jq '.d
 
 Both runtimes are confirmed to be executing `Q4_K_M`. Precision and model size are strictly identical.
 
-### Step 4: Leveling the Playing Field with Flash Attention & Batch Tuning
+## Step 4: Leveling the Playing Field with Flash Attention & Batch Tuning
 
 To give llama.cpp parity with Ollama's runtime optimizations, we restart `llama-server` with FlashAttention enabled and explicit batch sizes configured:
 
@@ -135,7 +135,7 @@ Here is what these tuning flags configure:
 - `-b 2048` (`--batch-size`): Sets the logical batch size for prompt evaluation.
 - `-ub 512` (`--ubatch-size`): Sets the physical micro-batch size dispatched to Metal compute passes, keeping the GPU pipelines fully saturated.
 
-### Step 5: Side-by-Side Benchmark on Longer Generation
+## Step 5: Side-by-Side Benchmark on Longer Generation
 
 Both engines were given the same prompt:
 
@@ -155,7 +155,7 @@ Here are the side-by-side results on the 32 GB MacBook Air:
 
 With FlashAttention and batch tuning enabled, llama.cpp matches or slightly edges out Ollama across both prompt evaluation (**48.68 vs. 46.01 tokens/s**) and token generation speed (**17.07 vs. 16.42 tokens/s**).
 
-#### Ollama Command & Stats
+### Ollama Command & Stats
 
 ```bash
 ollama run ornith-1.5:9b --verbose
@@ -175,7 +175,7 @@ eval duration:        30.204706s
 eval rate:            16.42 tokens/s
 ```
 
-#### llama.cpp Server Startup & Timing Logs
+### llama.cpp Server Startup & Timing Logs
 
 Server startup and live slot execution log:
 
@@ -280,7 +280,7 @@ curl http://localhost:8080/v1/chat/completions \
 }
 ```
 
-### Key Takeaways
+## Key Takeaways
 
 1. **Ollama is not faster than llama.cpp**: Under the hood, Ollama is llama.cpp. Its initial out-of-the-box advantage in prompt evaluation comes entirely from default runtime tuning (FlashAttention and batch sizes), not a secret runtime or different quantization.
 2. **FlashAttention is essential on Apple Silicon**: Enabling `-fa on` doubled prompt evaluation speed from **24.18 tokens/s to 48.68 tokens/s**, drastically cutting time-to-first-token.
@@ -289,7 +289,7 @@ curl http://localhost:8080/v1/chat/completions \
 
 In the next post, we will explore KV cache quantization and memory profiling to see how far we can stretch long-context windows on a 32 GB machine.
 
-### Cheat sheet
+## Cheat sheet
 
 ```text
 llama.cpp         = the lower-level inference engine that Ollama builds on

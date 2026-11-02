@@ -59,7 +59,7 @@ flowchart TD
     class B4 gpu;
 {{< /mermaid >}}
 
-My [autoscaling guide](/posts/autoscaling-llm-inference-kubernetes-keda/) explained why slow cold starts make scaling hard. This post is about making them short.
+Slow cold starts make scaling hard. This post is about making them short.
 
 ## Where the time goes
 
@@ -387,4 +387,4 @@ startupProbe      = tells Kubernetes a Pod is allowed to take minutes to start
 Rule of thumb     = never download at start time, then load from the fastest disk you have
 ```
 
-Fast starts make [autoscaling](/posts/autoscaling-llm-inference-kubernetes-keda/) practical: a replica that is ready in 30 seconds can react to a spike that a 5-minute replica would miss. For how big the weights are in the first place, see [How Much GPU Memory Does an LLM Need?](/posts/llm-gpu-memory-sizing-weights-kv-cache/) and [LLM Quantization, Simply](/posts/llm-quantization-fp16-int8-4bit-gguf/).
+Fast starts make autoscaling practical: a replica that is ready in 30 seconds can react to a spike that a 5-minute replica would miss. For how big the weights are in the first place, see [LLM Quantization, Simply](/posts/llm-quantization-fp16-int8-4bit-gguf/).

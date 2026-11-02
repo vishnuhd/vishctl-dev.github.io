@@ -334,4 +334,4 @@ Ironic Python Agent  = the ramdisk that writes the OS image to the server's disk
 Deprovisioning       = a released server is cleaned and goes back to available
 ```
 
-Previous: [what vCluster is](/posts/what-is-vcluster-virtual-kubernetes-clusters/). Next: [the lab, with real output](/posts/vcluster-bare-metal-gpu-tenant-metal3/). Related: [GPU sharing with time-slicing, MPS and MIG](/posts/kubernetes-gpu-sharing-time-slicing-mps-mig/).
+Previous: [what vCluster is](/posts/what-is-vcluster-virtual-kubernetes-clusters/). Next: [the lab, with real output](/posts/vcluster-bare-metal-gpu-tenant-metal3/).

@@ -67,7 +67,7 @@ body:has(.tty-tmux) .tok { bottom: 52px; }
     background: #0d1820;
     box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
     color: #d2dee6;
-    font: 500 11.5px/1.45 var(--font-family-code);
+    font: 500 12.5px/1.45 var(--font-family-code);
     pointer-events: none;
 }
 .tok-bubble::before { content: "> "; color: #66e3b4; }

@@ -161,6 +161,7 @@
     font-weight: 400;
 }
 .searchbox .search-prompt #searchInput:focus { outline: none; box-shadow: none; }
+.searchbox .search-prompt #searchInput::placeholder { color: var(--secondary); opacity: 1; }
 .searchbox .search-prompt #searchInput::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
 .searchResults { gap: 8px; }
 .searchResults li {

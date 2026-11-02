@@ -19,7 +19,7 @@ The upstream changelog is massive, but as someone who spends most of the day man
 
 Here are the features I am keeping an eye on, along with practical examples for how they work.
 
-### 1. HPA Can Finally Scale to Zero (`minReplicas: 0`)
+## 1. HPA Can Finally Scale to Zero (`minReplicas: 0`)
 
 For years, one of the most frustrating limitations in vanilla Kubernetes autoscaling was that `HorizontalPodAutoscaler` could not scale below one replica. If you had a queue consumer waiting on messages in SQS or RabbitMQ, or a GPU worker waiting on batch jobs, you had to keep at least one pod running around the clock, or pull in third-party tools like KEDA just to do basic scale-to-zero.
 
@@ -70,7 +70,7 @@ status:
 
 **The catch:** This only works with object or external metrics. It does not work with CPU or memory metrics, because a deployment with zero running pods produces no CPU or memory data to trigger an upscale. For event-driven workers and GPU workloads, this saves real money on cloud bills.
 
-### 2. Finding Orphaned PVCs Just Got Much Easier
+## 2. Finding Orphaned PVCs Just Got Much Easier
 
 PersistentVolumeClaims have a habit of outliving the workloads that created them. Someone deletes a Deployment or StatefulSet, but the PVC stays behind in the namespace. Weeks or months later, dozens of unused EBS volumes or cloud disks are quietly burning infrastructure budget.
 
@@ -111,7 +111,7 @@ IDLE_SINCE:.status.conditions[?(@.type=="Unused")].lastTransitionTime'
 
 With one command, you can spot storage that has been abandoned for 30+ days and clean it up safely.
 
-### 3. ClusterTrustBundles Go GA: Retire Your CA Sync Cronjobs
+## 3. ClusterTrustBundles Go GA: Retire Your CA Sync Cronjobs
 
 If you manage enterprise clusters with internal PKI, private container registries, or corporate proxies, you have almost certainly solved the root certificate problem with a workaround. Most teams either run a custom controller that clones a secret into every namespace as a `ConfigMap`, or bake internal certificates into container base images.
 
@@ -164,7 +164,7 @@ spec:
 
 The kubelet handles mounting and rotation natively. That is one less custom controller or sync cronjob to maintain.
 
-### 4. Control Plane Breathing Room: etcd RangeStream & Concurrent Decode
+## 4. Control Plane Breathing Room: etcd RangeStream & Concurrent Decode
 
 When large clusters experience network hiccups or controller restarts, hundreds of controllers can hit the API server with list requests at the exact same moment. Historically, etcd built full responses in memory before sending them, and the API server processed watch events serially on a single goroutine. During recovery storms, control plane memory would spike, occasionally sending nodes into Out-Of-Memory (OOM) loops.
 
@@ -182,7 +182,7 @@ etcdctl get /registry/pods/ --prefix --stream
 
 In upstream benchmarks across 150,000 pods, these two improvements combined cut cache initialization time by more than 50%. For operators of large clusters or CRD-heavy environments, this means significantly less control plane jitter during rolling restarts.
 
-### 5. `kubectl get -o kyaml` Goes Stable
+## 5. `kubectl get -o kyaml` Goes Stable
 
 YAML has plenty of parsing quirks (such as unquoted country codes like `NO` being interpreted as boolean `false`).
 
@@ -207,7 +207,7 @@ country: "NO"
 
 It formats cleanly, avoids parser edge cases, and provides predictable output for gitops diffs and scripts.
 
-### 6. SELinuxMount Reaches GA
+## 6. SELinuxMount Reaches GA
 
 If your nodes run SELinux (common in Red Hat, Rocky, or Fedora environments), volume mounts historically required recursive file relabeling on every pod start, which could cause painfully slow startup times on large volumes.
 
@@ -237,7 +237,7 @@ spec:
         claimName: shared-data-pvc
 ```
 
-### Where This Leaves Us
+## Where This Leaves Us
 
 Do not rush to upgrade production this weekend. If you use a managed provider (EKS, GKE, Rancher), wait for `.1` or `.2` patch releases. If you run physical data centers like me and manage the control plane yourself, be even more conservative: test locally, promote through lower environments, and comfortably stay on n-1 or n-2.
 
@@ -245,7 +245,7 @@ The real reason to track v1.37 today is preventing fresh technical debt. If your
 
 Let the early patches bake, keep your clusters healthy, and start planning which legacy workarounds you get to delete.
 
-### Cheat sheet
+## Cheat sheet
 
 ```text
 Garhwal                 = the release theme of Kubernetes v1.37

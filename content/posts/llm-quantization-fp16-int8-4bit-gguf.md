@@ -142,7 +142,7 @@ File size = parameters x bits per weight / 8
 
 Two cautions:
 
-- **Quantizing weights does not shrink the KV cache.** The cache that grows with your context is a separate cost. The [GPU memory sizing guide](/posts/llm-gpu-memory-sizing-weights-kv-cache/) covers both.
+- **Quantizing weights does not shrink the KV cache.** The cache that grows with your context is a separate cost.
 - **File size is not the whole footprint.** Leave room for the cache and the runtime, or a model that "fits" will crawl.
 
 ## 5. Reading the names
@@ -209,7 +209,7 @@ Generating a token means reading every weight from memory. On laptops and CPUs, 
 | Small GPU | Often the only way the model fits on the GPU at all |
 | Big GPU with spare memory | Smaller gain. 16-bit is already fast and well supported |
 
-On a data-center GPU the stronger argument is capacity, not speed: a smaller model leaves more memory for the KV cache, which means more concurrent users. See [how many requests fit](/posts/llm-gpu-memory-sizing-weights-kv-cache/#3-put-it-together-how-many-requests-fit).
+On a data-center GPU the stronger argument is capacity, not speed: a smaller model leaves more memory for the KV cache, which means more concurrent users.
 
 ## Try it: watch the quality fall off
 
@@ -293,7 +293,7 @@ On a GPU server, vLLM loads pre-quantized checkpoints the same way as any other 
 vllm serve <org>/<model>-FP8
 ```
 
-A fair test is simple: run the same ten prompts from your real work against two quantization levels and compare the answers side by side. Use the script from the [inference metrics guide](/posts/llm-inference-metrics-ttft-tpot-throughput-goodput/) to compare speed at the same time.
+A fair test is simple: run the same ten prompts from your real work against two quantization levels and compare the answers side by side.
 
 ## Which one should you pick?
 
@@ -348,4 +348,4 @@ KV cache        = not shrunk by weight quantization; size it separately
 Rule of thumb   = 8-bit is safe, 4-bit is the sweet spot, below 4 falls off fast
 ```
 
-For the memory math behind these choices, read [How Much GPU Memory Does an LLM Need?](/posts/llm-gpu-memory-sizing-weights-kv-cache/). For plain-English definitions of nearby terms (GGUF, FP16, INT4), see the [AI and LLM glossary](/posts/ai-llm-glossary/).
+For plain-English definitions of nearby terms (GGUF, FP16, INT4), see the [AI and LLM glossary](/posts/ai-llm-glossary/).

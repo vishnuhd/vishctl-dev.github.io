@@ -608,7 +608,7 @@ flowchart TD
     class X warn;
 {{< /mermaid >}}
 
-The GPUs are simulated, so this shows resource accounting and placement, not performance. If you want the full story on `Pending` GPU pods, see [why a GPU pod stays Pending](/posts/kubernetes-gpu-pod-pending-troubleshooting/).
+The GPUs are simulated, so this shows resource accounting and placement, not performance.
 
 ## Clean up: servers go back to the pool
 
@@ -695,5 +695,4 @@ Related posts:
 - [vCluster private nodes and Auto Nodes, explained](/posts/vcluster-private-nodes-auto-nodes-bare-metal/)
 - [Simulate GPUs, vLLM and llm-d on a laptop](/posts/simulate-gpu-vllm-llm-d-on-laptop/)
 - [Kubernetes GPU platform engineering](/posts/kubernetes-gpu-platform-engineering/)
-- [Why a GPU pod stays Pending](/posts/kubernetes-gpu-pod-pending-troubleshooting/)
 - [Karmada: Kubernetes across clusters](/posts/karmada-kubernetes-multi-cluster/)
