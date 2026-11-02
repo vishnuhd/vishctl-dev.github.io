@@ -4,7 +4,7 @@
 {{- $max := 1 }}
 {{- with index $terms 0 }}{{ $max = .Count }}{{ end }}
 
-{{- partial "page_header.html" (dict "page" . "command" "vishctl get topics --sort-by=count" "meta" (printf "%d topics across %d notes" (len $terms) (len site.RegularPages))) }}
+{{- partial "page_header.html" (dict "page" . "meta" (printf "%d topics across %d notes" (len $terms) (len site.RegularPages))) }}
 
 <ol class="topic-list">
   {{- range $index, $term := $terms }}

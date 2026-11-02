@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
     --card-surface: #f8fafc;
@@ -6,7 +6,7 @@
     --header-surface: rgba(255, 255, 255, 0.82);
     --pattern-line: rgba(2, 132, 199, 0.055);
     --pattern-glow: color-mix(in srgb, var(--accent) 9%, transparent);
-    --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-family-base: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     --font-family-code: 'JetBrains Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 }
 
@@ -21,19 +21,19 @@
 body,
 :root[data-theme] body.list {
     font-family: var(--font-family-base);
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
     background-color: var(--theme);
     background-image: none;
 }
 
-/* The grid sits behind the top of each page and fades out towards the bottom and sides.
+/* The grid frames the homepage terminal only; articles and lists keep a plain surface.
    It scrolls with the page, so the browser paints it once instead of on every scroll. */
 body {
     position: relative;
     isolation: isolate;
 }
 
-body::before {
+body.list:has(.home-info)::before {
     content: "";
     position: absolute;
     inset: 0 0 auto;
@@ -621,9 +621,8 @@ body.light .first-entry.home-info {
 
 .post-content blockquote {
     padding: 16px 18px;
-    border: 1px solid var(--card-border);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 9px 9px 0;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--card-border));
+    border-radius: 9px;
     background: color-mix(in srgb, var(--card-surface) 94%, var(--accent));
 }
 

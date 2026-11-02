@@ -80,56 +80,6 @@
     document.addEventListener('visibilitychange', updateVisibility);
     updateVisibility();
 
-    // Pointer glow on cards and terminals, and a grid spotlight behind the page, for mouse users with motion on.
-    // The styles are under "Pointer glow" and "Background spotlight" in lab.css.
-    const glowTargets = '.post-entry, .lab-terminal, .searchResults li, .paginav, .tty-pane, .tty-work, .post-toc, .post-content div.highlight, .post-content .mermaid, .post-content .table-scroll';
-    const gridSize = 56;
-    const spotlight = document.createElement('div');
-    spotlight.className = 'lab-spotlight';
-    spotlight.setAttribute('aria-hidden', 'true');
-    document.body.append(spotlight);
-    let pointer = null;
-    let pointerQueued = false;
-    const gridOffset = (edge) => `${(((-1 - edge) % gridSize) + gridSize) % gridSize}px`;
-    const paintPointer = () => {
-        pointerQueued = false;
-        if (!pointer) return;
-        const { x, y } = pointer;
-        let target = pointer.target;
-        pointer.target = null;
-        while (target) {
-            const rect = target.getBoundingClientRect();
-            target.classList.add('lab-glow');
-            target.style.setProperty('--mx', `${x - rect.left}px`);
-            target.style.setProperty('--my', `${y - rect.top}px`);
-            // Wide tables and diagrams scroll sideways; keep the glow over the visible part.
-            if (target.scrollWidth > target.clientWidth) target.style.setProperty('--sx', `${target.scrollLeft}px`);
-            target = target.parentElement?.closest(glowTargets);
-        }
-        // The box is centred on the cursor; shift its grid so the lines stay on the page grid.
-        spotlight.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-        spotlight.style.setProperty('--gx', gridOffset(x - 260));
-        spotlight.style.setProperty('--gy', gridOffset(y - 260 + window.scrollY));
-        spotlight.classList.add('is-on');
-    };
-    const queuePointer = () => {
-        if (pointerQueued) return;
-        pointerQueued = true;
-        window.requestAnimationFrame(paintPointer);
-    };
-    document.addEventListener('pointermove', (event) => {
-        if (event.pointerType !== 'mouse' || !motionRunning()) return;
-        pointer = { x: event.clientX, y: event.clientY, target: event.target.closest?.(glowTargets) };
-        queuePointer();
-    }, { passive: true });
-    window.addEventListener('scroll', () => {
-        if (pointer) queuePointer();
-    }, { passive: true });
-    root.addEventListener('pointerleave', () => {
-        pointer = null;
-        spotlight.classList.remove('is-on');
-    });
-
     // Looping terminal animations only run while the terminal is on screen.
     const terminalObserver = 'IntersectionObserver' in window
         ? new IntersectionObserver((entries) => entries.forEach(({ target, isIntersecting }) => {

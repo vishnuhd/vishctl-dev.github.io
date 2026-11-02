@@ -3,7 +3,7 @@
 {{- /* Only dated notes belong in the log; About, Search, and Archive have no publish date. */ -}}
 {{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}
 
-{{- partial "page_header.html" (dict "page" . "command" "git log --format='%ad %s' --date=short" "meta" (printf "%d notes, newest first" (len $pages))) }}
+{{- partial "page_header.html" (dict "page" . "meta" (printf "%d notes, newest first" (len $pages))) }}
 
 {{- range $pages.GroupByPublishDate "2006" }}
 {{- if ne .Key "0001" }}

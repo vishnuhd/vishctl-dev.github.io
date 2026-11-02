@@ -4,7 +4,6 @@
 {{- $tags := site.Taxonomies.tags }}
 <section class="first-entry home-info lab-hero" aria-labelledby="home-title">
     <div class="lab-intro">
-        <p class="lab-eyebrow"><span class="lab-status-dot" aria-hidden="true"></span> Vishnu's engineering notebook</p>
         <header class="entry-header">
             <h1 id="home-title"><span>Infrastructure.</span> <span>Local AI.</span> <span class="lab-title-accent">Learning by doing.</span></h1>
         </header>
@@ -52,7 +51,7 @@
             <p class="lab-command lab-command-next"><span aria-hidden="true">❯</span> <span class="lab-cursor" aria-hidden="true"></span></p>
         </div>
         <div class="lab-terminal-footer">
-            <span><span class="lab-status-dot" aria-hidden="true"></span> {{ len $notes }} notes · {{ len $tags }} topics</span>
+            <span>{{ len $notes }} notes · {{ len $tags }} topics</span>
             <span>~/vishctl.dev</span>
         </div>
     </aside>

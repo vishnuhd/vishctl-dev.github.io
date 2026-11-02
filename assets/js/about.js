@@ -610,7 +610,7 @@
                 else print(`cd: no such file or directory: ${place}`, 'is-error');
             },
             work() {
-                page.querySelectorAll('.tty-work').forEach((card) => pair(text(card.querySelector('.tty-work-index')), text(card.querySelector('h3')), 17));
+                page.querySelectorAll('.tty-work').forEach((card) => pair(text(card.querySelector('.tty-tags li')), text(card.querySelector('h3')), 17));
                 print('details: cd work', 'is-dim');
             },
             log() {

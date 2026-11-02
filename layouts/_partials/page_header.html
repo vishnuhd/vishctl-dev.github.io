@@ -1,10 +1,7 @@
-{{- /* Listing header: a shell command, the page title, and an optional count line. */ -}}
+{{- /* Listing header: the page title and an optional count line. */ -}}
 {{- $page := .page }}
 <header class="page-header lab-page-header">
   {{- partial "breadcrumbs.html" $page }}
-  {{- with .command }}
-  <p class="lab-section-kicker lab-typed" style="--chars: {{ add (len .) 2 }}">$ {{ . }}</p>
-  {{- end }}
   <h1>
     {{- .title | default $page.Title -}}
     {{- with .rss }}

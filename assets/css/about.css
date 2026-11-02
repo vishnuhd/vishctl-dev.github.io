@@ -18,7 +18,6 @@ body:has(.tty-page) .top-link { display: none; }
     --t-violet: #a78bfa;
     --t-amber: #edc16b;
     --t-red: #ee817e;
-    --glow: var(--t-mint);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 26px;
@@ -41,7 +40,6 @@ body:has(.tty-page) .top-link { display: none; }
     border: 1px solid var(--t-border);
     border-radius: 11px;
     background: var(--t-bg);
-    box-shadow: 0 24px 70px -36px rgba(0, 0, 0, 0.6), 0 0 50px -25px rgba(102, 227, 180, 0.14);
     scroll-margin-top: calc(var(--header-height, 60px) + 22px);
 }
 .tty-bar {
@@ -82,8 +80,6 @@ body:has(.tty-page) .top-link { display: none; }
 /* Hero */
 .tty-hero-body { padding-bottom: 32px; }
 .tty-rain { position: absolute; inset: 42px 0 0; z-index: 0; width: 100%; height: calc(100% - 42px); opacity: 0.5; pointer-events: none; -webkit-mask-image: linear-gradient(90deg, transparent 34%, #000 96%); mask-image: linear-gradient(90deg, transparent 34%, #000 96%); }
-.tty-scan { position: absolute; inset: 42px 0 0; z-index: 3; overflow: hidden; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 3px); }
-.tty-scan::after { content: ""; position: absolute; inset: 0 0 auto; height: 120px; background: linear-gradient(to bottom, transparent, rgba(102, 227, 180, 0.05), transparent); transform: translateY(-120px); }
 .tty-boot { position: absolute; inset: 0; z-index: 4; display: none; padding: 22px 26px; background: var(--t-bg); color: var(--t-text); font-size: 13px; clip-path: inset(0); }
 .tty-boot p { white-space: pre-wrap; }
 .tty-boot p:first-child, .tty-boot p:last-child { color: var(--t-dim); }
@@ -95,15 +91,11 @@ body:has(.tty-page) .top-link { display: none; }
     max-width: 100%;
     margin: 4px 0 18px;
     overflow: hidden;
-    background: linear-gradient(100deg, #66e3b4 0%, #7fc9e8 38%, #a78bfa 62%, #66e3b4 100%) 0 0 / 240% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--t-mint);
     font-size: clamp(7px, 2.8vw, 18px);
     line-height: 1.2;
     white-space: pre;
 }
-.tty-eyebrow { margin-bottom: 10px; color: var(--t-mint); font-size: 12.5px; font-weight: 500; letter-spacing: 0.03em; }
 .tty-h1 { max-width: 23ch; color: var(--t-bright); font-size: clamp(24px, 3.7vw, 41px); font-weight: 600; line-height: 1.2; letter-spacing: -0.04em; }
 .tty-h1 em { color: var(--t-mint); font-style: normal; }
 .tty-fetch { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 30px; margin-top: 26px; }
@@ -143,8 +135,8 @@ body:has(.tty-page) .top-link { display: none; }
 .tty-button .tty-cursor { color: var(--t-mint); }
 
 /* Impact: stat tiles with a small ASCII meter each */
-.tty-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.tty-stat { min-width: 0; padding: 14px 16px 16px; border: 1px solid var(--t-line); border-radius: 8px; background: rgba(19, 33, 43, 0.6); }
+.tty-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.tty-stat { min-width: 0; padding-top: 14px; border-top: 1px solid var(--t-line); }
 .tty-stat-key { color: var(--t-dim); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
 .tty-stat strong { display: block; margin: 6px 0 6px; color: var(--t-bright); font-size: clamp(23px, 2.9vw, 32px); font-weight: 600; line-height: 1.15; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tty-stat-viz { display: block; height: 1.65em; overflow: hidden; color: var(--t-mint); font-size: 12px; white-space: nowrap; }
@@ -157,14 +149,10 @@ body:has(.tty-page) .top-link { display: none; }
 .tty-steps i + i::before { content: "▸"; margin-right: 2px; opacity: 0.5; }
 
 /* Work: cards with a live readout */
-.tty-work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.tty-work { position: relative; display: flex; flex-direction: column; min-width: 0; overflow: hidden; padding: 18px 18px 16px; border: 1px solid var(--t-line); border-radius: 8px; background: rgba(19, 33, 43, 0.6); transition: border-color 200ms ease, transform 200ms ease; }
-.tty-work > * { position: relative; z-index: 1; }
-.tty-work:hover { border-color: color-mix(in srgb, var(--t-mint) 60%, var(--t-line)); transform: translateY(-2px); }
-.tty-work-index { color: var(--t-dim); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; }
-.tty-work-index b { margin-right: 6px; color: var(--t-mint); font-weight: 600; }
-.tty-work h3 { margin: 8px 0 8px; color: var(--t-bright); font-size: 17.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.03em; }
-.tty-work > p:not(.tty-work-index) { color: var(--t-text); font-size: 13.5px; line-height: 1.7; }
+.tty-work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.tty-work { position: relative; display: flex; flex-direction: column; min-width: 0; padding-top: 14px; border-top: 1px solid var(--t-line); }
+.tty-work h3 { margin: 0 0 8px; color: var(--t-bright); font-size: 17.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.03em; }
+.tty-work > p { color: var(--t-text); font-size: 13.5px; line-height: 1.7; }
 .tty-viz { display: grid; align-content: center; height: calc(3 * 1.6em + 22px); margin: 16px 0 14px; padding: 10px 12px; overflow: hidden; border: 1px dashed var(--t-line); border-radius: 6px; background: var(--t-well); font-size: 12px; line-height: 1.6; white-space: pre; }
 .tty-viz:empty { display: none; }
 .tty-viz div { display: flex; gap: 1ch; overflow: hidden; }
@@ -242,8 +230,8 @@ body:has(.tty-page) .top-link { display: none; }
 .tty-more:hover { color: var(--t-mint); }
 
 /* Interactive shell */
-.tty-shell-window { margin: 4px 0 6px; border: 1px solid var(--t-line); border-radius: 8px; background: var(--t-well); cursor: text; }
-.tty-shell-window:focus-within { border-color: color-mix(in srgb, var(--t-mint) 55%, var(--t-line)); box-shadow: 0 0 0 3px rgba(102, 227, 180, 0.1); }
+.tty-shell-window { margin: 4px 0 6px; border-top: 1px solid var(--t-line); cursor: text; }
+.tty-shell-window:focus-within { border-color: var(--t-mint); }
 .tty-shell-log { height: 250px; padding: 14px 16px 4px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--t-border) transparent; }
 .tty-shell-log p { min-height: 1.65em; white-space: pre-wrap; overflow-wrap: anywhere; }
 .tty-shell-log .is-echo { color: var(--t-bright); }
@@ -286,16 +274,12 @@ body:has(.tty-page) .top-link { display: none; }
 .tty-boot.is-clearing { clip-path: inset(0 0 100% 0); transition: clip-path 260ms cubic-bezier(0.6, 0, 0.9, 0.4); }
 
 @keyframes tty-blink { 0%, 45% { opacity: 0.9; } 50%, 95% { opacity: 0; } }
-@keyframes tty-shine { to { background-position: -240% 0; } }
-@keyframes tty-beam { to { transform: translateY(900px); } }
 @keyframes tty-chip-in { from { opacity: 0; transform: translateY(5px) scale(0.94); } }
 @keyframes tty-line-in { from { opacity: 0; transform: translateY(8px); } }
 
 @media (prefers-reduced-motion: no-preference) {
     :root[data-motion="running"]:not([data-page-hidden="true"]) :is(.tty-cursor, .tty-logo-cursor),
     :root[data-motion="running"]:not([data-page-hidden="true"]) .tty-caret::after { animation: tty-blink 1.1s steps(1) infinite; }
-    :root[data-motion="running"]:not([data-page-hidden="true"]) .tty-banner { animation: tty-shine 9s linear infinite; }
-    :root[data-motion="running"]:not([data-page-hidden="true"]) .tty-scan::after { animation: tty-beam 7s linear infinite; }
     :root[data-motion="running"]:not([data-page-hidden="true"]) .tty-commit.is-head::after { animation: lab-pulse 2.4s ease-out infinite; }
     :root[data-motion="running"] [data-tty-section]:not(.is-done) [data-tty-line].is-in { animation: tty-line-in 0.45s var(--ease-out) backwards; }
     :root[data-motion="running"] [data-tty-section]:not(.is-done) .tty-tree > li.is-in .tty-chips li { animation: tty-chip-in 0.4s var(--ease-out) backwards; animation-delay: calc(80ms + var(--i) * 45ms); }
@@ -332,7 +316,6 @@ body:has(.tty-page) .top-link { display: none; }
 }
 @media (max-width: 420px) {
     .tty-bar { gap: 12px; padding-inline: 14px; }
-    .tty-stat { padding: 12px 12px 14px; }
     .tty-commit { padding-left: 24px; }
     .tty-button { padding-inline: 13px; }
 }

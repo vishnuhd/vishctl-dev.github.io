@@ -12,8 +12,7 @@
 {{- if gt (len $paginator.Pages) 0 }}
 <div class="posts-section-header" id="latest-notes">
   <div>
-    <p class="lab-section-kicker">$ ls -t ./notes</p>
-    <h2 class="posts-section-title">{{ if $firstPage }}Latest notes{{ else }}Older notes{{ end }}<span class="lab-heading-dot">.</span></h2>
+    <h2 class="posts-section-title">{{ if $firstPage }}Latest notes{{ else }}Older notes{{ end }}</h2>
   </div>
   <a class="lab-all-notes" href="{{ "posts/" | relURL }}">All notes <span aria-hidden="true">↗</span></a>
 </div>

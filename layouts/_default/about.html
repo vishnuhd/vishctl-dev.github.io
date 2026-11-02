@@ -29,7 +29,6 @@
   <section class="tty-pane tty-hero" id="whoami" data-tty-section data-tty-hero aria-labelledby="about-title">
     {{- partial "tty_bar.html" (dict "title" "vishnu@lab: ~/about" "note" "zsh" "skip" true) }}
     <canvas class="tty-rain" aria-hidden="true"></canvas>
-    <div class="tty-scan" aria-hidden="true"></div>
     <div class="tty-hero-body">
       <div class="tty-boot" aria-hidden="true">
         <p>vishctl-os {{ $years }}.0 (singapore-1) tty1</p>
@@ -50,7 +49,6 @@
 ╚██╗ ██╔╝██║╚════██║██╔══██║██║╚██╗██║██║   ██║
  ╚████╔╝ ██║███████║██║  ██║██║ ╚████║╚██████╔╝
   ╚═══╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ </pre>
-      <p class="tty-eyebrow" data-tty-line>DevOps · Platform Engineering · AI Infrastructure</p>
       <h1 class="tty-h1" id="about-title" data-tty-type data-tty-speed="17">I build and run the <em>platforms</em> other teams ship on.</h1>
 
       <div class="tty-fetch">
@@ -129,35 +127,31 @@
       <h2 class="tty-h2" id="work-title" data-tty-line><span data-tty-fx="decode">Some of the systems I have worked on</span></h2>
       <div class="tty-work-grid">
         <article class="tty-work" data-tty-line>
-          <p class="tty-work-index"><b>01</b> telco</p>
           <h3>Kubernetes for a 5G core</h3>
           <p>Provisioned high-throughput, low-latency Kubernetes clusters on VMware for cloud-native network functions serving more than 760,000 daily users.</p>
           <div class="tty-viz" aria-hidden="true" data-tty-viz="traffic"></div>
-          <ul class="tty-tags"><li>Kubernetes</li><li>VMware</li><li>5G CNF</li></ul>
+          <ul class="tty-tags"><li>telco</li><li>Kubernetes</li><li>VMware</li><li>5G CNF</li></ul>
         </article>
 
         <article class="tty-work" data-tty-line>
-          <p class="tty-work-index"><b>02</b> government</p>
           <h3>Seven-version platform upgrade</h3>
           <p>Led a multi-cycle Tanzu Kubernetes upgrade from v1.26 to v1.33 with zero downtime for production government workloads.</p>
           <div class="tty-viz" aria-hidden="true" data-tty-viz="upgrade"></div>
-          <ul class="tty-tags"><li>Tanzu</li><li>Zero downtime</li><li>Platform ops</li></ul>
+          <ul class="tty-tags"><li>government</li><li>Tanzu</li><li>Zero downtime</li><li>Platform ops</li></ul>
         </article>
 
         <article class="tty-work" data-tty-line>
-          <p class="tty-work-index"><b>03</b> hybrid-cloud</p>
           <h3>Private and public cloud platforms</h3>
           <p>Delivered production Kubernetes on SUSE Harvester with RKE2 and Rancher Prime, and automated more than 90% of an AWS migration.</p>
           <div class="tty-viz" aria-hidden="true" data-tty-viz="apply"></div>
-          <ul class="tty-tags"><li>Private cloud</li><li>Public cloud</li><li>Kubernetes</li></ul>
+          <ul class="tty-tags"><li>hybrid-cloud</li><li>Private cloud</li><li>Public cloud</li><li>Kubernetes</li></ul>
         </article>
 
         <article class="tty-work" data-tty-line>
-          <p class="tty-work-index"><b>04</b> ai-infra</p>
           <h3>GPU workloads across clouds</h3>
           <p>Led infrastructure for vLLM workloads spanning data centres, AWS, OCI, and government cloud, alongside MLOps pipelines on SageMaker.</p>
           <div class="tty-viz" aria-hidden="true" data-tty-viz="gpu"></div>
-          <ul class="tty-tags"><li>vLLM</li><li>GPU</li><li>MLOps</li></ul>
+          <ul class="tty-tags"><li>ai-infra</li><li>vLLM</li><li>GPU</li><li>MLOps</li></ul>
         </article>
       </div>
     </div>

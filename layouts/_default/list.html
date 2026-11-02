@@ -3,10 +3,6 @@
 {{- $pages := union .RegularPages .Sections }}
 {{- $paginator := .Paginate $pages }}
 
-{{- $command := printf "vishctl get notes" }}
-{{- if eq .Kind "term" }}
-{{- $command = printf "vishctl get notes -l topic=%s" (.Data.Term | urlize) }}
-{{- end }}
 {{- $rss := "" }}
 {{- if and (or (eq .Kind "term") (eq .Kind "section")) (.Param "ShowRssButtonInSectionTermList") }}
 {{- $rss = .OutputFormats.Get "rss" }}
@@ -15,7 +11,7 @@
 {{- $title := .Title }}
 {{- if eq .Kind "term" }}{{ $title = printf "#%s" (.Data.Term | lower) }}{{ end }}
 
-{{- partial "page_header.html" (dict "page" . "command" $command "title" $title "rss" $rss "meta" (printf "%d %s" $count (cond (eq $count 1) "note" "notes"))) }}
+{{- partial "page_header.html" (dict "page" . "title" $title "rss" $rss "meta" (printf "%d %s" $count (cond (eq $count 1) "note" "notes"))) }}
 
 {{- if .Content }}
 <div class="post-content md-content">
