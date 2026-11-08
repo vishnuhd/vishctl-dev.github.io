@@ -1,7 +1,7 @@
 ---
 title: "GPU Sharing on Kubernetes: Time-Slicing, MPS, and MIG, Explained Simply"
-date: 2026-10-13T02:00:00+08:00
-draft: true
+date: 2026-11-09T00:00:00+08:00
+draft: false
 author: "Vishnu"
 description: "A simple, diagram-first guide to sharing one NVIDIA GPU between many Pods: what time-slicing, MPS, and MIG actually isolate, the ConfigMaps that turn them on, and which one fits LLM inference."
 series: ["AI Infra"]
@@ -14,7 +14,12 @@ ShowToc: true
 TocOpen: false
 ---
 
-Kubernetes counts GPUs the way it counts chairs: whole ones only. A Pod asks for `nvidia.com/gpu: 1` and gets an entire card, even if it only needs a corner of it.
+```text
+Kubernetes counts GPU devices, not spare memory or compute.
+Sharing changes the devices it counts and the isolation behind them.
+```
+
+Kubernetes counts GPUs the way it counts chairs: whole ones only. A Pod asks for `nvidia.com/gpu: 1` and normally gets exclusive access to one GPU device, even if it only needs a corner of it. With MIG, that device can be a hardware partition.
 
 That is fine for a training job that fills an H100. It is wasteful for an embedding model that uses 4 GB of an 80 GB card.
 
@@ -80,9 +85,9 @@ Every sharing method below is a different answer to the same question: **how do 
 | How it shares | Takes turns | Runs side by side | Splits the hardware |
 | Memory isolation | None | Software limit per client | Hardware, per instance |
 | Fault isolation | None | Weak | Strong |
-| Predictable speed | No | Mostly | Yes |
-| Max shares per GPU | Any number you choose | Any number you choose | Up to 7 |
-| Works on any NVIDIA GPU | Yes | Yes | No, only MIG-capable cards |
+| Predictable speed | No guarantee | Compute caps, no latency guarantee | Better isolation, benchmark your workload |
+| Shares per GPU | Configurable replicas | Replicas within MPS client limits | Up to 7 on the H100 used here |
+| Hardware support | Broad CUDA GPU support | Supported CUDA GPUs and software stack | MIG-capable cards only |
 
 Keep this table in mind. The rest of the post is just explaining each row.
 
@@ -92,7 +97,7 @@ Time-slicing is the simplest option. You tell the device plugin to **advertise e
 
 With `replicas: 4`, a node with one H100 reports `nvidia.com/gpu: 4`. Four Pods can each request one "GPU" and all land on the same card.
 
-Here is the important part: **nothing changes on the GPU itself.** The card was always able to switch between processes. Time-slicing only changes the number Kubernetes is allowed to count.
+Here is the important part: **nothing changes on the GPU itself.** The card was always able to switch between processes. Time-slicing only changes the number Kubernetes is allowed to count. The turns are between CUDA processes, not fixed per-Pod time slots; a Pod can launch several processes.
 
 {{< mermaid caption="Top: the device plugin turns one physical GPU into four countable replicas. Bottom: on the card, the Pods simply take turns." >}}
 flowchart TD
@@ -186,7 +191,7 @@ kubectl patch clusterpolicies.nvidia.com/cluster-policy \
 
 Two flags are worth understanding:
 
-- `failRequestsGreaterThanOne: true` rejects any Pod that asks for more than one replica. That stops people from believing `nvidia.com/gpu: 2` means "twice the GPU".
+- `failRequestsGreaterThanOne: true` causes allocation to fail for a container that asks for more than one replica. It is a device-plugin allocation check, not an admission policy. That stops people from believing `nvidia.com/gpu: 2` means "twice the GPU".
 - `renameByDefault: true` advertises the resource as `nvidia.com/gpu.shared` instead. Use it when you want Pods to say out loud that they accept a shared card.
 
 Then check that the node now reports four GPUs:
@@ -198,7 +203,7 @@ kubectl get node <node-name> \
 
 The node also gains a `nvidia.com/gpu.replicas=4` label, and the product label gets a `-SHARED` suffix. That suffix is handy for node selectors.
 
-To see sharing in action, run four Pods that each ask for one GPU:
+To see sharing in action, use a test cluster with exactly one eligible GPU node and one physical GPU. Run four Pods that each ask for one GPU; on a larger cluster the scheduler can spread them across different cards:
 
 ```yaml
 # shared-gpu-test.yaml
@@ -227,7 +232,11 @@ spec:
 
 ```bash
 kubectl apply -f shared-gpu-test.yaml
+kubectl rollout status deployment/shared-gpu-test --timeout=180s
 kubectl logs -l app=shared-gpu-test --prefix | sort
+
+# Clean up after checking the UUIDs
+kubectl delete deployment shared-gpu-test
 ```
 
 All four Pods should print the **same GPU UUID**. That is the proof that they share one physical card.
@@ -244,14 +253,14 @@ kubectl rollout restart -n gpu-operator daemonset/nvidia-device-plugin-daemonset
 
 With time-slicing, only one Pod's work runs at any instant. If Pod A uses 20% of the GPU during its turn, the other 80% sits idle until the turn ends.
 
-MPS puts a small server in front of the GPU. Every Pod sends its work to that server, and the server feeds it all to the GPU **at the same time**. Small workloads overlap instead of queueing.
+[MPS uses a control daemon and server](https://docs.nvidia.com/deploy/mps/latest/architecture.html) to coordinate access to GPU scheduling resources. On modern GPUs such as the H100, clients submit work directly to the GPU using separate address spaces. Their kernels **can run concurrently** when resources are available, so small workloads can overlap.
 
-{{< mermaid caption="With MPS, Pods hand their work to one shared server. The GPU runs all of it together, and each Pod has a memory cap." >}}
-flowchart LR
-    A["Embeddings Pod<br/>cap 20 GB"] m1@--> S["MPS server<br/>one shared<br/>GPU context"]
+{{< mermaid caption="MPS coordinates shared GPU access. Client kernels can overlap, and the device plugin configures a memory cap per client." >}}
+flowchart TD
+    A["Embeddings Pod<br/>cap 20 GB"] m1@--> S["MPS service<br/>coordinates<br/>GPU access"]
     B["Reranker Pod<br/>cap 20 GB"] m2@--> S
     C["Notebook Pod<br/>cap 20 GB"] m3@--> S
-    S m4@--> G["H100<br/>runs all three<br/>at once"]
+    S m4@--> G["H100<br/>can overlap<br/>client kernels"]
 
     m1@{ animate: true }
     m2@{ animate: true }
@@ -268,9 +277,11 @@ flowchart LR
 
 ### What changes compared to time-slicing
 
-The device plugin divides the card evenly. With `replicas: 4` on an 80 GB H100, each Pod is limited to **an equal fraction: 20 GB of memory and a quarter of the compute**.
+The device plugin divides the card evenly. With `replicas: 4` on an 80 GB H100, each MPS client gets **about 20 GB of allocatable memory and a 25% active-thread limit**. These are software caps, not a reserved quarter of throughput.
 
-Replay the walkthrough from earlier. At step 3, the notebook user tries to load a 68 GB model. This time **their own Pod fails** at 20 GB, and the embeddings Pod never notices.
+The examples assume one CUDA client process per Pod; a Pod resource request is not a general aggregate memory limit across arbitrary child processes.
+
+Replay the walkthrough from earlier. At step 3, the notebook user tries to load a 68 GB model. This time **their own Pod fails** at 20 GB, while the embeddings client keeps its own allocation budget. Shared GPU faults can still affect both.
 
 That is a real improvement. The mistake now hurts the person who made it.
 
@@ -279,11 +290,11 @@ That is a real improvement. The mistake now hurts the person who made it.
 - **Weak fault isolation.** All Pods share one MPS server. A fatal GPU error from one client can take the others down with it.
 - **Equal shares only.** You cannot give one Pod 40 GB and another 10 GB. Every replica is the same size.
 - **No MIG combination.** The device plugin does not support MPS on a GPU that has MIG enabled.
-- **Experimental status.** The device plugin README still describes MPS support as experimental (as of v0.15.0), so test it on your own versions before trusting it in production.
+- **Experimental status.** The [device plugin README](https://github.com/NVIDIA/k8s-device-plugin#with-cuda-mps) still describes MPS support as experimental (as of v0.15.0), so test it on your own versions before trusting it in production.
 
 ### Turn it on
 
-The config has the same shape as time-slicing. Only the key changes:
+The config has the same shape as time-slicing, but **the MPS control daemon must also be deployed and healthy**. A ConfigMap alone does not start that service. Check your Operator version and deployment manifests, or use the [standalone device-plugin Helm chart](https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin), which includes an MPS control daemon. Use only one device-plugin deployment per node.
 
 ```yaml
 # mps-config.yaml
@@ -305,6 +316,9 @@ data:
 
 ```bash
 kubectl apply -f mps-config.yaml
+
+# Confirm an MPS control daemon is deployed before selecting this config
+kubectl get daemonsets -A | grep mps
 ```
 
 ```bash
@@ -312,6 +326,8 @@ kubectl patch clusterpolicies.nvidia.com/cluster-policy \
   -n gpu-operator --type merge \
   -p '{"spec": {"devicePlugin": {"config": {"name": "mps-config", "default": "any"}}}}'
 ```
+
+The Operator patch above selects the plugin configuration; it does not install a missing MPS daemon. Confirm the daemon is Ready and check its logs before starting CUDA clients.
 
 Time-slicing and MPS are mutually exclusive on a node: the plugin applies one sharing method to every GPU on it. To confirm which one a node uses, read its label:
 
@@ -326,10 +342,10 @@ It prints `mps`, `time-slicing`, or `none`.
 
 **MIG (Multi-Instance GPU)** is the only option that changes the hardware layout.
 
-A MIG-capable card can be split into **up to 7 instances**. Each instance gets its own slice of memory and its own slice of compute. To the software inside a Pod, an instance looks like a small, separate GPU.
+The 80 GB H100 in this example can be split into **up to 7 MIG instances**. Each instance gets its own slice of memory and its own slice of compute. To the software inside a Pod, an instance looks like a small, separate GPU.
 
-{{< mermaid caption="One 80 GB H100 cut into four MIG instances. Each instance has its own memory and compute, so the Pods cannot touch each other." >}}
-flowchart LR
+{{< mermaid caption="One 80 GB H100 cut into four MIG instances. Each instance has its own memory and compute, with hardware isolation between instances." >}}
+flowchart TD
     G["H100<br/>80 GB"] s1@--> I1["3g.40gb<br/>40 GB slice"]
     G s2@--> I2["2g.20gb<br/>20 GB slice"]
     G s3@--> I3["1g.10gb<br/>10 GB slice"]
@@ -373,18 +389,25 @@ On an 80 GB H100, the common profiles are:
 | `3g.40gb` | 3 of 7 | 40 GB | 2 |
 | `7g.80gb` | 7 of 7 | 80 GB | 1 |
 
-You can also mix sizes on one card, as in the diagram above. That exact mix (two `1g.10gb`, one `2g.20gb`, one `3g.40gb`) is what the GPU Operator calls `all-balanced`.
+You can also mix sizes on one card, as in [NVIDIA's mixed-strategy example](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/gpu-operator-mig.html#example-mixed-mig-strategy) and the diagram above. That exact mix (two `1g.10gb`, one `2g.20gb`, one `3g.40gb`) is what the GPU Operator calls `all-balanced`.
 
 ### What MIG costs you
 
 - **Only some cards support it.** MIG needs data-center GPUs from the Ampere generation onward, such as the A100, A30, H100, and H200. Cards like the T4, L4, and L40S do not have it. Check `nvidia-smi` or your card's documentation before planning around it.
 - **Fixed sizes.** You pick from a menu of profiles. You cannot create a 13 GB instance.
-- **At most 7 instances.** Time-slicing and MPS let you choose any replica count.
+- **Hardware-specific instance limits.** This H100 supports up to 7. Other models can differ, and MPS also has client and compatibility limits.
 - **Changing the layout is disruptive.** The MIG Manager needs the GPU to be free of user workloads before it reshapes it, and some environments need a node reboot.
 
 ### Turn it on
 
-Install (or upgrade) the GPU Operator with a MIG strategy:
+The following commands assume MIG-capable hardware and no software-sharing configuration. If you ran either earlier example, delete the test workloads and clear the shared plugin config before switching:
+
+```bash
+kubectl patch clusterpolicies.nvidia.com/cluster-policy --type merge \
+  -p '{"spec":{"devicePlugin":{"config":{"name":"","default":""}}}}'
+```
+
+Install the GPU Operator with a MIG strategy. For an existing release, preserve its values with `helm upgrade gpu-operator nvidia/gpu-operator --reuse-values` and add `--set mig.strategy=single`; use your installed chart version to avoid an unintended upgrade:
 
 ```bash
 helm repo add nvidia https://helm.ngc.nvidia.com/nvidia
@@ -392,7 +415,7 @@ helm repo update
 ```
 
 ```bash
-helm upgrade --install gpu-operator nvidia/gpu-operator \
+helm install gpu-operator nvidia/gpu-operator \
   -n gpu-operator --create-namespace \
   --set mig.strategy=single
 ```
@@ -402,9 +425,9 @@ The strategy decides how instances are named:
 | Strategy | Use when | Pods request |
 |---|---|---|
 | `single` | Every GPU on the node has the same profile | `nvidia.com/gpu: 1` |
-| `mixed` | GPUs on the node have different profiles | `nvidia.com/mig-1g.10gb: 1` |
+| `mixed` | Multiple profiles on one GPU or across the node | `nvidia.com/mig-1g.10gb: 1` |
 
-Then label the node with the layout you want. Drain or cordon it first, because GPU Pods on that node will be stopped:
+Then label the node with the layout you want. Cordon it first and stop or migrate its GPU workloads during a maintenance window. Cordon only blocks new scheduling; it does not evict running Pods. MIG Manager stops GPU Pods while applying the new geometry:
 
 ```bash
 kubectl cordon <node-name>
@@ -419,6 +442,11 @@ kubectl get node <node-name> \
 ```
 
 ```bash
+kubectl wait node/<node-name> \
+  --for=jsonpath='{.metadata.labels.nvidia\.com/mig\.config\.state}'=success \
+  --timeout=600s
+
+# Uncordon only after the wait succeeds
 kubectl uncordon <node-name>
 ```
 
@@ -428,31 +456,31 @@ With `all-1g.10gb` and the `single` strategy, one H100 now reports `nvidia.com/g
 
 Sharing rules that work for notebooks can surprise you with an inference server. Three things matter most.
 
-### vLLM grabs memory up front
+### Give vLLM an explicit memory budget
 
-By default, [vLLM](/posts/why-vllm-is-dominating-ai-inference-market/) reserves about 90% of the GPU memory it can see (`--gpu-memory-utilization 0.9`) and uses the spare room for KV cache.
+[vLLM](/posts/why-vllm-is-dominating-ai-inference-market/) budgets GPU memory for model execution, including weights, runtime overhead, and KV cache. Set `--gpu-memory-utilization` explicitly when sharing; defaults and allocation behavior vary by version. The [engine argument reference](https://docs.vllm.ai/en/latest/configuration/engine_args/#cacheconfig) documents this per-instance setting.
 
-Now combine that with each sharing mode:
+For a concrete example, use `--gpu-memory-utilization 0.9` and compare the sharing modes:
 
-| Mode | What vLLM sees | Result with default settings |
+| Mode | Memory boundary | Result with an explicit 0.9 budget |
 |---|---|---|
-| Time-slicing | All 80 GB | First Pod takes 72 GB, second Pod fails to start |
-| MPS, 4 replicas | A 20 GB cap | Each Pod must fit inside its 20 GB share |
-| MIG `3g.40gb` | A 40 GB GPU | Works: 90% of 40 GB, no neighbors to fight |
+| Time-slicing | All 80 GB | A 72 GB executor budget leaves too little for another equal server |
+| MPS, 4 replicas | About 20 GB per client, not a separate GPU | Do not assume vLLM detects the cap; configure and test its budget |
+| MIG `3g.40gb` | A 40 GB GPU | About 36 GB for execution, if weights, overhead, and cache fit |
 
 On a time-sliced GPU you must lower the fraction yourself, for example two Pods at `--gpu-memory-utilization 0.45` each. Nothing enforces it, so one wrong flag still breaks the neighbor.
 
 ### Latency follows isolation
 
-Time-slicing adds waiting: your request's tokens are generated only during your Pod's turns. With four busy Pods, [time to first token](/posts/llm-inference-metrics-ttft-tpot-throughput-goodput/) and tokens per second both get worse, and they get worse unevenly.
+Time-slicing adds waiting: your request's tokens are generated only during your Pod's turns. With four busy Pods, time to first token and tokens per second both get worse, and they get worse unevenly.
 
-MIG gives each instance its own compute, so latency stays steady no matter what the neighbors do. That is why MIG is the usual choice when a shared model has a latency target.
+MIG dedicates compute and memory resources to each instance, which reduces GPU interference from neighbors. It does not guarantee end-to-end latency: CPU, networking, traffic bursts, and card-wide failures still matter. Benchmark the chosen profile against your latency target.
 
 ### Smaller GPU means smaller KV cache
 
 Whatever memory is left after loading weights becomes KV cache. A 10 GB slice holding an 8 GB model has very little room for long prompts or many concurrent users.
 
-If a model serves real traffic, size the slice for **weights plus cache**, not for weights alone. The [GPU memory sizing guide](/posts/llm-gpu-memory-sizing-weights-kv-cache/) has the formulas and a calculator for this. Routers such as [llm-d](/posts/llm-d-kubernetes-inference-routing/) and caches such as [LMCache](/posts/why-lmcache-is-needed/) help more when each replica has cache to spare.
+If a model serves real traffic, size the slice for **weights plus cache**, not for weights alone. Include runtime overhead and leave headroom for allocation spikes. Routers such as [llm-d](/posts/llm-d-kubernetes-inference-routing/) and caches such as [LMCache](/posts/why-lmcache-is-needed/) help more when each replica has cache to spare.
 
 ## Which one should you pick?
 
@@ -494,7 +522,7 @@ flowchart TD
 
 ### Pick MIG when:
 
-- **Different teams or tenants share a card** and one must never affect another.
+- **Different teams or tenants share a card** and you need stronger GPU memory and compute isolation.
 - **A workload has a latency or throughput target** that noisy neighbors would break.
 - **Your sizes are stable.** If the layout needs to change every hour, the drain-and-reconfigure cycle will hurt.
 
@@ -504,7 +532,9 @@ You can also layer them. Time-slicing works on top of MIG instances, so a `3g.40
 
 All three methods above are workarounds for the "GPUs are whole numbers" rule.
 
-**Dynamic Resource Allocation (DRA)** removes the rule. Instead of a count, a Pod makes a claim that describes the device it needs, and a driver decides how to satisfy it. DRA is now a stable API in recent Kubernetes releases, and NVIDIA maintains a DRA driver for GPUs.
+**Dynamic Resource Allocation (DRA)** offers a richer way to request devices. A Pod references a ResourceClaim, and a DRA driver supplies device information and prepares the allocated device. The [core DRA API became stable in Kubernetes v1.34](https://kubernetes.io/docs/concepts/resource-management/dynamic-resource-allocation/); NVIDIA maintains a GPU driver for it.
+
+DRA does not automatically create fractional GPUs or make every sharing mode available. Sharing support depends on the driver, Kubernetes features, and deployed versions.
 
 The ideas in this post do not go away under DRA. Time-slicing, MPS, and MIG are still the mechanisms on the card. DRA changes how you ask for them, not what they isolate.
 
@@ -513,15 +543,15 @@ The ideas in this post do not go away under DRA. Time-slicing, MPS, and MIG are 
 ```text
 Extended resource     = a whole-number device count; cannot be split or overcommitted
 Time-slicing          = advertise one GPU as N replicas; Pods take turns, nothing is isolated
-replicas              = how many Pods may share one GPU (or one MIG instance)
+replicas              = advertised shared allocations per GPU (or per configured MIG instance)
 renameByDefault       = expose shared GPUs as nvidia.com/gpu.shared instead of nvidia.com/gpu
-MPS                   = one shared server runs Pods side by side with equal memory and compute caps
-MIG                   = split a supported GPU into up to 7 hardware-isolated instances
+MPS                   = coordinated concurrent CUDA clients with software memory and compute caps
+MIG                   = hardware GPU partitions; this H100 supports up to 7 instances
 MIG profile 3g.40gb   = 3 of 7 compute slices plus 40 GB of memory
 mig.strategy single   = all GPUs on the node share one profile; Pods still ask for nvidia.com/gpu
-mig.strategy mixed    = profiles differ per GPU; Pods ask for nvidia.com/mig-<profile>
-Fault isolation       = one Pod's GPU crash cannot take down its neighbors (MIG only)
-DRA                   = the newer Kubernetes API that describes devices instead of counting them
+mig.strategy mixed    = multiple profiles on a node; Pods ask for nvidia.com/mig-<profile>
+Fault isolation       = containment of GPU faults; MIG is stronger, but card failures still matter
+DRA                   = claim-based device allocation; sharing still needs driver support
 Rule of thumb         = trust decides: same team can time-slice, strangers need MIG
 ```
 
